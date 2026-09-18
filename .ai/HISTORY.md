@@ -198,6 +198,11 @@
   Caddy (automatic Let's Encrypt HTTPS), `docker/Caddyfile`, `.env` keys for
   DOMAIN/POSTGRES_*, and `docs/deployment/VPS.md` (server setup, DNS, deploy,
   backups, and the checklist for moving off a temporary URL).
+- Made production settings fully host-agnostic: `ALLOWED_HOSTS` +
+  `EXTRA_ALLOWED_HOSTS` + `CSRF_TRUSTED_ORIGINS` from the environment, optional
+  Redis, and the Render hostname check reduced to an optional convenience that
+  is ignored elsewhere. Verified with a production smoke test and the full
+  suite (194 tests).
 
 ### Tests
 

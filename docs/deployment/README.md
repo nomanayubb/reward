@@ -1,5 +1,11 @@
 # Deployment
 
+> **Host-agnostic by design.** The same Docker image runs on your own VPS,
+> Render, Railway or any container host. Only environment variables change
+> (`ALLOWED_HOSTS`, `EXTRA_ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`,
+> `DATABASE_URL`, `REDIS_URL`, provider keys). There is no host-specific code
+> to rewrite — `render.yaml` is an optional recipe you can delete.
+
 ## Development
 
 ```bash

@@ -130,6 +130,10 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   (PostgreSQL + Redis + web + worker + beat + **Caddy with automatic HTTPS**),
   `docker/Caddyfile`, and the step-by-step `docs/deployment/VPS.md` guide
   (server, DNS, deploy, backups, migration from the temporary URL).
+- Host-agnostic configuration: production settings are fully environment-driven
+  (`ALLOWED_HOSTS`, `EXTRA_ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, optional
+  Redis); the only Render-aware line is an optional hostname auto-detect that
+  is ignored elsewhere. Verified with a production-settings smoke test.
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,

@@ -1,17 +1,30 @@
-"""Production settings — secure by default, all secrets from the environment."""
+"""Production settings — secure by default, all secrets from the environment.
+
+Host-agnostic: the same image runs on your own VPS, Render, Railway or any
+container host. Everything that differs between hosts is an environment
+variable, never code.
+"""
 from .base import *  # noqa: F401,F403
 
 DEBUG = False
-ALLOWED_HOSTS = env("ALLOWED_HOSTS")  # noqa: F405
 
-# Free PaaS hosts (Render) announce their hostname via this env var.
-RENDER_EXTERNAL_HOSTNAME = env("RENDER_EXTERNAL_HOSTNAME", default="")  # noqa: F405
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+# ---------------------------------------------------------------------------
+# Hosts and trusted origins — all environment-driven.
+#   ALLOWED_HOSTS        e.g. "example.com,www.example.com"
+#   EXTRA_ALLOWED_HOSTS  additional hosts (staging, preview URLs, ...)
+#   CSRF_TRUSTED_ORIGINS e.g. "https://example.com,https://www.example.com"
+# ---------------------------------------------------------------------------
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")  # noqa: F405
+ALLOWED_HOSTS += env.list("EXTRA_ALLOWED_HOSTS", default=[])  # noqa: F405
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])  # noqa: F405
-if RENDER_EXTERNAL_HOSTNAME:
-    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
+
+# Optional convenience only: Render announces its hostname in this variable.
+# It is ignored on any other host and can be deleted without side effects.
+_render_host = env("RENDER_EXTERNAL_HOSTNAME", default="")  # noqa: F405
+if _render_host:
+    ALLOWED_HOSTS.append(_render_host)
+    CSRF_TRUSTED_ORIGINS.append(f"https://{_render_host}")
 
 # Redis is used when available; free single-instance hosts can run without it.
 REDIS_URL = env("REDIS_URL", default="")  # noqa: F405

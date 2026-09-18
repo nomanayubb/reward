@@ -521,6 +521,21 @@ switching providers from a temporary URL to the real domain). 194 tests green.
 
 Commit: `chore(deploy): add own-server production stack (Caddy + VPS guide)`.
 
+## 38. Host-agnostic configuration
+
+**User:** "make coding in very flexible way so it not get only render only" —
+they want no Render lock-in.
+
+**Agent:** Audited the codebase for host coupling (only 3 references, all
+configuration). Made production settings fully environment-driven:
+`ALLOWED_HOSTS`, new `EXTRA_ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, optional
+Redis; the Render hostname auto-detect is now a clearly-marked optional
+convenience that is ignored on any other host. Verified with a production
+smoke test (`manage.py check` with production settings) and the full suite
+(194 tests). Deployment docs now state the host-agnostic guarantee.
+
+Commit: `refactor(settings): make production host configuration environment-driven`.
+
 ---
 
 ## Decisions made this session
