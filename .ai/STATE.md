@@ -95,6 +95,9 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   sponsorship campaigns with image upload, placements, schedule, weight and
   frequency caps; impressions/clicks/CTR stats; pause/activate with audit.
   4 tests (168 total).
+- Network ad snippets supported: staff-authored HTML tags (AdSense/Adsterra/
+  Monetag) render verbatim in placements, audit-logged; network tags handle
+  their own clicks. 1 test (169 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
@@ -123,8 +126,9 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - NOWPayments adapter is implemented and unit-tested but **not verified against
   the live/sandbox API** — credentials required (see docs/integrations/NOWPAYMENTS.md)
 - No CPA / survey / EasyPaisa adapters yet (interfaces + manual provider only)
-- Ad network integration not done (house/direct serving is live; networks need
-  policy verification first — ADR-013)
+- Ad network **accounts** and per-campaign policy verification are business
+  steps (the snippet capability is built; house/direct serving is live —
+  ADR-013)
 - Reports run inline (switch to Celery `.delay()` once a worker is deployed)
 - Urdu catalogue covers navigation/dashboard strings only
 - Test coverage gaps: postback end-to-end, quota edge cases, true parallel

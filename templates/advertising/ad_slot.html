@@ -1,11 +1,16 @@
 {% load i18n %}{% if ad_slot %}
   <div class="card" style="padding:.8rem;">
     <span class="pill">{% trans "Sponsored" %}</span>
-    <a href="{% url 'ad-click' ad_slot.impression.id %}" rel="noopener sponsored">
-      {% if ad_slot.campaign.image %}
-        <img src="{{ ad_slot.campaign.image.url }}" alt="{{ ad_slot.campaign.name }}" style="max-width:100%;border-radius:8px;margin-top:.5rem;" />
-      {% endif %}
-      <div><strong>{{ ad_slot.campaign.name }}</strong></div>
-    </a>
+    {% if ad_slot.campaign.html_snippet %}
+      {# Network tag (AdSense/Adsterra/...): staff-authored only, audited. #}
+      {{ ad_slot.campaign.html_snippet|safe }}
+    {% else %}
+      <a href="{% url 'ad-click' ad_slot.impression.id %}" rel="noopener sponsored">
+        {% if ad_slot.campaign.image %}
+          <img src="{{ ad_slot.campaign.image.url }}" alt="{{ ad_slot.campaign.name }}" style="max-width:100%;border-radius:8px;margin-top:.5rem;" />
+        {% endif %}
+        <div><strong>{{ ad_slot.campaign.name }}</strong></div>
+      </a>
+    {% endif %}
   </div>
 {% endif %}

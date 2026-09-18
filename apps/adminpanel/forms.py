@@ -33,7 +33,12 @@ class FeatureFlagToggleForm(forms.Form):
 
 
 class AdCampaignForm(forms.ModelForm):
-    """Create a direct/house ad campaign (banner, native, sponsorship, ...)."""
+    """Create a direct/house ad campaign (banner, native, sponsorship, ...).
+
+    ``html_snippet`` is for network tags (AdSense/Adsterra/...). It is only
+    editable by staff, rendered verbatim on the page, and every save is
+    audit-logged — never put user-supplied content here (ADR-013).
+    """
 
     class Meta:
         model = AdCampaign
@@ -42,6 +47,7 @@ class AdCampaignForm(forms.ModelForm):
             "provider",
             "ad_type",
             "image",
+            "html_snippet",
             "target_url",
             "placements",
             "weight",

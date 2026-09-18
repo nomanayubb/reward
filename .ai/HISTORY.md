@@ -154,6 +154,10 @@
   campaigns (banner, native, sponsorship) with image upload, placements,
   schedule, weight and frequency caps, plus impressions/clicks/CTR stats and
   pause/activate actions, all audit-logged. 4 tests (168 total).
+- Added network ad snippet support: staff-authored HTML tags (AdSense/
+  Adsterra/Monetag) render verbatim in placements and are audit-logged;
+  network tags handle their own clicks (no internal redirect). 1 test
+  (169 total).
 
 ### Tests
 

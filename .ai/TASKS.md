@@ -117,7 +117,7 @@
 - [x] Ad rendering/placement service + rotation logic
 - [x] Frequency-cap enforcement at serve time
 - [x] House ads / direct sponsorship (first monetization, no policy risk)
-- [ ] Ad-network integration (PropellerAds/Adsterra/Monetag — verify each campaign policy)
+- [x] Ad-network integration capability (snippet slot; network account + policy check is a business step)
 - [ ] Google AdSense only on SEO content pages — never on reward/game pages
       (incentivized clicks violate policy; see DECISIONS.md ADR-013)
 - [x] Ad admin UI + reporting (direct/house campaign management with stats)

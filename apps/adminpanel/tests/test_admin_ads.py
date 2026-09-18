@@ -109,3 +109,23 @@ def test_toggle_campaign(client, staff, provider, placement):
     campaign.refresh_from_db()
     assert campaign.status == AdCampaign.Status.PAUSED
     assert AuditLog.objects.filter(action="ad_campaign.toggle").exists()
+
+
+def test_network_snippet_renders_verbatim(client, staff, player, provider, placement):
+    campaign = AdCampaign.objects.create(
+        provider=provider,
+        name="Network slot",
+        ad_type=AdCampaign.AdType.BANNER,
+        status=AdCampaign.Status.ACTIVE,
+        html_snippet='<div id="network-slot-tag">NETWORK_AD</div>',
+    )
+    campaign.placements.add(placement)
+
+    client.force_login(player)
+    content = client.get("/").content.decode("utf-8")
+
+    assert 'id="network-slot-tag"' in content
+    assert "NETWORK_AD" in content
+    # Network tags handle their own clicks — no internal click redirect.
+    assert f"/ads/click/{campaign.impressions.first().id}/" not in content
+

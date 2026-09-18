@@ -399,6 +399,18 @@ Commit: `feat(offers,surveys): add click-through and survey start actions`.
 
 Commit: `feat(adminpanel): add direct ad campaign management`.
 
+## 30. Network ad snippets
+
+**User:** "next".
+
+**Agent:** Added the network ad snippet capability: staff-authored HTML tags
+(AdSense/Adsterra/Monetag) can be pasted into a campaign's `html_snippet` and
+render verbatim in placements; saves are audit-logged and network tags handle
+their own clicks (no internal click redirect). House/direct image campaigns
+unchanged. 1 test (169 total).
+
+Commit: `feat(advertising): render network ad snippets in placements`.
+
 ---
 
 ## Decisions made this session
