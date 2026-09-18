@@ -188,6 +188,14 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 ## Current Git
 
 Branch: main
-Last known commit: 5e29c59
+Last known commit: (see `git log`)
 Remote: origin — https://github.com/nomanayubb/reward.git
 Working tree: clean
+
+## Live deployments
+
+| Environment | URL | Notes |
+| --- | --- | --- |
+| Local dev | http://127.0.0.1:8010 | `demo@example.com` / `Demo1234!`, staff `admin@example.com` / `Admin1234!` |
+| Render (free, review/demo) | https://reward-odgq.onrender.com | sleeps when idle; SQLite resets on redeploy |
+| Own VPS (planned) | domain TBD | `docker-compose.prod.yml` + `docs/deployment/VPS.md` |
