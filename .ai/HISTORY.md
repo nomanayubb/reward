@@ -50,6 +50,9 @@
 - Added `.ai/REQUIREMENTS.md`: traceability of the master spec (50 areas) to
   done/partial/not-started, integration status (no CPA/survey/payment network
   connected yet) and the decisions needed from the product owner.
+- Added `.ai/sessions/` conversation-log convention (one append-only log per
+  session with requests, actions, decisions, blockers; the newest log is read
+  at session start) and logged this session.
 
 ### Tests
 

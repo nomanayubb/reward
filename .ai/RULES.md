@@ -127,8 +127,11 @@ inspect only files relevant to the current task.
 ## Rule 18 — Update Project Memory
 
 At the end of every meaningful session update `.ai/STATE.md` and
-`.ai/HISTORY.md`. Update `.ai/TASKS.md` when task status changes. Update
-`.ai/MASTER.md` when architecture/integration behavior changes. Record
+`.ai/HISTORY.md`. Write the session conversation log in
+`.ai/sessions/YYYY-MM-DD-<topic>.md` (user requests, actions, decisions,
+blockers — append-only). Update `.ai/TASKS.md` when task status changes.
+Update `.ai/MASTER.md` when architecture/integration behavior changes.
+Update `.ai/REQUIREMENTS.md` when requirement status changes. Record
 architecture decisions in `.ai/DECISIONS.md`.
 
 ## Rule 19 — Stop on Ambiguity

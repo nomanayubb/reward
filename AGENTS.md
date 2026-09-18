@@ -23,6 +23,7 @@ At the beginning of every new session, read these files in this order:
 .ai/TASKS.md
 .ai/MASTER.md
 .ai/REQUIREMENTS.md
+.ai/sessions/<latest log>.md
 ```
 
 Then read only the module-specific documentation relevant to the task.
@@ -194,6 +195,8 @@ When implementation changes behavior, update the relevant documentation:
 - `.ai/TASKS.md` — task status
 - `.ai/HISTORY.md` — completed work
 - `.ai/DECISIONS.md` — important architectural decisions
+- `.ai/REQUIREMENTS.md` — requirement traceability
+- `.ai/sessions/YYYY-MM-DD-<topic>.md` — conversation log for the session
 - `docs/` and module `README.md` — detailed behavior
 
 Do not put every tiny implementation detail into MASTER.md.
@@ -272,11 +275,14 @@ Before ending a meaningful session:
 4. Update `.ai/STATE.md`.
 5. Update `.ai/TASKS.md`.
 6. Append a concise entry to `.ai/HISTORY.md`.
-7. Update `.ai/MASTER.md` if architecture/integrations changed.
-8. Update `.ai/DECISIONS.md` if an architectural decision was made.
-9. Commit.
-10. Push.
-11. Confirm final `git status`.
+7. Write the session conversation log in `.ai/sessions/YYYY-MM-DD-<topic>.md`
+   (user requests, actions, decisions, blockers — append-only, no secrets).
+8. Update `.ai/MASTER.md` if architecture/integrations changed.
+9. Update `.ai/DECISIONS.md` if an architectural decision was made.
+10. Update `.ai/REQUIREMENTS.md` if requirement status changed.
+11. Commit.
+12. Push.
+13. Confirm final `git status`.
 
 ## 25. ERROR PROTOCOL
 

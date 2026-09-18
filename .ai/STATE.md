@@ -39,6 +39,8 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   (19 tests total)
 - Requirements traceability matrix: `.ai/REQUIREMENTS.md` (50 areas +
   integration status + decisions needed)
+- Session conversation logs: `.ai/sessions/` (one append-only log per session;
+  newest log read at session start)
 - Git repository initialized; initial commit created
 
 ## In Progress
