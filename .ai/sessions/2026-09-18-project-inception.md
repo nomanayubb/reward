@@ -426,6 +426,19 @@ JSON config. 8 tests (176 total).
 
 Commit: `feat(adminpanel): add multi-network console with tabs and connection tests`.
 
+## 32. More games
+
+**User:** "NEXT".
+
+**Agent:** Added two more original HTML5 games with full documentation and
+starter reward rules: **Memory Match** (4×4 pairs, score 100/pair minus
+10/extra move) and **Snake** (20×20 grid, keyboard + swipe, 90 seconds).
+Both integrate the Game SDK with offline fallback. `seed_reference_game` now
+seeds all three games (run against the dev DB). Test updated to require docs
+for every bundled game.
+
+Commit: `feat(games): add memory-match and snake to the catalog`.
+
 ---
 
 ## Decisions made this session

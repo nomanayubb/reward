@@ -36,7 +36,7 @@
 - [x] Game session / event / end API (Game SDK server side)
 - [x] Game SDK (`static/game-sdk/`)
 - [x] Game iframe wrapper view + origin checks
-- [x] First game package (`games/tap-target/` + docs)
+- [x] Game catalog: tap-target, memory-match, snake (each with docs + starter rules)
 - [ ] Game player page + reward rules display
 
 ## P2 — Offers / CPA

@@ -81,10 +81,11 @@ def test_asset_view_unknown_game(client, settings, tmp_path):
 
 
 def test_first_game_package_exists():
-    """The reference game ships with the required documentation."""
+    """The bundled games ship with the required documentation."""
     from django.conf import settings as django_settings
 
-    game_dir = django_settings.GAMES_ROOT / "tap-target"
-    assert (game_dir / "game.html").is_file()
-    for doc in ("README.md", "API.md", "REWARD_RULES.md", "DEVELOPMENT.md"):
-        assert (game_dir / "documentation" / doc).is_file()
+    for slug in ("tap-target", "memory-match", "snake"):
+        game_dir = django_settings.GAMES_ROOT / slug
+        assert (game_dir / "game.html").is_file(), f"{slug} game.html missing"
+        for doc in ("README.md", "API.md", "REWARD_RULES.md", "DEVELOPMENT.md"):
+            assert (game_dir / "documentation" / doc).is_file(), f"{slug}/{doc} missing"

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <title>Snake</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header id="hud">
+    <span>Score <b id="score">0</b></span>
+    <span>Time <b id="time">90</b>s</span>
+    <span id="connection" class="muted">connecting…</span>
+  </header>
+
+  <main>
+    <canvas id="board" width="400" height="400" aria-label="Snake board"></canvas>
+    <p class="hint">Arrow keys / WASD, or swipe on mobile.</p>
+  </main>
+
+  <div id="overlay">
+    <h1>Snake</h1>
+    <p>Eat the food, avoid the walls and yourself. 90 seconds.</p>
+    <button id="start-button" type="button">Start</button>
+  </div>
+
+  <script src="/static/game-sdk/game-sdk.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

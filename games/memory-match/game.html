@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <title>Memory Match</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header id="hud">
+    <span>Pairs <b id="pairs">0</b>/8</span>
+    <span>Moves <b id="moves">0</b></span>
+    <span id="connection" class="muted">connecting…</span>
+  </header>
+
+  <main id="board" aria-label="Memory board"></main>
+
+  <div id="overlay">
+    <h1>Memory Match</h1>
+    <p>Find all 8 pairs with as few moves as possible.</p>
+    <button id="start-button" type="button">Start</button>
+  </div>
+
+  <script src="/static/game-sdk/game-sdk.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

@@ -103,6 +103,9 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   per-network inventory counts, health, enable/disable, connection **Test**,
   manual syncs, and an "Add network" form (JSON config validated). Onboarding
   checklist in `docs/integrations/CPA_ONBOARDING.md`. 8 tests (176 total).
+- Game catalog expanded: `tap-target`, `memory-match` and `snake` — each an
+  original HTML5 game with its own documentation and a starter reward rule;
+  `manage.py seed_reference_game` seeds all three.
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,

@@ -164,6 +164,10 @@
   are missing), manual syncs, and an Add-network form with validated JSON
   config. Added `docs/integrations/CPA_ONBOARDING.md` (what to get from each
   network and what to send). 8 tests (176 total).
+- Expanded the game catalog with two more original HTML5 games: Memory Match
+  (4×4 pairs, move-efficient scoring) and Snake (20×20 grid, 90s), each with
+  its own documentation and a starter reward rule; `seed_reference_game` now
+  seeds all three games.
 
 ### Tests
 
