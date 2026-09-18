@@ -1,0 +1,27 @@
+"""Admin registrations for the support module.
+
+Generic registrations; add list_display/filters per model as the admin UX
+is built out (docs/DRD.md §57, §164).
+"""
+from django.contrib import admin
+
+from . import models
+
+
+
+@admin.register(models.Ticket)
+class TicketAdmin(admin.ModelAdmin):
+    list_per_page = 50
+    show_full_result_count = False
+
+
+@admin.register(models.TicketMessage)
+class TicketMessageAdmin(admin.ModelAdmin):
+    list_per_page = 50
+    show_full_result_count = False
+
+
+@admin.register(models.RewardDispute)
+class RewardDisputeAdmin(admin.ModelAdmin):
+    list_per_page = 50
+    show_full_result_count = False

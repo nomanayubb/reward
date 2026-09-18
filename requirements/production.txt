@@ -1,0 +1,4 @@
+-r base.txt
+
+uvicorn[standard]>=0.29
+sentry-sdk>=1.40

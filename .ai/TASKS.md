@@ -1,0 +1,93 @@
+# TASKS
+
+## P0 — Foundation
+
+- [x] Initialize Django project
+- [x] Configure settings (base/development/production/test)
+- [x] Configure PostgreSQL (dev SQLite fallback)
+- [x] Configure Redis / cache
+- [x] Configure Celery + beat
+- [x] Custom user model (email, Argon2)
+- [x] Wallet + wallet accounts
+- [x] Immutable ledger (locking, idempotency, reversals)
+- [x] Reward engine (rules, calculation, lifecycle)
+- [x] Admin registrations for all models
+- [x] Critical business-rule tests (11 passing)
+- [x] AI development protocol (.ai memory, AGENTS.md, scripts)
+- [ ] User-facing REST API (auth, wallet, ledger, offers, withdrawals, notifications)
+- [ ] Frontend templates (home, earn, wallet, withdraw, dashboard)
+
+## P1 — Games
+
+- [x] Game / category / session / event models
+- [x] Server-side session validation + reward rules
+- [ ] Game SDK (`static/game-sdk/`)
+- [ ] Game iframe wrapper view + origin checks
+- [ ] First game package (`games/<slug>/` + docs)
+- [ ] Game player page + reward rules display
+
+## P2 — Offers / CPA
+
+- [x] Provider interface + normalized types
+- [x] Offer model with compliance flags
+- [x] Click tracking + conversions + postbacks
+- [x] Eligibility engine + campaign quotas
+- [x] Idempotency on (provider, external_conversion_id)
+- [ ] First real CPA provider adapter
+- [ ] Second CPA provider adapter
+- [ ] Offer list/detail API + pages
+- [ ] Provider reconciliation job
+
+## P3 — Surveys
+
+- [x] Provider interface + normalized types
+- [x] Survey model, sessions, completions
+- [x] Idempotent completion processing
+- [ ] First real survey provider adapter
+- [ ] Survey wall API + pages
+
+## P4 — Payments
+
+- [x] Payment provider interface
+- [x] Deposit + withdrawal services and state machines
+- [x] Webhook endpoint + signature hook
+- [ ] NOWPayments adapter (real)
+- [ ] EasyPaisa adapter (real, subject to merchant availability)
+- [ ] Reconciliation + payment proof workflow (admin UI)
+- [ ] Payout automation for hybrid/auto modes
+
+## P5 — Fraud / Risk
+
+- [x] FraudEvent + RiskRule + RiskScore models
+- [x] Scoring + automated restriction actions
+- [x] Device reuse / rapid conversion sweep
+- [ ] IP reputation integration (VPN/proxy/TOR)
+- [ ] Velocity checks on withdrawals/deposits
+- [ ] Fraud admin queue
+
+## P6 — Admin
+
+- [x] Django admin registered for all models
+- [x] RBAC models, settings, feature flags, audit log
+- [ ] Admin dashboard (metrics)
+- [ ] Withdrawal review queue UI
+- [ ] Configuration center UI
+- [ ] User management UI (limits, restrictions, adjustments)
+- [ ] Provider management + kill switches UI
+
+## P7 — SEO / CMS
+
+- [x] Models (pages, versions, blog, SEO config)
+- [ ] Public pages + sitemaps
+- [ ] Blog rendering
+- [ ] Structured data + performance budget
+
+## P8 — Production
+
+- [x] Dockerfile + docker-compose + Nginx config
+- [ ] CI (GitHub Actions: check, tests, lint)
+- [ ] HTTPS + domain/security headers verification
+- [ ] Monitoring/alerting
+- [ ] Backups + restore drill
+- [ ] Load testing
+- [ ] Security audit (OWASP)
