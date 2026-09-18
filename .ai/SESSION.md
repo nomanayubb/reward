@@ -1,45 +1,37 @@
 # CURRENT SESSION
 
+Status: **complete**
+
 ## Objective
 
-Adopt the AI development protocol for this repository:
+Install the AI development protocol:
 
-- Create `.ai/` project memory (GOAL, RULES, STATE, TASKS, HISTORY, MASTER,
-  DECISIONS, SESSION)
-- Create root `AGENTS.md` operating protocol
-- Create `scripts/project-check` and `scripts/session-finish`
-- Align `docs/` structure (api, modules, integrations, deployment, security)
-- Initialize Git and make the initial commit
+- `.ai/` project memory (GOAL, RULES, STATE, TASKS, HISTORY, MASTER,
+  DECISIONS, SESSION) — done
+- Root `AGENTS.md` operating protocol — done
+- `scripts/project-check` + `scripts/session-finish` (sh + ps1) — done
+- `docs/` structure (api, modules, integrations, deployment, security) — done
+- GitHub Actions CI workflow — done
+- Git repository initialized + initial commit — done (0e69b96)
+- Push — **not possible: no remote configured**
 
-## Files Being Modified
+## Files Modified
 
-- `.ai/*` (new)
-- `AGENTS.md` (new)
-- `scripts/project-check.sh`, `scripts/project-check.ps1` (new)
-- `scripts/session-finish.sh`, `scripts/session-finish.ps1` (new)
-- `docs/integrations/*` (moved)
-- `README.md`, `docs/PRD.md` (references)
-
-## Requirements
-
-- Project memory stays short (STATE < ~100 lines).
-- Scripts must run the real project checks (`manage.py check`, `pytest`).
-- No secrets committed; `.env` remains ignored.
+`.ai/*`, `AGENTS.md`, `scripts/*`, `docs/*`, `.github/workflows/ci.yml`,
+`.gitattributes`, `.gitkeep` placeholders
 
 ## Validation
 
-```
-scripts/project-check.ps1        (or ./scripts/project-check.sh)
-```
+`scripts/project-check.ps1` — check + migrations + 11 tests pass.
 
-## Completion Criteria
+## Next Session Objective
 
-- All `.ai/` files exist with accurate content.
-- `AGENTS.md` describes the operating protocol.
-- Scripts run successfully.
-- Git repository initialized; initial commit created.
-- Push attempted; if no remote is configured, reported honestly.
+Implement the user-facing REST API, starting with authentication
+(`apps/accounts`: register, login, logout, me) with tests, then wallet and
+ledger read endpoints. Follow `AGENTS.md` §2 (take the next task from
+`.ai/TASKS.md`).
 
-## Finalization
+## Blocking / Notes
 
-Update `.ai/STATE.md`, `.ai/HISTORY.md`, `.ai/TASKS.md`, then commit and push.
+- Add a Git remote before pushing: `git remote add origin <github-url>`
+- Git identity is set locally: noman <nomanayubb@gmail.com>

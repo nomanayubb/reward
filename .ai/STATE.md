@@ -9,15 +9,14 @@ Phase 2 — Games / Surveys / Offers: **core services implemented, adapters + UI
 
 ## Current Focus
 
-Adopting the AI development protocol (`.ai/` memory system, `AGENTS.md`,
-scripts, Git) and then implementing the user-facing REST API.
+Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Completed
 
 - Django project + config package (base/development/production/test)
 - PostgreSQL/Redis/Celery configuration (SQLite + locmem fallback in dev)
 - Custom user model (`accounts.User`) + Argon2
-- All 26 domain apps created with models, admin registrations, migrations
+- All 26 domain apps with models, admin registrations, migrations
 - Immutable double-entry ledger (locking, idempotency, reversals)
 - Wallets (cash/points/bonus/pending/locked/withdrawable/deposit) + system wallet
 - Reward engine (rule resolution, calculation, pending → approved lifecycle)
@@ -28,19 +27,22 @@ scripts, Git) and then implementing the user-facing REST API.
 - CPA / survey / payment provider adapter interfaces
 - Fraud/risk scoring, restrictions, automation event bus, notifications
 - Celery tasks (offers, surveys, rewards, deposits, fraud, analytics)
-- Postback + payment webhook endpoints
+- Postback + payment webhook endpoints; OpenAPI schema + Swagger UI
 - Django admin registered for every model
 - 11 critical business-rule tests passing
-- Docs: PRD, DRD, ARCHITECTURE, DATABASE, GAME_INTEGRATION, CPA_INTEGRATION
+- Docs: PRD, DRD, ARCHITECTURE, DATABASE + `docs/integrations/*`
+- AI development protocol: `.ai/` memory, `AGENTS.md`, check scripts,
+  GitHub Actions CI, docs folder structure
+- Git repository initialized; initial commit created
 
 ## In Progress
 
-- AI development protocol setup (this session)
+- (none)
 
 ## Next
 
 1. Implement user-facing REST API (auth/register/login/me, wallet, ledger,
-   offers, withdrawals, notifications)
+   offers, withdrawals, notifications) — start with `apps/accounts` auth
 2. Build Game SDK + first game package
 3. Implement real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
 4. Frontend templates (homepage, earn pages, wallet, withdraw, dashboard)
@@ -51,8 +53,8 @@ scripts, Git) and then implementing the user-facing REST API.
 - Business API endpoints are empty stubs (only schema/docs/callbacks exist)
 - No real provider adapters implemented yet (interfaces only)
 - No frontend templates yet
-- Git repository not initialized until 2026-09-18 (no remote configured yet)
-- Git push not possible until a remote is added
+- No Git remote configured — push is not possible until one is added
+  (`git remote add origin <url>`)
 
 ## Important Decisions
 
@@ -62,9 +64,12 @@ scripts, Git) and then implementing the user-facing REST API.
 - Provider integrations use adapters only
 - Reward rules are database configuration, not code
 - Games run isolated (sandboxed iframe, separate origin in production)
+- Development follows `AGENTS.md` (read memory → one task → test → document →
+  commit → push)
 
 ## Current Git
 
-Branch: main (to be initialized)
+Branch: main
+Last known commit: 0e69b96
 Remote: none configured
-Working tree: n/a
+Working tree: clean
