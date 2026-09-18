@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Q, Sum
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.views import View
@@ -29,7 +30,7 @@ from apps.withdrawals.services import (
 from .audit import log_action
 from .forms import AdjustBalanceForm, RestrictionForm
 from .models import ConfigurationVersion, FeatureFlag, PlatformSetting
-from .settings import set_setting
+from .settings import get_setting, set_setting
 
 User = get_user_model()
 
@@ -345,3 +346,119 @@ class AdminFeatureFlagsView(StaffRequiredMixin, TemplateView):
         )
         messages.success(request, f"{flag.key} is now {'on' if flag.is_enabled else 'off'}.")
         return redirect("admin-flags")
+
+
+EMERGENCY_SWITCHES = [
+    "GAMES_ENABLED",
+    "OFFERS_ENABLED",
+    "SURVEYS_ENABLED",
+    "DEPOSITS_ENABLED",
+    "WITHDRAWALS_ENABLED",
+]
+
+
+def _provider_model(kind: str):
+    from apps.advertising.models import AdProvider
+    from apps.cpa.models import CPAProvider
+    from apps.payments.models import PaymentProvider
+    from apps.surveys.models import SurveyProvider
+
+    models = {
+        "cpa": CPAProvider,
+        "survey": SurveyProvider,
+        "payment": PaymentProvider,
+        "ad": AdProvider,
+    }
+    if kind not in models:
+        raise Http404("Unknown provider kind.")
+    return models[kind]
+
+
+class AdminProvidersView(StaffRequiredMixin, TemplateView):
+    template_name = "adminpanel/providers.html"
+
+    def get_context_data(self, **kwargs):
+        from apps.advertising.models import AdProvider
+        from apps.cpa.models import CPAProvider
+        from apps.payments.models import PaymentProvider
+        from apps.surveys.models import SurveyProvider
+
+        context = super().get_context_data(**kwargs)
+        context["cpa_providers"] = CPAProvider.objects.order_by("priority", "name")
+        context["survey_providers"] = SurveyProvider.objects.order_by("priority", "name")
+        context["payment_providers"] = PaymentProvider.objects.order_by("name")
+        context["ad_providers"] = AdProvider.objects.order_by("name")
+        context["switches"] = [
+            {"key": key, "enabled": get_setting(key, True)} for key in EMERGENCY_SWITCHES
+        ]
+        return context
+
+
+class AdminProviderActionView(StaffRequiredMixin, View):
+    """Kill switches, per-provider toggles and manual syncs."""
+
+    def post(self, request):
+        action = request.POST.get("action", "")
+
+        if action == "switch":
+            key = request.POST.get("key", "")
+            if key not in EMERGENCY_SWITCHES:
+                messages.error(request, "Unknown switch.")
+                return redirect("admin-providers")
+            enabled = request.POST.get("value") == "on"
+            set_setting(
+                key,
+                enabled,
+                updated_by=request.user,
+                group="switches",
+                note="emergency switch",
+            )
+            log_action(
+                actor=request.user,
+                action="switch.toggle",
+                object_type="PlatformSetting",
+                object_id=key,
+                new_value=enabled,
+                request=request,
+            )
+            messages.success(request, f"{key} is now {'ON' if enabled else 'OFF'}.")
+
+        elif action == "toggle_provider":
+            model = _provider_model(request.POST.get("kind", ""))
+            provider = get_object_or_404(model, pk=request.POST.get("provider_id"))
+            provider.is_enabled = not provider.is_enabled
+            provider.save(update_fields=["is_enabled", "updated_at"])
+            log_action(
+                actor=request.user,
+                action="provider.toggle",
+                obj=provider,
+                new_value=provider.is_enabled,
+                request=request,
+            )
+            messages.success(
+                request,
+                f"{provider.name} is now {'enabled' if provider.is_enabled else 'disabled'}.",
+            )
+
+        elif action == "sync":
+            kind = request.POST.get("kind", "")
+            try:
+                if kind == "cpa":
+                    from apps.offers.tasks import sync_offers
+
+                    result = sync_offers()
+                elif kind == "survey":
+                    from apps.surveys.tasks import sync_surveys
+
+                    result = sync_surveys()
+                else:
+                    raise ValueError("Unknown provider kind.")
+            except Exception as exc:  # provider failures must be visible
+                messages.error(request, f"Sync failed: {exc}")
+            else:
+                messages.success(request, f"Sync complete: {result}")
+
+        else:
+            messages.error(request, "Unknown action.")
+
+        return redirect("admin-providers")

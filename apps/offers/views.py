@@ -20,6 +20,10 @@ class OfferListView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        from apps.adminpanel.settings import get_setting
+
+        if not get_setting("OFFERS_ENABLED", True):
+            return Offer.objects.none()
         return (
             Offer.objects.filter(status=Offer.Status.ACTIVE, incentive_allowed=True)
             .select_related("provider", "category", "quota")
@@ -50,9 +54,15 @@ class OfferListPageView(LoginRequiredMixin, TemplateView):
     template_name = "offers/list.html"
 
     def get_context_data(self, **kwargs):
+        from apps.adminpanel.settings import get_setting
+
         context = super().get_context_data(**kwargs)
         user = self.request.user
         country = getattr(user, "country", "") or ""
+
+        if not get_setting("OFFERS_ENABLED", True):
+            context["offers"] = []
+            return context
 
         candidates = (
             Offer.objects.filter(status=Offer.Status.ACTIVE, incentive_allowed=True)

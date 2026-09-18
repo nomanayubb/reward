@@ -305,6 +305,19 @@ admin pages. 7 tests (125 total).
 
 Commit: `feat(adminpanel): add user management and configuration center`.
 
+## 23. Provider management + emergency kill switches
+
+**User:** "NEXT".
+
+**Agent:** Added the providers admin page: per-provider enable/disable for CPA,
+survey, payment and ad providers; manual offer/survey sync actions (graceful
+error reporting when an adapter is unavailable); and platform-wide emergency
+switches (`GAMES_ENABLED`, `OFFERS_ENABLED`, `SURVEYS_ENABLED`,
+`DEPOSITS_ENABLED`, `WITHDRAWALS_ENABLED`) enforced in the services and
+catalog views, all audit-logged. 7 tests (132 total).
+
+Commit: `feat(adminpanel): add provider management and emergency kill switches`.
+
 ---
 
 ## Decisions made this session

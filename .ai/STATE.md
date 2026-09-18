@@ -66,6 +66,9 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   transaction + audit log), editable `PlatformSetting` values with
   `ConfigurationVersion` history, and feature-flag toggles. 7 tests
   (125 total).
+- Admin provider management live: per-provider enable/disable, manual
+  offer/survey syncs, and emergency kill switches (games/offers/surveys/
+  deposits/withdrawals) enforced across services. 7 tests (132 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
@@ -84,14 +87,14 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Next
 
-1. Admin: provider management + kill switches UI
-2. Real provider adapters (CPA, survey, EasyPaisa) — needs network choices
-3. Ads serving (models only today)
+1. Real provider adapters (CPA, survey, EasyPaisa) — needs network choices
+   (`.ai/REQUIREMENTS.md`)
+2. Ads serving (models only today)
+3. KYC flow UI, reports/exports, Urdu/i18n
 
 ## Known Problems
 
-- Admin UI: dashboard, withdrawal queue, users and settings done; provider
-  management/kill switches still Django-admin only
+- Admin UI complete for operations; deeper analytics/reporting still pending
 - NOWPayments adapter is implemented and unit-tested but **not verified against
   the live/sandbox API** — credentials required (see docs/integrations/NOWPAYMENTS.md)
 - No CPA / survey / EasyPaisa adapters yet (interfaces + manual provider only)

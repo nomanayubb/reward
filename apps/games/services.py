@@ -20,6 +20,10 @@ logger = logging.getLogger(__name__)
 
 @transaction.atomic
 def start_session(user, game: Game, *, ip=None, device_hash="") -> GameSession:
+    from apps.adminpanel.settings import get_setting
+
+    if not get_setting("GAMES_ENABLED", True):
+        raise ValueError("Games are temporarily disabled.")
     if game.status != Game.Status.ACTIVE:
         raise ValueError("Game is not available.")
 

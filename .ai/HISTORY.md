@@ -119,6 +119,11 @@
   transaction) and the configuration center (editable `PlatformSetting`
   values with `ConfigurationVersion` history + audit, feature-flag toggles).
   7 tests (125 total).
+- Added admin provider management: per-provider enable/disable for CPA,
+  survey, payment and ad providers, manual offer/survey sync buttons, and
+  emergency kill switches (`GAMES_ENABLED`, `OFFERS_ENABLED`,
+  `SURVEYS_ENABLED`, `DEPOSITS_ENABLED`, `WITHDRAWALS_ENABLED`) enforced in
+  the services and catalog views. 7 tests (132 total).
 
 ### Tests
 

@@ -300,6 +300,12 @@ PLATFORM_DEFAULTS = {
     "KYC_THRESHOLD_PKR": "5000.00",
     "AUTO_PAYOUT_MAX_PKR": "1500.00",
     "DUAL_APPROVAL_THRESHOLD_PKR": "25000.00",
+    # Emergency switches (admin panel → Providers)
+    "GAMES_ENABLED": True,
+    "OFFERS_ENABLED": True,
+    "SURVEYS_ENABLED": True,
+    "DEPOSITS_ENABLED": True,
+    "WITHDRAWALS_ENABLED": True,
 }
 
 # Root folder holding self-contained HTML5 games (see docs/GAME_INTEGRATION.md)

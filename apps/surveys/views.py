@@ -13,6 +13,10 @@ class SurveyListView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        from apps.adminpanel.settings import get_setting
+
+        if not get_setting("SURVEYS_ENABLED", True):
+            return Survey.objects.none()
         return (
             Survey.objects.filter(status=Survey.Status.ACTIVE)
             .select_related("provider")
@@ -27,6 +31,10 @@ class SurveyListPageView(LoginRequiredMixin, ListView):
     context_object_name = "surveys"
 
     def get_queryset(self):
+        from apps.adminpanel.settings import get_setting
+
+        if not get_setting("SURVEYS_ENABLED", True):
+            return Survey.objects.none()
         return (
             Survey.objects.filter(status=Survey.Status.ACTIVE)
             .select_related("provider")

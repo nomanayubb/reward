@@ -6,6 +6,7 @@ from decimal import Decimal
 from django.db import transaction
 from django.utils import timezone
 
+from apps.adminpanel.settings import get_setting
 from apps.ledger import services as ledger
 from apps.ledger.models import LedgerTransaction
 from apps.payments.models import PaymentProvider, PaymentTransaction
@@ -41,6 +42,8 @@ def create_deposit(*, user, provider: PaymentProvider, amount, currency: str | N
     amount = Decimal(str(amount))
     if amount <= 0:
         raise DepositError("Deposit amount must be positive.")
+    if not get_setting("DEPOSITS_ENABLED", True):
+        raise DepositError("Deposits are temporarily disabled.")
     if currency is None:
         currency = get_wallet(user).currency
 

@@ -4,6 +4,8 @@ from django.urls import path
 from .views import (
     AdminDashboardView,
     AdminFeatureFlagsView,
+    AdminProviderActionView,
+    AdminProvidersView,
     AdminSettingsView,
     AdminUserActionView,
     AdminUserDetailView,
@@ -29,4 +31,10 @@ urlpatterns = [
     ),
     path("settings/", AdminSettingsView.as_view(), name="admin-settings"),
     path("flags/", AdminFeatureFlagsView.as_view(), name="admin-flags"),
+    path("providers/", AdminProvidersView.as_view(), name="admin-providers"),
+    path(
+        "providers/action/",
+        AdminProviderActionView.as_view(),
+        name="admin-provider-action",
+    ),
 ]

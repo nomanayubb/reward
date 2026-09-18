@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Admin · Providers{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Providers</h1>
+    {% include "adminpanel/_nav.html" %}
+
+    <h2>Emergency switches</h2>
+    <table>
+      <thead><tr><th>Switch</th><th>State</th><th></th></tr></thead>
+      <tbody>
+        {% for switch in switches %}
+          <tr>
+            <td><code>{{ switch.key }}</code></td>
+            <td><span class="pill {% if switch.enabled %}ok{% else %}bad{% endif %}">{{ switch.enabled|yesno:"ON,OFF" }}</span></td>
+            <td>
+              <form class="inline" method="post" action="{% url 'admin-provider-action' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="switch" />
+                <input type="hidden" name="key" value="{{ switch.key }}" />
+                <input type="hidden" name="value" value="{% if switch.enabled %}off{% else %}on{% endif %}" />
+                <button type="submit">Turn {% if switch.enabled %}OFF{% else %}ON{% endif %}</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">CPA networks</h2>
+    <p>
+      <form class="inline" method="post" action="{% url 'admin-provider-action' %}">
+        {% csrf_token %}<input type="hidden" name="action" value="sync" /><input type="hidden" name="kind" value="cpa" />
+        <button type="submit">Sync offers now</button>
+      </form>
+    </p>
+    <table>
+      <thead><tr><th>Code</th><th>Name</th><th>Health</th><th>State</th><th></th></tr></thead>
+      <tbody>
+        {% for provider in cpa_providers %}
+          <tr>
+            <td><code>{{ provider.code }}</code></td>
+            <td>{{ provider.name }}</td>
+            <td class="muted">{{ provider.get_health_display }}{% if provider.last_error %} · {{ provider.last_error }}{% endif %}</td>
+            <td><span class="pill {% if provider.is_enabled %}ok{% else %}bad{% endif %}">{{ provider.is_enabled|yesno:"enabled,disabled" }}</span></td>
+            <td>
+              <form class="inline" method="post" action="{% url 'admin-provider-action' %}">
+                {% csrf_token %}<input type="hidden" name="action" value="toggle_provider" />
+                <input type="hidden" name="kind" value="cpa" /><input type="hidden" name="provider_id" value="{{ provider.id }}" />
+                <button type="submit">{% if provider.is_enabled %}Disable{% else %}Enable{% endif %}</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="muted">No CPA providers configured.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Survey providers</h2>
+    <p>
+      <form class="inline" method="post" action="{% url 'admin-provider-action' %}">
+        {% csrf_token %}<input type="hidden" name="action" value="sync" /><input type="hidden" name="kind" value="survey" />
+        <button type="submit">Sync surveys now</button>
+      </form>
+    </p>
+    <table>
+      <thead><tr><th>Code</th><th>Name</th><th>Health</th><th>State</th><th></th></tr></thead>
+      <tbody>
+        {% for provider in survey_providers %}
+          <tr>
+            <td><code>{{ provider.code }}</code></td>
+            <td>{{ provider.name }}</td>
+            <td class="muted">{{ provider.get_health_display }}{% if provider.last_error %} · {{ provider.last_error }}{% endif %}</td>
+            <td><span class="pill {% if provider.is_enabled %}ok{% else %}bad{% endif %}">{{ provider.is_enabled|yesno:"enabled,disabled" }}</span></td>
+            <td>
+              <form class="inline" method="post" action="{% url 'admin-provider-action' %}">
+                {% csrf_token %}<input type="hidden" name="action" value="toggle_provider" />
+                <input type="hidden" name="kind" value="survey" /><input type="hidden" name="provider_id" value="{{ provider.id }}" />
+                <button type="submit">{% if provider.is_enabled %}Disable{% else %}Enable{% endif %}</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="muted">No survey providers configured.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Payment providers</h2>
+    <table>
+      <thead><tr><th>Code</th><th>Name</th><th>Kind</th><th>Health</th><th>State</th><th></th></tr></thead>
+      <tbody>
+        {% for provider in payment_providers %}
+          <tr>
+            <td><code>{{ provider.code }}</code></td>
+            <td>{{ provider.name }}</td>
+            <td class="muted">{{ provider.get_kind_display }}</td>
+            <td class="muted">{{ provider.get_health_display }}{% if provider.last_error %} · {{ provider.last_error }}{% endif %}</td>
+            <td><span class="pill {% if provider.is_enabled %}ok{% else %}bad{% endif %}">{{ provider.is_enabled|yesno:"enabled,disabled" }}</span></td>
+            <td>
+              <form class="inline" method="post" action="{% url 'admin-provider-action' %}">
+                {% csrf_token %}<input type="hidden" name="action" value="toggle_provider" />
+                <input type="hidden" name="kind" value="payment" /><input type="hidden" name="provider_id" value="{{ provider.id }}" />
+                <button type="submit">{% if provider.is_enabled %}Disable{% else %}Enable{% endif %}</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6" class="muted">No payment providers configured.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Ad providers</h2>
+    <table>
+      <thead><tr><th>Code</th><th>Name</th><th>Kind</th><th>State</th><th></th></tr></thead>
+      <tbody>
+        {% for provider in ad_providers %}
+          <tr>
+            <td><code>{{ provider.code }}</code></td>
+            <td>{{ provider.name }}</td>
+            <td class="muted">{{ provider.get_kind_display }}</td>
+            <td><span class="pill {% if provider.is_enabled %}ok{% else %}bad{% endif %}">{{ provider.is_enabled|yesno:"enabled,disabled" }}</span></td>
+            <td>
+              <form class="inline" method="post" action="{% url 'admin-provider-action' %}">
+                {% csrf_token %}<input type="hidden" name="action" value="toggle_provider" />
+                <input type="hidden" name="kind" value="ad" /><input type="hidden" name="provider_id" value="{{ provider.id }}" />
+                <button type="submit">{% if provider.is_enabled %}Disable{% else %}Enable{% endif %}</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="muted">No ad providers configured.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

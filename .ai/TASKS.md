@@ -86,7 +86,7 @@
 - [x] Withdrawal review queue UI (approve / pay / reject + audit)
 - [x] Configuration center UI (settings + versioning + audit)
 - [x] User management UI (freeze, restrictions, balance adjustments)
-- [ ] Provider management + kill switches UI
+- [x] Provider management + kill switches UI (toggles, syncs, emergency switches)
 
 ## P7 — SEO / CMS
 
