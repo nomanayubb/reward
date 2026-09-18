@@ -24,7 +24,8 @@
 - [x] PKR migration: slice 3 withdrawal/deposit limits + fees in PKR
 - [x] PKR migration: slice 4 API/tests/docs updates
 - [x] Offers / surveys / games listing endpoints
-- [ ] Withdrawal request/list endpoints
+- [x] Withdrawal request/list endpoints (+ payout methods)
+- [x] Deposit create/list endpoints (+ manual provider adapter)
 - [ ] Notifications endpoints
 - [ ] Frontend templates (home, earn, wallet, withdraw, dashboard)
 

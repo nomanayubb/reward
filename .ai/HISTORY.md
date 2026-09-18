@@ -83,6 +83,10 @@
   `GET /api/v1/offers/` (only offers the user is eligible for, via the shared
   eligibility engine; tracking URLs never exposed) and `GET /api/v1/surveys/`
   (active surveys). 7 new tests (55 total).
+- Added money-movement APIs: `GET/POST /api/v1/withdrawals/` (fund reservation
+  via the service layer), `GET/POST /api/v1/withdrawals/methods/` (ownership
+  enforced) and `GET/POST /api/v1/deposits/`; added a `manual` payment
+  provider adapter for development/testing. 10 new tests (65 total).
 
 ### Tests
 

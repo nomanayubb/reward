@@ -40,6 +40,9 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   `GET /api/v1/ledger/transactions/` with 8 tests (55 tests total)
 - Earning catalog APIs live: `GET /api/v1/games/`, `GET /api/v1/offers/`
   (eligibility-filtered), `GET /api/v1/surveys/`
+- Money movement APIs live: `GET/POST /api/v1/withdrawals/`,
+  `GET/POST /api/v1/withdrawals/methods/`, `GET/POST /api/v1/deposits/`
+  (manual provider adapter for development/testing)
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
@@ -58,7 +61,7 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Next
 
-1. Withdrawal request/list endpoints (+ deposit create/list)
+1. Notifications endpoints + game session API
 2. Game SDK + first game package
 3. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
 4. Frontend templates (home, earn, wallet, withdraw, dashboard)
@@ -66,12 +69,13 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Known Problems
 
-- User-facing layer incomplete: auth + wallet + ledger + catalog read APIs
-  done; withdrawal/deposit endpoints and all pages still missing
+- User-facing layer incomplete: auth, wallet, ledger, catalog, withdrawals and
+  deposits APIs done; notifications/game-session endpoints and all pages missing
 - Custom admin UI not built (Django admin works; dashboard/queue/config UI do not)
-- Test coverage gaps: deposits, postback end-to-end, quotas/eligibility edge
-  cases, true parallel concurrency
-- No real provider adapters yet (interfaces only); no ads rendering (models only)
+- Test coverage gaps: postback end-to-end, quota edge cases, true parallel
+  concurrency
+- No real provider adapters yet (interfaces + manual provider only); no ads
+  rendering (models only)
 
 ## Important Decisions
 
