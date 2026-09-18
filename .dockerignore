@@ -1,0 +1,32 @@
+# Never bake local development state or secrets into the image.
+.env
+.env.*
+!.env.example
+
+# Local databases and media
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Python / tooling
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Git and editor state
+.git/
+.gitignore
+.github/
+.idea/
+.vscode/
+
+# Project memory / docs not needed at runtime
+.ai/
+docs/
+tests/
+scripts/

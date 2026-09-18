@@ -3,6 +3,11 @@
 # Used by Render/Railway and any host that runs the Docker image.
 set -e
 
+# Always run in production inside a container unless the host explicitly
+# overrides it. Without this, `manage.py`'s development default leaks into
+# gunicorn and the app would run with DEBUG=True.
+export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:-config.settings.production}"
+
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 
