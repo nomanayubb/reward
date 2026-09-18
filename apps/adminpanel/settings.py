@@ -60,7 +60,7 @@ def points_per_usd():
 
 
 def usd_to_points(amount) -> int:
-    from decimal import Decimal, ROUND_DOWN
+    from decimal import ROUND_DOWN, Decimal
 
     rate = Decimal(str(points_per_usd()))
     points = (Decimal(str(amount)) * rate).quantize(Decimal("1"), rounding=ROUND_DOWN)

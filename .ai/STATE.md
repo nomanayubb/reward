@@ -33,6 +33,8 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - Docs: PRD, DRD, ARCHITECTURE, DATABASE + `docs/integrations/*`
 - AI development protocol: `.ai/` memory, `AGENTS.md`, check scripts,
   GitHub Actions CI, docs folder structure
+- Ruff configured (`ruff.toml`); `scripts/project-check` passes end-to-end
+  (Django check + migrations + tests + lint)
 - Git repository initialized; initial commit created
 
 ## In Progress
@@ -41,13 +43,12 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Next
 
-1. Ruff config so `scripts/project-check` passes end-to-end
-2. User REST API — start with auth (register/login/logout/me) + tests
-3. Wallet + ledger read endpoints
-4. Game SDK + first game package
-5. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
-6. Frontend templates (home, earn, wallet, withdraw, dashboard)
-7. Custom admin UI (dashboard, withdrawal queue, config center)
+1. User REST API — start with auth (register/login/logout/me) + tests
+2. Wallet + ledger read endpoints
+3. Game SDK + first game package
+4. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
+5. Frontend templates (home, earn, wallet, withdraw, dashboard)
+6. Custom admin UI (dashboard, withdrawal queue, config center)
 
 ## Known Problems
 
@@ -57,8 +58,6 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - Test coverage gaps: deposits, postback end-to-end, quotas/eligibility,
   true parallel concurrency, points ledger
 - No real provider adapters yet (interfaces only); no ads rendering (models only)
-- `ruff` reports 321 findings (no config yet) — `scripts/project-check` fails
-  at the lint step until configured/fixed
 
 ## Important Decisions
 

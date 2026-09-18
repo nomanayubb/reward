@@ -8,7 +8,6 @@ from django.contrib import admin
 from . import models
 
 
-
 @admin.register(models.Deposit)
 class DepositAdmin(admin.ModelAdmin):
     list_per_page = 50

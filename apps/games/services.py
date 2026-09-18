@@ -45,9 +45,7 @@ def _conditions_match(conditions: dict, *, duration: int, score: int | None) -> 
     if min_score is not None and (score is None or score < int(min_score)):
         return False
     min_duration = conditions.get("min_duration_seconds")
-    if min_duration is not None and duration < int(min_duration):
-        return False
-    return True
+    return min_duration is None or duration >= int(min_duration)
 
 
 @transaction.atomic
@@ -118,7 +116,4 @@ def _rule_available(session: GameSession, rule: GameRewardRule) -> bool:
         user=session.user, game=session.game, status=GameSession.Status.ENDED,
         ended_at__year=now.year, ended_at__month=now.month,
     ).exclude(pk=session.pk).count()
-    if month_count >= rule.monthly_max:
-        return False
-
-    return True
+    return month_count < rule.monthly_max

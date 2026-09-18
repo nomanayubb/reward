@@ -1,5 +1,5 @@
 """Survey provider adapter interface (docs/DRD.md §12)."""
-from abc import ABC, abstractmethod
+from abc import ABC
 from dataclasses import dataclass, field
 from decimal import Decimal
 

@@ -40,17 +40,18 @@ class RewardError(Exception):
 def _conditions_match(conditions: dict, *, payout=None) -> bool:
     if not conditions:
         return True
-    if conditions.get("min_payout") is not None or conditions.get("max_payout") is not None:
-        if payout is None:
-            return False
-        payout = Decimal(str(payout))
-    if conditions.get("min_payout") is not None:
-        if payout < Decimal(str(conditions["min_payout"])):
-            return False
-    if conditions.get("max_payout") is not None:
-        if payout > Decimal(str(conditions["max_payout"])):
-            return False
-    return True
+
+    min_payout = conditions.get("min_payout")
+    max_payout = conditions.get("max_payout")
+    if min_payout is None and max_payout is None:
+        return True
+    if payout is None:
+        return False
+
+    payout = Decimal(str(payout))
+    if min_payout is not None and payout < Decimal(str(min_payout)):
+        return False
+    return max_payout is None or payout <= Decimal(str(max_payout))
 
 
 def resolve_rule(

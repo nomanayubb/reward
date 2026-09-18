@@ -5,12 +5,12 @@ VPN status, campaign rules, provider rules, daily/lifetime limits.
 Output: ELIGIBLE / NOT_ELIGIBLE / REQUIRES_REVIEW with reasons.
 """
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 from django.utils import timezone
 
 
-class Eligibility(str, Enum):
+class Eligibility(StrEnum):
     ELIGIBLE = "eligible"
     NOT_ELIGIBLE = "not_eligible"
     REQUIRES_REVIEW = "requires_review"

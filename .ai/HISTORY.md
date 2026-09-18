@@ -40,6 +40,9 @@
 - Aligned `.ai/TASKS.md` and `.ai/STATE.md` with the verified status
   (admin/user-app gaps, test-coverage gaps, ads status) and recorded
   ADR-013 (ad monetization policy).
+- Configured `ruff` (`ruff.toml`, Django-aware rule set) and fixed all lint
+  findings (import sorting, unused imports, simplifications, `StrEnum`);
+  `scripts/project-check` now passes end-to-end.
 
 ### Tests
 

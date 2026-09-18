@@ -4,7 +4,7 @@ Every network implements this interface. The core reward engine only ever
 sees ``NormalizedOffer`` / ``NormalizedConversion`` — never provider-specific
 payloads (docs/DRD.md §91, §138, §246).
 """
-from abc import ABC, abstractmethod
+from abc import ABC
 from dataclasses import dataclass, field
 from decimal import Decimal
 

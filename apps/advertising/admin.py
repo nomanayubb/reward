@@ -8,7 +8,6 @@ from django.contrib import admin
 from . import models
 
 
-
 @admin.register(models.AdProvider)
 class AdProviderAdmin(admin.ModelAdmin):
     list_per_page = 50

@@ -9,7 +9,7 @@ from django.conf import settings
 from django.db import models
 
 from apps.common.fields import money_field
-from apps.common.models import TimeStampedModel, UUIDTimeStampedModel
+from apps.common.models import UUIDTimeStampedModel
 
 
 class GameCategory(UUIDTimeStampedModel):

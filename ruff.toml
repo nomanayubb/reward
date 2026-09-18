@@ -1,0 +1,38 @@
+# Ruff configuration for the Reward Platform.
+# Run via: scripts/project-check  (or: python -m ruff check .)
+
+target-version = "py311"
+line-length = 100
+
+exclude = [
+    ".venv",
+    "**/migrations",
+    "staticfiles",
+    "media",
+]
+
+[lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # import sorting
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # comprehension simplifications
+    "SIM", # flake8-simplify
+    "DJ",  # flake8-django
+]
+ignore = [
+    # Line length is enforced by review, not the linter, to avoid churn in
+    # docstrings and long business-rule comments.
+    "E501",
+]
+
+[lint.per-file-ignores]
+# Django settings layer star-imports from base for environment overrides.
+"config/settings/*.py" = ["F403", "F405"]
+# Package inits intentionally re-export nothing today.
+"**/__init__.py" = ["F401"]
+# Provider adapters declare optional capabilities: not every network supports
+# every method, so the base classes intentionally have no abstract methods.
+"apps/*/providers/base.py" = ["B024"]

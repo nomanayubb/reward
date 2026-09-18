@@ -28,7 +28,7 @@ def payment_webhook(request, provider_code: str):
     except json.JSONDecodeError:
         return JsonResponse({"ok": False, "error": "invalid_json"}, status=400)
 
-    headers = {key: value for key, value in request.headers.items()}
+    headers = dict(request.headers.items())
 
     try:
         adapter = load_adapter(provider)

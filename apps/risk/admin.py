@@ -8,7 +8,6 @@ from django.contrib import admin
 from . import models
 
 
-
 @admin.register(models.RiskRule)
 class RiskRuleAdmin(admin.ModelAdmin):
     list_per_page = 50

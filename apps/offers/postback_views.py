@@ -31,7 +31,7 @@ def provider_postback(request, provider_code: str):
     if not isinstance(payload, dict):
         payload = {"data": payload}
 
-    headers = {key: value for key, value in request.headers.items()}
+    headers = dict(request.headers.items())
     conversion, created = process_postback(
         provider, payload, headers=headers, ip=request.META.get("REMOTE_ADDR")
     )

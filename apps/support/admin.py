@@ -8,7 +8,6 @@ from django.contrib import admin
 from . import models
 
 
-
 @admin.register(models.Ticket)
 class TicketAdmin(admin.ModelAdmin):
     list_per_page = 50

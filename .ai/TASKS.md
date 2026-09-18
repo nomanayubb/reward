@@ -14,7 +14,7 @@
 - [x] Admin registrations for all models
 - [x] Critical business-rule tests (11 passing)
 - [x] AI development protocol (.ai memory, AGENTS.md, scripts)
-- [ ] Ruff configuration (project-check lint step currently fails — 321 findings)
+- [x] Ruff configuration (project-check passes end-to-end)
 - [ ] Extra test coverage: deposits, postback end-to-end, quotas/eligibility,
       true parallel concurrency, points ledger
 - [ ] User-facing REST API (auth, wallet, ledger, offers, withdrawals, notifications)

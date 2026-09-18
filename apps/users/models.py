@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.db import models
 
-from apps.common.models import TimeStampedModel, UUIDTimeStampedModel
+from apps.common.models import UUIDTimeStampedModel
 
 
 class UserProfile(UUIDTimeStampedModel):

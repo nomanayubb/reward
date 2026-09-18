@@ -3,7 +3,7 @@
 Adapters own provider-specific API calls; the deposit/withdrawal services own
 the business flow and the ledger.
 """
-from abc import ABC, abstractmethod
+from abc import ABC
 from dataclasses import dataclass, field
 from decimal import Decimal
 

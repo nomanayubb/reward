@@ -8,7 +8,6 @@ from django.contrib import admin
 from . import models
 
 
-
 @admin.register(models.LedgerTransaction)
 class LedgerTransactionAdmin(admin.ModelAdmin):
     list_per_page = 50
