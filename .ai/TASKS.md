@@ -49,11 +49,14 @@
 - [x] Multi-network admin console (tabs per network type; add / test / toggle / sync)
 - [x] Network catalog (34 platforms) + provider scaffolding command
 - [x] CPA onboarding checklist (`docs/integrations/CPA_ONBOARDING.md`)
+- [x] AdGem adapter (Offer API + v3 signed postbacks; credential pending approval)
+- [x] AdGem Web Offerwall page (`/offers/offerwall/adgem/`, player-id based)
+- [x] AdGem Reporting API + reconciliation (`manage.py reconcile_provider`)
 - [ ] Second CPA provider adapter
 - [x] Earn hub tabs (games / offers / surveys) with full per-offer rules
 - [x] Remaining-limit visibility (offers: today/lifetime left; games: plays left)
 - [x] Offer click-through (Start → click recorded → provider redirect with subid)
-- [ ] Provider reconciliation job
+- [x] Provider reconciliation job (AdGem reporting client + command)
 
 ## P3 — Surveys
 
