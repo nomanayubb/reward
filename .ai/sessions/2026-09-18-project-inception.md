@@ -214,6 +214,22 @@ Commits: `d03b973` (slice 1), slice 2 commit.
 
 Commits: `377a14f` (slice 3), slice 4 commit. 48 tests total.
 
+## 16. Earning catalog + money movement APIs
+
+**User:** "next" (twice) — continue the task list.
+
+**Agent:**
+
+- Catalog endpoints: `GET /api/v1/games/` (active games),
+  `GET /api/v1/offers/` (eligibility-filtered via the shared engine, tracking
+  URLs never exposed) and `GET /api/v1/surveys/`. 7 tests (55 total).
+  Commit `30eff71`.
+- Money endpoints: `GET/POST /api/v1/withdrawals/` (reservation handled by the
+  service), `GET/POST /api/v1/withdrawals/methods/` (ownership enforced) and
+  `GET/POST /api/v1/deposits/`; added a `manual` payment provider adapter for
+  development/testing so deposits can be exercised without a real PSP. 10 tests
+  (65 total). Commit `4069e64`.
+
 ---
 
 ## Decisions made this session
