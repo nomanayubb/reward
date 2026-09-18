@@ -34,12 +34,15 @@ class DepositError(Exception):
 
 
 @transaction.atomic
-def create_deposit(*, user, provider: PaymentProvider, amount, currency: str = "USD") -> Deposit:
+def create_deposit(*, user, provider: PaymentProvider, amount, currency: str | None = None) -> Deposit:
     from apps.payments.providers.base import load_adapter
+    from apps.wallets.services import get_wallet
 
     amount = Decimal(str(amount))
     if amount <= 0:
         raise DepositError("Deposit amount must be positive.")
+    if currency is None:
+        currency = get_wallet(user).currency
 
     deposit = Deposit.objects.create(
         user=user, provider=provider, amount=amount, currency=currency, status=Deposit.Status.CREATED

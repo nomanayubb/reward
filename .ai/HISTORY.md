@@ -66,6 +66,12 @@
 - ADR-015 slice 1: multi-currency wallet accounts (on-demand per currency) and
   per-currency ledger integrity (each currency must balance; cross-currency
   leakage rejected) with 4 tests (31 total).
+- ADR-015 slice 2: exchange-rate service (`EXCHANGE_RATE_USD_PKR`, admin-set,
+  rate stored on every reward), reward engine pays **PKR by default** with
+  percentage rewards converted from USD and fixed amounts already in the
+  reward currency; wallet default currency is PKR; deposits/withdrawals
+  default to the wallet currency; platform share is computed in the revenue
+  currency. Global test cache clearing added. 42 tests total.
 
 ### Tests
 

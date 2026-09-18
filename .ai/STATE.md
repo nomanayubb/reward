@@ -40,9 +40,10 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   `GET /api/v1/ledger/transactions/` with 8 tests (27 tests total)
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
-- Currency migration (ADR-015): slice 1 done — wallets provision accounts per
-  currency, ledger enforces per-currency zero-sum (mixed-currency leakage
-  rejected). Default currency is still USD until slice 2 lands conversion.
+- Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
+  per-currency ledger integrity, exchange-rate service (`EXCHANGE_RATE_USD_PKR`),
+  rewards pay **PKR by default** with the conversion rate stored per reward,
+  wallet default currency is PKR
 - Requirements traceability matrix: `.ai/REQUIREMENTS.md` (50 areas +
   integration status + decisions needed)
 - Session conversation logs: `.ai/sessions/` (one append-only log per session;
@@ -68,9 +69,9 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Known Problems
 
-- Currency migration in progress (ADR-015): slice 1 done; wallets still
-  default to USD and rewards still use USD until slice 2 (exchange rate +
-  conversion) flips the default to PKR
+- Currency migration (ADR-015): slices 3-4 pending — withdrawal/deposit
+  limits and fees still keyed to USD settings (`MIN_WITHDRAWAL_USD`); API
+  summary shows PKR wallet but limits need PKR equivalents
 - User-facing layer incomplete: auth + wallet + ledger read APIs done;
   offers/withdrawals endpoints and all pages still missing
 - Custom admin UI not built (Django admin works; dashboard/queue/config UI do not)

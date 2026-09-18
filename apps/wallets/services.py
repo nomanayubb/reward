@@ -10,6 +10,7 @@ POINTS_CURRENCY = "POINTS"
 
 # Currencies a wallet may hold (ADR-015: PKR primary, USD for crypto).
 SUPPORTED_CURRENCIES = ("PKR", "USD")
+PRIMARY_CURRENCY = "PKR"
 
 DEFAULT_ACCOUNT_TYPES = [
     WalletAccount.Type.CASH,
@@ -25,7 +26,7 @@ SYSTEM_USER_EMAIL = "system@reward-platform.local"
 
 @transaction.atomic
 def get_wallet(user) -> Wallet:
-    wallet, _ = Wallet.objects.get_or_create(user=user, defaults={"currency": "USD"})
+    wallet, _ = Wallet.objects.get_or_create(user=user, defaults={"currency": PRIMARY_CURRENCY})
     ensure_accounts(wallet)
     return wallet
 

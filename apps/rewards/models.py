@@ -49,6 +49,11 @@ class RewardRule(UUIDTimeStampedModel):
 
     # Reward definition
     mode = models.CharField(max_length=16, choices=Mode.choices, default=Mode.CASH)
+    reward_currency = models.CharField(
+        max_length=8,
+        default="PKR",
+        help_text="Currency the user is paid in (ADR-015: PKR by default).",
+    )
     user_percentage = models.DecimalField(
         max_digits=6, decimal_places=3, null=True, blank=True,
         help_text="Percent of validated revenue paid to the user, e.g. 40.000",
@@ -103,7 +108,7 @@ class Reward(UUIDTimeStampedModel):
     gross_revenue = money_field(null=True, blank=True)
     platform_share = money_field(null=True, blank=True)
     user_reward = money_field()
-    currency = models.CharField(max_length=8, default="USD")
+    currency = models.CharField(max_length=8, default="PKR")
     points_reward = models.DecimalField(max_digits=20, decimal_places=2, default=0)
 
     status = models.CharField(

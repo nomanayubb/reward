@@ -13,6 +13,7 @@ from django.utils import timezone
 
 from apps.ledger import services as ledger
 from apps.ledger.models import LedgerTransaction
+from apps.payments.services import convert
 from apps.wallets.models import WalletAccount
 from apps.wallets.services import (
     get_account,
@@ -29,6 +30,9 @@ logger = logging.getLogger(__name__)
 ZERO = Decimal("0")
 MONEY_QUANT = Decimal("0.00000001")
 POINTS_QUANT = Decimal("0.01")
+
+DEFAULT_REWARD_CURRENCY = "PKR"
+DEFAULT_REVENUE_CURRENCY = "USD"
 
 
 class RewardError(Exception):
@@ -83,32 +87,34 @@ def resolve_rule(
     return None
 
 
-def calculate_reward(rule: RewardRule | None, payout) -> tuple[Decimal, Decimal]:
-    """Return ``(cash, points)`` for the given rule and validated revenue."""
+def calculate_reward_parts(
+    rule: RewardRule | None, payout
+) -> tuple[Decimal, Decimal, Decimal]:
+    """Return ``(percentage_cash, fixed_cash, points)`` before conversion.
+
+    ``percentage_cash`` is denominated in the revenue currency; ``fixed_cash``
+    is already denominated in the rule's reward currency.
+    """
     if rule is None:
-        return ZERO, ZERO
+        return ZERO, ZERO, ZERO
 
     payout = Decimal(str(payout or 0))
-    cash, points = ZERO, ZERO
+    percentage_cash, fixed_cash, points = ZERO, ZERO, ZERO
 
     if rule.user_percentage is not None:
-        cash += payout * rule.user_percentage / Decimal("100")
+        percentage_cash += payout * rule.user_percentage / Decimal("100")
     if rule.fixed_cash is not None:
-        cash += rule.fixed_cash
+        fixed_cash += rule.fixed_cash
     if rule.points_percentage is not None:
         points += payout * rule.points_percentage / Decimal("100")
     if rule.fixed_points is not None:
         points += rule.fixed_points
     if rule.multiplier and rule.multiplier != 1:
-        cash *= rule.multiplier
+        percentage_cash *= rule.multiplier
+        fixed_cash *= rule.multiplier
         points *= rule.multiplier
 
-    cash = cash.quantize(MONEY_QUANT)
-    points = points.quantize(POINTS_QUANT)
-
-    if rule.max_user_reward is not None and cash > rule.max_user_reward:
-        cash = rule.max_user_reward
-    return cash, points
+    return percentage_cash, fixed_cash, points.quantize(POINTS_QUANT)
 
 
 # --------------------------------------------------------------------------
@@ -150,7 +156,39 @@ class RewardService:
                 payout=gross_revenue,
             )
 
-        cash, points = calculate_reward(rule, gross_revenue)
+        reward_currency = context.get("reward_currency") or (
+            rule.reward_currency if rule is not None else DEFAULT_REWARD_CURRENCY
+        )
+        revenue_currency = context.get("revenue_currency", DEFAULT_REVENUE_CURRENCY)
+
+        percentage_cash, fixed_cash, points = calculate_reward_parts(rule, gross_revenue)
+        exchange_rate = None
+        if percentage_cash and revenue_currency != reward_currency:
+            percentage_cash, exchange_rate = convert(
+                percentage_cash, revenue_currency, reward_currency
+            )
+
+        cash = (percentage_cash + fixed_cash).quantize(MONEY_QUANT)
+        if rule is not None and rule.max_user_reward is not None and cash > rule.max_user_reward:
+            cash = rule.max_user_reward
+
+        # Platform share stays in the revenue currency so profitability math
+        # never mixes currencies.
+        platform_share = None
+        if gross_revenue is not None:
+            if revenue_currency == reward_currency:
+                cash_in_revenue = cash
+            else:
+                cash_in_revenue, _ = convert(cash, reward_currency, revenue_currency)
+            platform_share = Decimal(str(gross_revenue)) - cash_in_revenue
+
+        if exchange_rate is not None:
+            context = {
+                **context,
+                "revenue_currency": revenue_currency,
+                "exchange_rate": str(exchange_rate),
+            }
+
         return cls._issue(
             user=user,
             source=source,
@@ -158,7 +196,10 @@ class RewardService:
             cash=cash,
             points=points,
             gross_revenue=gross_revenue,
+            platform_share=platform_share,
             rule=rule,
+            reward_currency=reward_currency,
+            revenue_currency=revenue_currency,
             context=context,
             auto_approve=auto_approve,
         )
@@ -173,6 +214,7 @@ class RewardService:
         source_reference: str = "",
         cash=ZERO,
         points=ZERO,
+        currency: str = DEFAULT_REWARD_CURRENCY,
         gross_revenue=None,
         context: dict | None = None,
         auto_approve: bool | None = True,
@@ -186,6 +228,7 @@ class RewardService:
             points=Decimal(str(points)).quantize(POINTS_QUANT),
             gross_revenue=gross_revenue,
             rule=None,
+            reward_currency=currency,
             context=context or {},
             auto_approve=auto_approve,
         )
@@ -200,7 +243,10 @@ class RewardService:
         cash: Decimal,
         points: Decimal,
         gross_revenue=None,
+        platform_share=None,
         rule: RewardRule | None = None,
+        reward_currency: str = DEFAULT_REWARD_CURRENCY,
+        revenue_currency: str | None = None,
         context: dict | None = None,
         auto_approve: bool | None = None,
     ) -> tuple[Reward, bool]:
@@ -216,7 +262,11 @@ class RewardService:
         if cash <= 0 and points <= 0:
             raise RewardError("Reward resolves to zero — check RewardRule configuration.")
 
-        if gross_revenue is not None and cash > Decimal(str(gross_revenue)):
+        if (
+            gross_revenue is not None
+            and revenue_currency == reward_currency
+            and cash > Decimal(str(gross_revenue))
+        ):
             logger.warning(
                 "Reward %s exceeds gross revenue %s (user=%s rule=%s) — verify admin config.",
                 cash,
@@ -231,11 +281,10 @@ class RewardService:
             source_reference=source_reference,
             rule=rule,
             gross_revenue=gross_revenue,
-            platform_share=(
-                Decimal(str(gross_revenue)) - cash if gross_revenue is not None else None
-            ),
+            platform_share=platform_share,
             user_reward=cash,
             points_reward=points,
+            currency=reward_currency,
             status=Reward.Status.PENDING,
             metadata=context,
         )
@@ -244,12 +293,16 @@ class RewardService:
             txn, _ = ledger.post_transaction(
                 type=LedgerTransaction.Type.REWARD,
                 entries=[
-                    (system_account(WalletAccount.Type.CASH), -cash),
-                    (get_account(user, WalletAccount.Type.PENDING), cash),
+                    (system_account(WalletAccount.Type.CASH, reward_currency), -cash),
+                    (get_account(user, WalletAccount.Type.PENDING, reward_currency), cash),
                 ],
                 reference=str(reward.id),
                 description=f"Pending {source} reward",
-                metadata={"reward_id": str(reward.id), "user_id": str(user.pk)},
+                metadata={
+                    "reward_id": str(reward.id),
+                    "user_id": str(user.pk),
+                    "currency": reward_currency,
+                },
                 idempotency_key=f"reward:{reward.id}:pending",
             )
             reward.ledger_transaction = txn
@@ -290,8 +343,14 @@ class RewardService:
             txn, _ = ledger.post_transaction(
                 type=LedgerTransaction.Type.REWARD,
                 entries=[
-                    (get_account(reward.user, WalletAccount.Type.PENDING), -reward.user_reward),
-                    (get_account(reward.user, WalletAccount.Type.CASH), reward.user_reward),
+                    (
+                        get_account(reward.user, WalletAccount.Type.PENDING, reward.currency),
+                        -reward.user_reward,
+                    ),
+                    (
+                        get_account(reward.user, WalletAccount.Type.CASH, reward.currency),
+                        reward.user_reward,
+                    ),
                 ],
                 reference=str(reward.id),
                 description="Reward approved",

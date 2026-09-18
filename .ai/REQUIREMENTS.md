@@ -13,7 +13,7 @@ Updated: 2026-09-18
 | --- | --- | --- | --- |
 | 1 | Modular monolith, configurable admin | 🟡 | 26 apps + service layer + PlatformSetting; admin UI missing |
 | 2 | Email auth, Argon2, 2FA-ready | 🟡 | Auth API done; 2FA flow not built |
-| 3 | Wallet: multiple ledgers | ✅ | 7 account types, system wallet |
+| 3 | Wallet: multiple ledgers | ✅ | Multi-currency (PKR default + USD), 7 account types, system wallet |
 | 4 | Immutable ledger, reversals, locking | ✅ | `apps/ledger` + tests |
 | 5 | Configurable reward engine | ✅ | `RewardRule` + `RewardService` |
 | 6 | Points + cash + hybrid | ✅ | Points ledger + modes |

@@ -71,8 +71,14 @@ def _validate_request(user, amount: Decimal, method: WithdrawalMethod) -> None:
 
 
 @transaction.atomic
-def request_withdrawal(*, user, method: WithdrawalMethod, amount, currency: str = "USD") -> Withdrawal:
+def request_withdrawal(
+    *, user, method: WithdrawalMethod, amount, currency: str | None = None
+) -> Withdrawal:
+    from apps.wallets.services import get_wallet
+
     amount = Decimal(str(amount)).quantize(Decimal("0.00000001"))
+    if currency is None:
+        currency = get_wallet(user).currency
     _validate_request(user, amount, method)
 
     account = get_account(user, WalletAccount.Type.CASH, currency)

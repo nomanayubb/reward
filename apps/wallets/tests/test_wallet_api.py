@@ -44,7 +44,7 @@ def test_summary_shows_zero_balances_for_new_user(client, user):
     assert Decimal(response.data["cash"]) == Decimal("0")
     assert Decimal(response.data["pending"]) == Decimal("0")
     assert Decimal(response.data["points"]) == Decimal("0")
-    assert response.data["currency"] == "USD"
+    assert response.data["currency"] == "PKR"
 
 
 def test_summary_reflects_reward_balances(client, user):

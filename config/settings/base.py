@@ -290,8 +290,9 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@example.com")
 # --------------------------------------------------------------------------
 PLATFORM_DEFAULTS = {
     "POINTS_PER_USD": 100,
-    "DEFAULT_CURRENCY": "USD",
-    "SUPPORTED_CURRENCIES": ["USD", "PKR", "POINTS"],
+    "DEFAULT_CURRENCY": "PKR",
+    "SUPPORTED_CURRENCIES": ["PKR", "USD", "POINTS"],
+    "EXCHANGE_RATE_USD_PKR": "280.00",
     "MIN_WITHDRAWAL_USD": "5.00",
     "MAX_WITHDRAWAL_USD": "500.00",
 }

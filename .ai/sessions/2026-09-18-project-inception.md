@@ -172,6 +172,31 @@ were removed from the dev database.
 
 Commits: `0d2996e`, `36d6d72`.
 
+## 14. PKR currency decision + slices 1-2
+
+**User:** "payment will be in pkr" → answered the follow-up questions with
+"dual wallets USD + PKR" and, on points, "i think if direct pkr not point not
+its look more good" (asked what is best).
+
+**Agent:** Recommended and recorded direct-PKR rewards with the points engine
+kept but disabled by default (ADR-015), dual wallets (PKR primary, USD for
+crypto), USD→PKR conversion with the rate stored per transaction, all limits
+in PKR. Planned four migration slices.
+
+- Slice 1 (`d03b973`): multi-currency wallet accounts provisioned per currency;
+  ledger enforces per-currency zero-sum so cross-currency leakage is rejected.
+  4 tests.
+- Slice 2: `apps/payments/services.py` exchange-rate service
+  (`EXCHANGE_RATE_USD_PKR`, admin-configurable), `RewardRule.reward_currency`
+  (default PKR) and `Reward.currency` default PKR; percentage rewards convert
+  USD→PKR with the rate stored in reward metadata; fixed amounts are already
+  in the reward currency; platform share computed in the revenue currency;
+  wallet default currency is PKR; deposits/withdrawals default to the wallet
+  currency. Global test cache clearing added (settings cache leaked between
+  tests). 42 tests total.
+
+Commits: `d03b973` (slice 1), slice 2 commit.
+
 ---
 
 ## Decisions made this session
