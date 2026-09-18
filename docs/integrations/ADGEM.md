@@ -7,7 +7,7 @@ replay detected as duplicate → tampered signature rejected.
 
 | Path | Credential needed | Status |
 | --- | --- | --- |
-| Web Offerwall (pre-built iframe) | **App ID** ✅ have it | page live at `/offers/offerwall/adgem/`; shows offers after AdGem approves |
+| Web Offerwall (pre-built iframe) | **App ID** ✅ have it | live in the generic hub `/offers/offerwall/` → `/offers/offerwall/adgem/`; shows offers after AdGem approves |
 | Native offers (Offer API / Prism) | Offer API refresh token / Prism JWT | adapter built + tested; credential pending AdGem support |
 | Reporting + reconciliation | dashboard API token | **working live** (`manage.py reconcile_provider adgem`) |
 

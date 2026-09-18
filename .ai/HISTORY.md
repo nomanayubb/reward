@@ -220,20 +220,38 @@
   offers query, cached JWT. Documented that the `refresh_token` is **provided
   by the AdGem Team** (not self-service), which is why the credentials tried so
   far returned 401. 2 tests (225 total).
+- Fixed the live deployment (`6bb8aae`): the container was silently running
+  development settings because `docker/start.sh` ran `manage.py` (its dev
+  default leaked into gunicorn) and the local `.env` was baked into the image
+  via `COPY . .`. Added `.dockerignore` (excludes `.env`, database, media,
+  memory), forced `DJANGO_SETTINGS_MODULE=config.settings.production` in
+  `docker/start.sh` and the `Dockerfile`. Live verified: HSTS header, Secure
+  CSRF cookie, DEBUG off, landing/login/register/CMS/robots/sitemap all 200,
+  offerwall route reachable behind login.
+- Made offerwalls network-agnostic (review feedback: "17 more networks"): the
+  AdGem-specific view/template was replaced by a generic hub
+  (`/offers/offerwall/`) that lists every enabled network exposing a
+  pre-built wall, and a generic page (`/offers/offerwall/<code>/`) that
+  renders it. The URL is data: `offerwall_url_template` on the adapter
+  (`{player_id}`, `{app_id}`), overridable per provider in config; `{app_id}`
+  resolves from config or `<CODE>_APP_ID`. `/offers/offerwall/adgem/` keeps
+  working through the generic route. 5 tests rewritten/added (230 total).
 
 ### Tests
 
 - `python manage.py check` — no issues.
-- `pytest` — 11 passed (`tests/test_critical_flows.py`).
+- `pytest` — 230 passed (full suite).
+- `scripts/project-check` — all checks passed.
 
 ### Git
 
-Commit: `0e69b96` — chore: initialize reward platform foundation and AI
-development protocol
-Push: successful — `origin/main` at `5e29c59`
+Commit: `6bb8aae` (deploy fix) + generic-offerwall commit — see `git log`
+Push: successful — `origin/main` up to date
 (remote: https://github.com/nomanayubb/reward.git)
 
 ### Next
 
-Implement the user-facing REST API (auth, wallet, ledger, offers, withdrawals,
-notifications).
+Wait for AdGem property approval; then flip `incentive_allowed` (written
+consent) and request the Offer API/Prism refresh token. Add the next networks
+from `docs/integrations/NETWORK_CATALOG.md` — each is an adapter plus a
+one-line offerwall template.

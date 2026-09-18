@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ provider.name }} offers{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">{{ provider.name }} offers</h1>
+    <p class="muted">
+      Complete an offer and the reward appears in your wallet once the provider
+      confirms it. Some offers take longer to verify.
+    </p>
+    <iframe
+      src="{{ wall_url }}"
+      title="{{ provider.name }} offers"
+      style="width:100%;min-height:70vh;border:1px solid var(--line);border-radius:12px;background:#0d1017;"
+    ></iframe>
+    <p class="muted" style="font-size:.8rem;">Your player ID: <code>{{ player_id }}</code></p>
+    <p><a href="{% url 'offerwall-index' %}">← All offerwalls</a></p>
+  </div>
+{% endblock %}

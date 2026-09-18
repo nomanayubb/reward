@@ -20,3 +20,4 @@ Detailed technical state still lives in `STATE.md` / `TASKS.md` /
 | Date | Topic | File |
 | --- | --- | --- |
 | 2026-09-18 | Project inception, foundation build, AI protocol, auth API | `2026-09-18-project-inception.md` |
+| 2026-09-18 | AdGem integration, Render production fix, generic offerwalls | `2026-09-18-adgem-and-live-deploy.md` |

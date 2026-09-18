@@ -90,5 +90,19 @@ Our callback URL to give each network:
    path, JSON config) → **Test** → **Sync now** → enable.
 5. Run `pytest` (adapter tests) and `scripts/project-check`.
 
+### Pre-built offerwalls (iframe) — no new view code, ever
+
+If the network offers a hosted wall (URL with a player id), set one line in its
+adapter (or the provider config, which wins):
+
+```python
+offerwall_url_template = "https://wall.example.com?pub={app_id}&subid={player_id}"
+```
+
+The network then appears automatically in the generic hub `/offers/offerwall/`
+with its own page `/offers/offerwall/<code>/`. `{app_id}` resolves from
+provider config `app_id` or `<CODE>_APP_ID` in the environment. Nothing else to
+build — the hub lists every enabled network that has a template.
+
 Nothing in the reward engine, wallets, ledger, quotas or UI changes — that is
 the point of the adapter design (ADR-003).

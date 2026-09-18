@@ -55,6 +55,12 @@ class CPAProviderAdapter(ABC):
 
     code = "base"
 
+    # Optional: URL template for the network's pre-built offerwall, with
+    # ``{player_id}`` (required) and ``{app_id}`` placeholders. When set (or
+    # overridden in the provider config), the network automatically appears in
+    # the platform's generic offerwall hub — no per-network code needed.
+    offerwall_url_template = ""
+
     def __init__(self, provider, config: dict | None = None):
         self.provider = provider
         self.config = config if config is not None else (getattr(provider, "config", {}) or {})

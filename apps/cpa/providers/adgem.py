@@ -82,6 +82,11 @@ def _header(headers: dict | None, name: str) -> str:
 class AdgemAdapter(CPAProviderAdapter):
     code = "adgem"
 
+    # Pre-built Web Offerwall (needs only the App ID).
+    offerwall_url_template = (
+        "https://api.adgem.com/v1/wall?appid={app_id}&playerid={player_id}"
+    )
+
     @property
     def refresh_token(self) -> str:
         return (

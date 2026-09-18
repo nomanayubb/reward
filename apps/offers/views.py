@@ -8,6 +8,7 @@ import uuid
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import TemplateView
@@ -124,30 +125,39 @@ class OfferStartView(LoginRequiredMixin, View):
         return redirect(url)
 
 
-class AdgemOfferwallView(LoginRequiredMixin, TemplateView):
-    """Embed AdGem's pre-built Web Offerwall.
+class OfferwallIndexView(LoginRequiredMixin, TemplateView):
+    """Hub of every enabled network's pre-built offerwall (network-agnostic)."""
 
-    This path needs only the AdGem **App ID** (no Offer API approval):
-    ``https://api.adgem.com/v1/wall?appid=<app>&playerid=<player>``.
-    Rewards arrive through the signed v3 postback endpoint.
-    """
-
-    template_name = "offers/offerwall_adgem.html"
+    template_name = "offers/offerwall_index.html"
 
     def get_context_data(self, **kwargs):
-        from django.conf import settings
-
-        from apps.accounts.services import player_id_for
+        from .services import offerwall_urls
 
         context = super().get_context_data(**kwargs)
-        app_id = getattr(settings, "ADGEM_APP_ID", "") or ""
-        player_id = player_id_for(self.request.user)
+        context["offerwalls"] = offerwall_urls(self.request.user)
+        return context
 
-        context["app_id"] = app_id
-        context["player_id"] = player_id
-        context["wall_url"] = (
-            f"https://api.adgem.com/v1/wall?appid={app_id}&playerid={player_id}"
-            if app_id
-            else ""
+
+class OfferwallProviderView(LoginRequiredMixin, TemplateView):
+    """Render one network's offerwall in an iframe (URL from its adapter)."""
+
+    template_name = "offers/offerwall.html"
+
+    def get_context_data(self, **kwargs):
+        from apps.accounts.services import player_id_for
+        from apps.cpa.models import CPAProvider
+
+        from .services import offerwall_url
+
+        context = super().get_context_data(**kwargs)
+        provider = get_object_or_404(
+            CPAProvider, code=self.kwargs["code"], is_enabled=True
         )
+        url = offerwall_url(provider, self.request.user)
+        if not url:
+            raise Http404("This network has no offerwall configured.")
+
+        context["provider"] = provider
+        context["wall_url"] = url
+        context["player_id"] = player_id_for(self.request.user)
         return context

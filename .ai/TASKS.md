@@ -51,9 +51,11 @@
 - [x] CPA onboarding checklist (`docs/integrations/CPA_ONBOARDING.md`)
 - [x] AdGem adapter (Offer API + v3 signed postbacks; credential pending approval)
 - [x] AdGem Prism (GraphQL) mode support (`mode: prism` in provider config)
-- [x] AdGem Web Offerwall page (`/offers/offerwall/adgem/`, player-id based)
+- [x] Generic offerwall hub (`/offers/offerwall/` + `/offers/offerwall/<code>/`,
+      driven by each adapter's `offerwall_url_template`; no per-network views)
 - [x] AdGem Reporting API + reconciliation (`manage.py reconcile_provider`)
-- [ ] Second CPA provider adapter
+- [ ] Second CPA provider adapter (pick from `NETWORK_CATALOG.md`; offerwall =
+      one-line template)
 - [x] Earn hub tabs (games / offers / surveys) with full per-offer rules
 - [x] Remaining-limit visibility (offers: today/lifetime left; games: plays left)
 - [x] Offer click-through (Start → click recorded → provider redirect with subid)

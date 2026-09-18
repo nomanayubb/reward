@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Offerwalls{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Offerwalls</h1>
+    <p class="muted">
+      Each network below hosts its own offers. Complete an offer and the reward
+      appears in your wallet once the network confirms it.
+    </p>
+    {% if offerwalls %}
+      <div class="grid">
+        {% for entry in offerwalls %}
+          <div class="card" style="margin:0;">
+            <h3 style="margin:.2rem 0;">{{ entry.provider.name }}</h3>
+            <p class="muted">{{ entry.provider.code }}</p>
+            <a class="pill ok" href="{% url 'offerwall-provider' entry.provider.code %}">Open offerwall</a>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">No offerwalls are available right now.</p>
+    {% endif %}
+    <p><a href="{% url 'offer-list-page' %}">← Browse our own offer list</a></p>
+  </div>
+{% endblock %}

@@ -112,6 +112,53 @@ def _offer_from_postback(provider, normalized) -> Offer:
     return offer
 
 
+def offerwall_url(provider, user) -> str:
+    """Resolve a provider's pre-built offerwall URL for a user.
+
+    The template comes from the provider's adapter (or the provider config,
+    which wins) and uses ``{player_id}`` and ``{app_id}`` placeholders. This is
+    what makes offerwalls network-agnostic: adding a network is configuration,
+    never new view code.
+    """
+    from django.conf import settings
+
+    from apps.accounts.services import player_id_for
+    from apps.cpa.providers.base import load_adapter
+
+    template = (provider.config or {}).get("offerwall_url_template", "")
+    if not template:
+        try:
+            template = load_adapter(provider).offerwall_url_template or ""
+        except Exception:
+            logger.exception("Could not load adapter for provider %s", provider.code)
+            template = ""
+    if not template:
+        return ""
+
+    app_id = (provider.config or {}).get("app_id") or getattr(
+        settings, f"{provider.code.upper()}_APP_ID", ""
+    )
+    if "{app_id}" in template and not app_id:
+        return ""
+    try:
+        return template.format(player_id=player_id_for(user), app_id=app_id)
+    except (KeyError, IndexError, ValueError):
+        logger.exception("Invalid offerwall template for provider %s", provider.code)
+        return ""
+
+
+def offerwall_urls(user) -> list[dict]:
+    """Every enabled provider that exposes an offerwall, ready to render."""
+    from apps.cpa.models import CPAProvider
+
+    entries = []
+    for provider in CPAProvider.objects.filter(is_enabled=True).order_by("priority", "name"):
+        url = offerwall_url(provider, user)
+        if url:
+            entries.append({"provider": provider, "url": url})
+    return entries
+
+
 def record_click(user, offer: Offer, *, click_id: str, ip=None, device_hash="", user_agent="") -> OfferClick:
     return OfferClick.objects.create(
         user=user,

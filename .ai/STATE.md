@@ -144,6 +144,18 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   auto-provision offers, with compliance gating; (3) **Reporting API** client +
   `manage.py reconcile_provider <code> --days N` (verified live with the
   dashboard token). 20 tests (223 total).
+- **Live deployment secured** (commit `6bb8aae`): containers were silently
+  running development settings — `docker/start.sh` ran `manage.py` (whose dev
+  default leaked into gunicorn) and the local `.env` was baked into the image.
+  Fixed with `.dockerignore` (no secrets in images), forced production settings
+  in `docker/start.sh` and `Dockerfile`. Verified live: HSTS + Secure cookies +
+  DEBUG off, all public pages/robots/sitemap 200.
+- **Offerwalls are network-agnostic** (ADR-003 extended): a generic hub at
+  `/offers/offerwall/` lists every enabled network with a pre-built wall, and
+  `/offers/offerwall/<code>/` renders it. The URL comes from the adapter's
+  `offerwall_url_template` (`{player_id}`, `{app_id}`) — provider config wins;
+  `{app_id}` resolves from config or `<CODE>_APP_ID`. Adding a network's wall
+  is one line, never new view code. 5 tests (230 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
@@ -162,10 +174,11 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Next
 
-1. Real provider adapters (CPA, survey, EasyPaisa) — needs network choices
-   (`.ai/REQUIREMENTS.md`)
-2. Ad network integration, deeper analytics dashboards, reconciliation workflow
-3. Remaining translations (beyond navigation) as the UI grows
+1. Wait for AdGem property approval; then flip `incentive_allowed` (written
+   consent) and request the Offer API/Prism refresh token
+2. Add the next networks from `docs/integrations/NETWORK_CATALOG.md` (adapter +
+   one-line offerwall template each)
+3. EasyPaisa / local payment adapter; remaining translations; deeper analytics
 
 ## Known Problems
 
@@ -194,9 +207,9 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 ## Current Git
 
 Branch: main
-Last known commit: (see `git log`)
+Last known commit: `6bb8aae` + generic-offerwall commit (see `git log`)
 Remote: origin — https://github.com/nomanayubb/reward.git
-Working tree: clean
+Working tree: clean (agent can push: credentials cached)
 
 ## Live deployments
 
