@@ -279,6 +279,19 @@ the DRF login view (page POSTs returned JSON 400s). 19 tests (111 total).
 
 Commit: `feat(web): add server-rendered pages for earning, wallet and payments`.
 
+## 21. Admin operations UI
+
+**User:** "next".
+
+**Agent:** Built the staff-only admin panel at `/admin-panel/`: metrics
+dashboard (users, provider revenue, rewards by currency, pending rewards,
+open withdrawals, confirmed deposits today, user liability PKR/USD, open fraud
+events) and the withdrawal review queue with approve / mark-paid / reject
+actions, each audit-logged. Non-staff users get 403; guests are redirected to
+login. 7 tests (118 total).
+
+Commit: `feat(adminpanel): add operations dashboard and withdrawal queue`.
+
 ---
 
 ## Decisions made this session

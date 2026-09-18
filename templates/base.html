@@ -50,6 +50,7 @@
     </nav>
     <span class="spacer"></span>
     {% if user.is_authenticated %}
+      {% if user.is_staff %}<a href="{% url 'admin-dashboard' %}">Admin</a>{% endif %}
       <span class="who">{{ user.email }}</span>
       <form class="inline" method="post" action="{% url 'logout-page' %}">
         {% csrf_token %}

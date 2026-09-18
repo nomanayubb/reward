@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Admin dashboard{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Operations dashboard</h1>
+    <div class="grid">
+      <div><div class="muted">Users</div><div class="stat">{{ users_total }}</div><div class="muted">+{{ users_today }} today</div></div>
+      <div><div class="muted">Provider revenue (USD)</div><div class="stat">{{ provider_revenue_usd|floatformat:2 }}</div></div>
+      <div><div class="muted">Pending rewards</div><div class="stat">{{ pending_rewards }}</div></div>
+      <div><div class="muted">Open withdrawals</div><div class="stat">{{ withdrawals_open }}</div></div>
+      <div><div class="muted">User liability PKR</div><div class="stat">{{ liability_pkr|floatformat:2 }}</div></div>
+      <div><div class="muted">User liability USD</div><div class="stat">{{ liability_usd|floatformat:2 }}</div></div>
+      <div><div class="muted">Open fraud events</div><div class="stat">{{ fraud_open }}</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">User rewards by currency</h2>
+    {% if rewards_by_currency %}
+      <table>
+        <thead><tr><th>Currency</th><th>Rewards</th><th>Total paid out</th></tr></thead>
+        <tbody>
+          {% for row in rewards_by_currency %}
+            <tr><td>{{ row.currency }}</td><td>{{ row.count }}</td><td>{{ row.total }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No rewards yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Open withdrawals</h2>
+    {% if withdrawals_by_currency %}
+      <table>
+        <thead><tr><th>Currency</th><th>Requests</th><th>Total</th></tr></thead>
+        <tbody>
+          {% for row in withdrawals_by_currency %}
+            <tr><td>{{ row.currency }}</td><td>{{ row.count }}</td><td>{{ row.total }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p><a href="{% url 'admin-withdrawals' %}">Open the withdrawal queue →</a></p>
+    {% else %}
+      <p class="muted">Nothing waiting.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Confirmed deposits today</h2>
+    {% if deposits_today %}
+      <table>
+        <thead><tr><th>Currency</th><th>Total</th></tr></thead>
+        <tbody>
+          {% for row in deposits_today %}
+            <tr><td>{{ row.currency }}</td><td>{{ row.total }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No confirmed deposits today.</p>
+    {% endif %}
+  </div>
+{% endblock %}

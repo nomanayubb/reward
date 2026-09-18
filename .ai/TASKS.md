@@ -82,8 +82,8 @@
 
 - [x] Django admin registered for all models
 - [x] RBAC models, settings, feature flags, audit log
-- [ ] Admin dashboard (metrics)
-- [ ] Withdrawal review queue UI
+- [x] Admin dashboard (metrics)
+- [x] Withdrawal review queue UI (approve / pay / reject + audit)
 - [ ] Configuration center UI
 - [ ] User management UI (limits, restrictions, adjustments)
 - [ ] Provider management + kill switches UI

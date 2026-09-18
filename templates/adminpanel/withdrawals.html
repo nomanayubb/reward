@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Withdrawal queue{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Withdrawal queue</h1>
+    <p class="muted">
+      Filter:
+      <a href="?">all open</a>
+      {% for value, label in statuses %}
+        · <a href="?status={{ value }}">{{ label }}</a>
+      {% endfor %}
+    </p>
+
+    {% if withdrawals %}
+      <table>
+        <thead>
+          <tr><th>Requested</th><th>User</th><th>Amount</th><th>Method</th><th>Risk</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for withdrawal in withdrawals %}
+            <tr>
+              <td>{{ withdrawal.requested_at|date:"Y-m-d H:i" }}</td>
+              <td>{{ withdrawal.user.email }}</td>
+              <td>{{ withdrawal.amount }} {{ withdrawal.currency }}<br /><span class="muted">net {{ withdrawal.net_amount }}</span></td>
+              <td>{{ withdrawal.method.get_type_display }}<br /><span class="muted">{{ withdrawal.method.details.account_number|default:"—" }}</span></td>
+              <td><span class="pill {% if withdrawal.risk_level == 'high' %}bad{% elif withdrawal.risk_level == 'low' %}ok{% endif %}">{{ withdrawal.get_risk_level_display }}</span></td>
+              <td><span class="pill">{{ withdrawal.get_status_display }}</span></td>
+              <td>
+                {% if withdrawal.status == 'requested' or withdrawal.status == 'under_review' %}
+                  <form class="inline" method="post" action="{% url 'admin-withdrawal-action' withdrawal.id %}">
+                    {% csrf_token %}<input type="hidden" name="action" value="approve" />
+                    <button type="submit">Approve</button>
+                  </form>
+                  <form class="inline" method="post" action="{% url 'admin-withdrawal-action' withdrawal.id %}">
+                    {% csrf_token %}<input type="hidden" name="action" value="reject" />
+                    <button type="submit">Reject</button>
+                  </form>
+                {% endif %}
+                {% if withdrawal.status == 'approved' or withdrawal.status == 'processing' %}
+                  <form class="inline" method="post" action="{% url 'admin-withdrawal-action' withdrawal.id %}">
+                    {% csrf_token %}<input type="hidden" name="action" value="pay" />
+                    <input type="text" name="reference" placeholder="payment reference" />
+                    <button type="submit">Mark paid</button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if is_paginated %}
+        <p class="muted">
+          {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">← Previous</a>{% endif %}
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Next →</a>{% endif %}
+        </p>
+      {% endif %}
+    {% else %}
+      <p class="muted">No withdrawals waiting.</p>
+    {% endif %}
+  </div>
+{% endblock %}

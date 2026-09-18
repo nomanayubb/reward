@@ -109,6 +109,11 @@
   withdraw page (payout methods + request form), deposit page (payment
   instructions) and alerts. Fixed a class-shadowing bug where the page login
   view inherited from the DRF login view. 19 new tests (111 total).
+- Added the admin operations UI (`/admin-panel/`, staff only): metrics
+  dashboard (users, provider revenue, rewards by currency, open withdrawals,
+  user liability, open fraud events) and the withdrawal review queue with
+  approve/pay/reject actions, all audit-logged via `AuditLog`. 7 tests
+  (118 total).
 
 ### Tests
 
