@@ -1,0 +1,23 @@
+{% comment %}Campaign rules for one offer row (expects `row` with offer + limits).{% endcomment %}
+<div class="rules">
+  <p class="row" style="margin:.2rem 0;">
+    <span class="pill {% if row.offer.incentive_allowed %}ok{% else %}bad{% endif %}">
+      {% if row.offer.incentive_allowed %}Incentivized traffic allowed{% else %}Incentivized traffic NOT allowed{% endif %}
+    </span>
+    <span class="pill">{{ row.offer.provider.name }}</span>
+    {% if row.offer.category %}<span class="pill">{{ row.offer.category.name }}</span>{% endif %}
+    {% if row.offer.advertiser %}<span class="pill">{{ row.offer.advertiser }}</span>{% endif %}
+  </p>
+  <ul class="muted" style="margin:.3rem 0;padding-inline-start:1.1rem;font-size:.85rem;">
+    <li>Countries: {% if row.offer.countries %}{{ row.offer.countries|join:", " }}{% else %}All countries{% endif %}</li>
+    <li>Devices: {% if row.offer.devices %}{{ row.offer.devices|join:", " }}{% else %}Any{% endif %}{% if row.offer.operating_systems %} · OS: {{ row.offer.operating_systems|join:", " }}{% endif %}</li>
+    <li>Reinstall: {% if row.offer.reinstall_allowed %}allowed{% else %}not allowed{% endif %} · Completions: {% if row.offer.multiple_completion_allowed %}multiple allowed{% else %}one per user{% endif %}</li>
+    <li>Your remaining: <strong>{{ row.limits.daily_remaining }}</strong> today · <strong>{{ row.limits.lifetime_remaining }}</strong> lifetime</li>
+    {% if row.limits.campaign_remaining is not None %}
+      <li>Campaign remaining today: {{ row.limits.campaign_remaining }}</li>
+    {% endif %}
+    {% if row.offer.min_age %}<li>Minimum age: {{ row.offer.min_age }}+</li>{% endif %}
+    {% if row.offer.expires_at %}<li>Expires: {{ row.offer.expires_at|date:"Y-m-d" }}</li>{% endif %}
+    {% if row.reasons %}<li>Status: {{ row.reasons|join:", " }}</li>{% endif %}
+  </ul>
+</div>

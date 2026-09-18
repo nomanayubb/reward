@@ -106,6 +106,12 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - Game catalog expanded: `tap-target`, `memory-match` and `snake` — each an
   original HTML5 game with its own documentation and a starter reward rule;
   `manage.py seed_reference_game` seeds all three.
+- Earn hub live at `/earn/` with tabs (Games / Offers / Surveys): every tab
+  shows its own activity list, and each offer exposes the full campaign rules
+  (incentive policy, countries, devices, OS, reinstall, completions, remaining
+  limits, campaign cap, min age, expiry) plus an offer detail page
+  (`/offers/<id>/`). Catalog row builders centralized in services. 6 tests
+  (182 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,

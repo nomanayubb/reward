@@ -49,6 +49,7 @@
 - [x] Multi-network admin console (tabs per network type; add / test / toggle / sync)
 - [x] CPA onboarding checklist (`docs/integrations/CPA_ONBOARDING.md`)
 - [ ] Second CPA provider adapter
+- [x] Earn hub tabs (games / offers / surveys) with full per-offer rules
 - [x] Remaining-limit visibility (offers: today/lifetime left; games: plays left)
 - [x] Offer click-through (Start → click recorded → provider redirect with subid)
 - [ ] Provider reconciliation job

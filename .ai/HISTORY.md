@@ -168,6 +168,13 @@
   (4×4 pairs, move-efficient scoring) and Snake (20×20 grid, 90s), each with
   its own documentation and a starter reward rule; `seed_reference_game` now
   seeds all three games.
+- Added the tabbed Earn hub (`/earn/`): Games / Offers / Surveys tabs, each
+  showing its own catalog, with full per-offer campaign rules displayed
+  (incentive policy, countries, devices/OS, reinstall, completion rules,
+  remaining daily/lifetime/campaign limits, min age, expiry) and a dedicated
+  offer detail page. Catalog row logic centralized in
+  `games.services.catalog_rows` / `offers.services.catalog_rows`. 6 tests
+  (182 total).
 
 ### Tests
 

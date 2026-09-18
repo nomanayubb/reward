@@ -439,6 +439,28 @@ for every bundled game.
 
 Commit: `feat(games): add memory-match and snake to the catalog`.
 
+## 33. Earn hub tabs + full offer rules
+
+**User:** "every tab on our site show different web offers with their rules
+and regulations".
+
+**Agent:** Built the tabbed Earn hub at `/earn/` (Games / Offers / Surveys).
+Each tab shows its own catalog; every offer now displays the complete campaign
+rules (incentivized allowed/not, countries, devices/OS, reinstall, completion
+rules, remaining daily/lifetime/campaign limits, min age, expiry) via a shared
+partial, plus a new offer detail page at `/offers/<id>/`. Catalog row builders
+were centralized (`games.services.catalog_rows`,
+`offers.services.catalog_rows`) and reused by the hub and the existing pages.
+6 tests (182 total).
+
+Commit: `feat(web): add tabbed earn hub with full offer rules`.
+
+Also verified network terms while researching (recorded in the reply): AdGem's
+Terms §11.3 require **prior written consent** for incentivized traffic and
+§10.2 pays within 60 days after month end; CPX Research pays from $25 (bank/
+PayPal) / $100 (BTC) with no setup fee; BitLabs (Prodege) is net-30; AdGate
+Media is now part of Prodege.
+
 ---
 
 ## Decisions made this session

@@ -62,6 +62,31 @@ def limit_status(user, offer: Offer) -> dict:
     }
 
 
+def catalog_rows(user, country: str = ""):
+    """Offers split into ``(available, unavailable)`` rows with limits/reasons.
+
+    Shared by the offers page, the Earn hub and offer detail pages so the rules
+    shown to users are always computed the same way.
+    """
+    candidates = (
+        Offer.objects.filter(status=Offer.Status.ACTIVE, incentive_allowed=True)
+        .select_related("provider", "category", "quota")
+        .order_by("-rank_score", "-payout")[:100]
+    )
+
+    available: list[dict] = []
+    unavailable: list[dict] = []
+    for offer in candidates:
+        result = evaluate_offer(user, offer, context={"country": country})
+        limits = limit_status(user, offer)
+        row = {"offer": offer, "limits": limits, "reasons": result.reasons}
+        if result.is_eligible and limits["can_complete"]:
+            available.append(row)
+        else:
+            unavailable.append(row)
+    return available, unavailable
+
+
 def record_click(user, offer: Offer, *, click_id: str, ip=None, device_hash="", user_agent="") -> OfferClick:
     return OfferClick.objects.create(
         user=user,

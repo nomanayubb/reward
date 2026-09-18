@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ row.offer.title }}{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">{{ row.offer.title }}</h1>
+    <p class="stat">{{ row.offer.user_reward }} {{ row.offer.currency }}
+      {% if row.offer.points_reward %}<span class="muted" style="font-size:1rem;">+ {{ row.offer.points_reward }} pts</span>{% endif %}
+    </p>
+
+    {% include "offers/_offer_rules.html" with row=row %}
+
+    <p class="muted">Daily limits reset at {{ next_reset_at|date:"H:i" }} local time.</p>
+
+    {% if eligible and row.limits.can_complete %}
+      <p><a class="pill ok" href="{% url 'offer-start' row.offer.id %}">Start offer</a></p>
+    {% elif not row.limits.can_complete %}
+      <p class="muted">You have used all your completions for this offer — it resets at {{ next_reset_at|date:"H:i" }}.</p>
+    {% else %}
+      <p class="muted">This offer is not available for your account right now.</p>
+    {% endif %}
+
+    <p><a href="{% url 'offer-list-page' %}">← All offers</a></p>
+  </div>
+{% endblock %}

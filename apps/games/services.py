@@ -56,6 +56,51 @@ def report_event(
     )
 
 
+def catalog_rows(user) -> list[dict]:
+    """Active games with plays remaining today and a reward summary.
+
+    Shared by the games page and the Earn hub.
+    """
+    from django.db.models import Count
+
+    games = list(
+        Game.objects.filter(status=Game.Status.ACTIVE)
+        .select_related("category")
+        .order_by("sort_order", "title")
+    )
+    today = timezone.localdate()
+    counts = dict(
+        GameSession.objects.filter(user=user, started_at__date=today)
+        .values_list("game_id")
+        .annotate(total=Count("id"))
+    )
+
+    rules = {}
+    for rule in GameRewardRule.objects.filter(game__in=games, is_active=True).order_by(
+        "game_id", "priority"
+    ):
+        rules.setdefault(rule.game_id, rule)
+
+    rows = []
+    for game in games:
+        rule = rules.get(game.id)
+        reward = ""
+        if rule is not None:
+            reward = (
+                f"{rule.points} pts"
+                if rule.mode == GameRewardRule.Mode.POINTS
+                else f"{rule.cash}"
+            )
+        rows.append(
+            {
+                "game": game,
+                "plays_remaining": max(0, game.max_daily_sessions - counts.get(game.id, 0)),
+                "reward": reward,
+            }
+        )
+    return rows
+
+
 def _conditions_match(conditions: dict, *, duration: int, score: int | None) -> bool:
     if not conditions:
         return True

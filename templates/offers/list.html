@@ -9,7 +9,7 @@
     </p>
     {% if offers %}
       <table>
-        <thead><tr><th>Offer</th><th>Reward</th><th>Left for you</th><th>Requirements</th><th></th></tr></thead>
+        <thead><tr><th>Offer</th><th>Reward</th><th>Left for you</th><th>Rules</th><th></th></tr></thead>
         <tbody>
           {% for row in offers %}
             <tr>
@@ -28,12 +28,16 @@
                   <br /><span class="muted">{{ row.limits.campaign_remaining }} left in campaign today</span>
                 {% endif %}
               </td>
-              <td class="muted">
-                {% if row.offer.countries %}Countries: {{ row.offer.countries|join:", " }}{% else %}All countries{% endif %}
-                {% if row.offer.devices %}<br />Devices: {{ row.offer.devices|join:", " }}{% endif %}
-                {% if row.offer.min_age %}<br />Age {{ row.offer.min_age }}+{% endif %}
+              <td>
+                <details>
+                  <summary>Rules &amp; requirements</summary>
+                  {% include "offers/_offer_rules.html" with row=row %}
+                </details>
               </td>
-              <td><a class="pill ok" href="{% url 'offer-start' row.offer.id %}">Start</a></td>
+              <td>
+                <a class="pill ok" href="{% url 'offer-start' row.offer.id %}">Start</a>
+                <a class="pill" href="{% url 'offer-detail' row.offer.id %}">Details</a>
+              </td>
             </tr>
           {% endfor %}
         </tbody>

@@ -10,7 +10,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.utils import timezone
 from django.views import View
 from django.views.generic import ListView, TemplateView
 from rest_framework import status
@@ -19,7 +18,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Game, GameRewardRule, GameSession
+from .models import Game, GameSession
 from .serializers import GameSerializer, GameSessionSerializer
 from .services import end_session, report_event, start_session
 
@@ -154,43 +153,11 @@ class GameListPageView(LoginRequiredMixin, ListView):
         )
 
     def get_context_data(self, **kwargs):
-        from django.db.models import Count
-
         from apps.advertising.services import serve_ad
 
+        from .services import catalog_rows
+
         context = super().get_context_data(**kwargs)
-        games = list(context["games"])
-
-        today = timezone.localdate()
-        counts = dict(
-            GameSession.objects.filter(user=self.request.user, started_at__date=today)
-            .values_list("game_id")
-            .annotate(total=Count("id"))
-        )
-        rules = {}
-        for rule in GameRewardRule.objects.filter(game__in=games, is_active=True).order_by(
-            "game_id", "priority"
-        ):
-            rules.setdefault(rule.game_id, rule)
-
-        rows = []
-        for game in games:
-            rule = rules.get(game.id)
-            reward = ""
-            if rule is not None:
-                reward = (
-                    f"{rule.points} pts"
-                    if rule.mode == GameRewardRule.Mode.POINTS
-                    else f"{rule.cash}"
-                )
-            rows.append(
-                {
-                    "game": game,
-                    "plays_remaining": max(0, game.max_daily_sessions - counts.get(game.id, 0)),
-                    "reward": reward,
-                }
-            )
-
-        context["games"] = rows
+        context["games"] = catalog_rows(self.request.user)
         context["ad_slot"] = serve_ad("games", self.request)
         return context

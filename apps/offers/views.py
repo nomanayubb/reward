@@ -18,7 +18,7 @@ from rest_framework.response import Response
 from .eligibility import evaluate_offer
 from .models import Offer
 from .serializers import OfferSerializer
-from .services import get_click_url, limit_status, next_reset_at, record_click
+from .services import catalog_rows, get_click_url, limit_status, next_reset_at, record_click
 
 
 class OfferListView(ListAPIView):
@@ -63,8 +63,6 @@ class OfferListPageView(LoginRequiredMixin, TemplateView):
         from apps.adminpanel.settings import get_setting
 
         context = super().get_context_data(**kwargs)
-        user = self.request.user
-        country = getattr(user, "country", "") or ""
         context["offers"] = []
         context["unavailable"] = []
         context["next_reset_at"] = next_reset_at()
@@ -72,21 +70,28 @@ class OfferListPageView(LoginRequiredMixin, TemplateView):
         if not get_setting("OFFERS_ENABLED", True):
             return context
 
-        candidates = (
-            Offer.objects.filter(status=Offer.Status.ACTIVE, incentive_allowed=True)
-            .select_related("provider", "category", "quota")
-            .order_by("-rank_score", "-payout")[:100]
-        )
+        country = getattr(self.request.user, "country", "") or ""
+        context["offers"], context["unavailable"] = catalog_rows(self.request.user, country)
+        return context
 
-        for offer in candidates:
-            result = evaluate_offer(user, offer, context={"country": country})
-            limits = limit_status(user, offer)
-            row = {"offer": offer, "limits": limits, "reasons": result.reasons}
-            if result.is_eligible and limits["can_complete"]:
-                context["offers"].append(row)
-            else:
-                context["unavailable"].append(row)
 
+class OfferDetailView(LoginRequiredMixin, TemplateView):
+    """Full offer page: reward, every campaign rule and the user's limits."""
+
+    template_name = "offers/detail.html"
+
+    def get_context_data(self, **kwargs):
+        offer = get_object_or_404(Offer, pk=self.kwargs["pk"])
+        user = self.request.user
+        country = getattr(user, "country", "") or ""
+
+        result = evaluate_offer(user, offer, context={"country": country})
+        limits = limit_status(user, offer)
+
+        context = super().get_context_data(**kwargs)
+        context["row"] = {"offer": offer, "limits": limits, "reasons": result.reasons}
+        context["next_reset_at"] = limits["next_reset_at"]
+        context["eligible"] = result.is_eligible
         return context
 
 

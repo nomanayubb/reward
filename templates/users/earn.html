@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Earn{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Earn</h1>
+    <p class="row">
+      <a class="pill {% if tab == 'games' %}ok{% endif %}" href="?tab=games">Games ({{ games|length }})</a>
+      <a class="pill {% if tab == 'offers' %}ok{% endif %}" href="?tab=offers">Offers ({{ offers|length }})</a>
+      <a class="pill {% if tab == 'surveys' %}ok{% endif %}" href="?tab=surveys">Surveys ({{ surveys|length }})</a>
+    </p>
+    <p class="muted">Each tab lists a different activity with its own rules and limits. Daily limits reset at {{ next_reset_at|date:"H:i" }}.</p>
+  </div>
+
+  {% if tab == 'games' %}
+    <div class="card">
+      <h2 style="margin-top:0;">Games</h2>
+      <div class="grid">
+        {% for row in games %}
+          <div class="card" style="margin:0;">
+            <h3 style="margin:.2rem 0;">{{ row.game.title }}</h3>
+            {% if row.game.category %}<span class="pill">{{ row.game.category.name }}</span>{% endif %}
+            <p class="muted">{{ row.game.description|default:"Play and earn." }}</p>
+            <p>
+              <span class="pill {% if row.plays_remaining %}ok{% else %}bad{% endif %}">
+                {{ row.plays_remaining }} of {{ row.game.max_daily_sessions }} plays left today
+              </span>
+              {% if row.reward %}<span class="pill">{{ row.reward }}</span>{% endif %}
+            </p>
+            {% if row.plays_remaining %}
+              <a class="pill ok" href="{% url 'game-player' row.game.slug %}">Play</a>
+            {% else %}
+              <span class="muted">Come back tomorrow</span>
+            {% endif %}
+          </div>
+        {% empty %}
+          <p class="muted">No games available yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if tab == 'offers' %}
+    <div class="card">
+      <h2 style="margin-top:0;">Offers & app installs</h2>
+      {% if offers %}
+        {% for row in offers %}
+          <div class="card" style="margin:0 0 .8rem;">
+            <p class="row" style="margin:0;">
+              <strong>{{ row.offer.title }}</strong>
+              <span class="pill ok">{{ row.offer.user_reward }} {{ row.offer.currency }}</span>
+              <span class="muted">{{ row.limits.daily_remaining }} left today</span>
+            </p>
+            {% include "offers/_offer_rules.html" with row=row %}
+            <p class="row" style="margin:.3rem 0 0;">
+              <a class="pill ok" href="{% url 'offer-start' row.offer.id %}">Start</a>
+              <a class="pill" href="{% url 'offer-detail' row.offer.id %}">Details</a>
+            </p>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="muted">No offers available for you right now. Check back soon.</p>
+      {% endif %}
+    </div>
+
+    {% if unavailable %}
+      <div class="card">
+        <h2 style="margin-top:0;">Not available right now</h2>
+        {% for row in unavailable %}
+          <div class="card" style="margin:0 0 .8rem;">
+            <p style="margin:0;"><strong>{{ row.offer.title }}</strong>
+              <span class="muted">· {{ row.offer.provider.name }}</span></p>
+            {% include "offers/_offer_rules.html" with row=row %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endif %}
+
+  {% if tab == 'surveys' %}
+    <div class="card">
+      <h2 style="margin-top:0;">Surveys</h2>
+      {% if surveys %}
+        <table>
+          <thead><tr><th>Survey</th><th>Reward</th><th>Time</th><th>Eligibility</th><th></th></tr></thead>
+          <tbody>
+            {% for survey in surveys %}
+              <tr>
+                <td><strong>{{ survey.title }}</strong><br /><span class="muted">{{ survey.provider.name }}</span></td>
+                <td>{{ survey.user_reward }} {{ survey.currency }}</td>
+                <td class="muted">{% if survey.estimated_minutes %}~{{ survey.estimated_minutes }} min{% else %}—{% endif %}</td>
+                <td class="muted">
+                  {% if survey.country %}{{ survey.country }}{% else %}All countries{% endif %}
+                  {% if survey.device %} · {{ survey.device }}{% endif %}
+                  {% if survey.user_cap %} · max {{ survey.user_cap }} per user{% endif %}
+                </td>
+                <td><a class="pill ok" href="{% url 'survey-start' survey.id %}">Start</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="muted">No surveys available right now.</p>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}
