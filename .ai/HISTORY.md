@@ -208,6 +208,13 @@
   pages) and per-path metadata from `SEOConfig` (title, description, robots,
   canonical, OG tags) through a cached context processor with safe defaults.
   5 tests (199 total).
+- Added the AdGem integration paths: the Web Offerwall page
+  (`/offers/offerwall/adgem/`, stable `u<uuid>` player id, needs only the App
+  ID), offerwall postback resolution by player id with automatic offer
+  provisioning and compliance gating, and the Reporting API client with a
+  reconciliation service + `manage.py reconcile_provider` command (verified
+  live with the dashboard token). Added the AdGem adapter's Cloudflare-safe
+  User-Agent. 20 tests (223 total).
 
 ### Tests
 

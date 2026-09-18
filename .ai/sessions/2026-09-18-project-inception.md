@@ -549,6 +549,29 @@ context keys — switched to `firstof`/conditionals). 5 tests (199 total).
 
 Commit: `feat(seo): add robots.txt, sitemap and per-page metadata`.
 
+## 40. AdGem integration paths (offerwall, postbacks, reporting)
+
+**User:** provided their AdGem token and pointed at the Web Offerwall,
+quickstart and Reporting API docs.
+
+**Agent:** Implemented three AdGem paths:
+
+1. **Web Offerwall** page (`/offers/offerwall/adgem/`) embedding
+   `api.adgem.com/v1/wall?appid=&playerid=` with a stable AdGem-compatible
+   player id (`player_id_for` / `user_for_player_id`).
+2. **Offerwall postbacks**: conversions without a click resolve the user from
+   the player id and auto-provision the offer from postback data; compliance
+   still gates payment (`incentive_allowed` in provider config).
+3. **Reporting API + reconciliation**: `AdgemAdapter.get_reporting_data()` and
+   `manage.py reconcile_provider <code> --days N`, verified **live** with the
+   dashboard token (HTTP 200, balanced output). Also added a Cloudflare-safe
+   User-Agent because Python's default UA was blocked (error 1010).
+
+20 tests (223 total). The Offer API/Prism credentials still need AdGem
+approval — documented in `docs/integrations/ADGEM.md`.
+
+Commit: `feat(cpa): add AdGem offerwall, postback resolution and reconciliation`.
+
 ---
 
 ## Decisions made this session

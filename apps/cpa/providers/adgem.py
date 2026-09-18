@@ -40,8 +40,21 @@ from .base import (
 )
 
 DEFAULT_API_BASE = "https://offer-api.adgem.com"
+DEFAULT_REPORT_BASE = "https://dashboard.adgem.com"
 DEFAULT_TIMEOUT = 30
 TOKEN_CACHE_KEY = "adgem:access_token"
+
+# Cloudflare fronts AdGem's hosts and rejects unknown client signatures, so we
+# identify as a normal HTTP client.
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0 Safari/537.36 RewardPlatform/1.0"
+)
+
+
+def _add_common_headers(request) -> None:
+    request.add_header("User-Agent", USER_AGENT)
+    request.add_header("Accept", "application/json")
 
 
 def _header(headers: dict | None, name: str) -> str:
@@ -89,7 +102,7 @@ class AdgemAdapter(CPAProviderAdapter):
             f"{self.api_base.rstrip('/')}/v1/users/token", data=body, method="POST"
         )
         request.add_header("Content-Type", "application/x-www-form-urlencoded")
-        request.add_header("Accept", "application/json")
+        _add_common_headers(request)
 
         try:
             with urllib.request.urlopen(request, timeout=DEFAULT_TIMEOUT) as response:
@@ -122,7 +135,7 @@ class AdgemAdapter(CPAProviderAdapter):
 
         request = urllib.request.Request(url, method="GET")
         request.add_header("Authorization", f"Bearer {self._get_access_token()}")
-        request.add_header("Accept", "application/json")
+        _add_common_headers(request)
 
         try:
             with urllib.request.urlopen(request, timeout=DEFAULT_TIMEOUT) as response:
@@ -134,6 +147,57 @@ class AdgemAdapter(CPAProviderAdapter):
             raise ProviderRequestError(f"AdGem HTTP {exc.code}: {detail!r}") from exc
         except urllib.error.URLError as exc:
             raise ProviderRequestError(f"AdGem unreachable: {exc.reason}") from exc
+
+    # -- reporting API ------------------------------------------------------
+    @property
+    def report_token(self) -> str:
+        return (
+            getattr(settings, "ADGEM_REPORT_TOKEN", "")
+            or getattr(settings, "ADGEM_API_KEY", "")
+            or ""
+        )
+
+    @property
+    def report_base(self) -> str:
+        return (
+            self.config.get("report_base")
+            or getattr(settings, "ADGEM_REPORT_BASE", "")
+            or DEFAULT_REPORT_BASE
+        )
+
+    def _report_request(self, params: list[tuple]) -> list[dict]:
+        if not self.report_token:
+            raise ProviderConfigurationError(
+                "ADGEM_REPORT_TOKEN is not configured (dashboard → generate API token)."
+            )
+        url = f"{self.report_base.rstrip('/')}/v1/report?{urllib.parse.urlencode(params)}"
+        request = urllib.request.Request(url, method="GET")
+        request.add_header("Authorization", f"Bearer {self.report_token}")
+        _add_common_headers(request)
+
+        try:
+            with urllib.request.urlopen(request, timeout=DEFAULT_TIMEOUT) as response:
+                data = json.loads(response.read().decode("utf-8") or "[]")
+        except urllib.error.HTTPError as exc:
+            detail = exc.read()[:300]
+            raise ProviderRequestError(f"AdGem report HTTP {exc.code}: {detail!r}") from exc
+        except urllib.error.URLError as exc:
+            raise ProviderRequestError(f"AdGem unreachable: {exc.reason}") from exc
+
+        return data if isinstance(data, list) else data.get("data", [])
+
+    def get_reporting_data(self, since=None, until=None) -> list[dict]:
+        """Daily report rows (app_id, date, conversions, payout, ...).
+
+        Used for reconciliation: compare their reported conversions/payout
+        against our own ``OfferConversion`` rows for the same period.
+        """
+        params = [("group_by[]", "app_id"), ("group_by[]", "date")]
+        if since is not None:
+            params.append(("date_range[start_date]", since.strftime("%Y-%m-%d %H:%M:%S")))
+        if until is not None:
+            params.append(("date_range[end_date]", until.strftime("%Y-%m-%d %H:%M:%S")))
+        return self._report_request(params)
 
     # -- provider interface -------------------------------------------------
     def get_offers(self) -> list[NormalizedOffer]:

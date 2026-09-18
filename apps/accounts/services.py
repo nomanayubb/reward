@@ -1,5 +1,6 @@
 """Account services: registration, referral codes, verification tokens."""
 import secrets
+import uuid
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -19,6 +20,29 @@ def generate_referral_code(length: int = REFERRAL_LENGTH) -> str:
 
 def generate_token(length: int = 32) -> str:
     return secrets.token_urlsafe(length)
+
+
+def player_id_for(user) -> str:
+    """Stable, provider-safe player id.
+
+    AdGem requires: lowercase, alphanumeric + hyphens/underscores, max 255
+    characters, and a value that is constant per user (so they can prevent
+    duplicate completions and attribute rewards). ``u<uuid-hex>`` satisfies all
+    of that and is reversible on our side.
+    """
+    return f"u{user.id.hex}"
+
+
+def user_for_player_id(player_id: str):
+    """Reverse ``player_id_for``; returns ``None`` for foreign ids."""
+    value = (player_id or "").strip().lower()
+    if not value.startswith("u") or len(value) != 33:
+        return None
+    try:
+        user_uuid = uuid.UUID(hex=value[1:])
+    except ValueError:
+        return None
+    return get_user_model().objects.filter(id=user_uuid).first()
 
 
 @transaction.atomic

@@ -122,3 +122,32 @@ class OfferStartView(LoginRequiredMixin, View):
             return redirect("offer-list-page")
 
         return redirect(url)
+
+
+class AdgemOfferwallView(LoginRequiredMixin, TemplateView):
+    """Embed AdGem's pre-built Web Offerwall.
+
+    This path needs only the AdGem **App ID** (no Offer API approval):
+    ``https://api.adgem.com/v1/wall?appid=<app>&playerid=<player>``.
+    Rewards arrive through the signed v3 postback endpoint.
+    """
+
+    template_name = "offers/offerwall_adgem.html"
+
+    def get_context_data(self, **kwargs):
+        from django.conf import settings
+
+        from apps.accounts.services import player_id_for
+
+        context = super().get_context_data(**kwargs)
+        app_id = getattr(settings, "ADGEM_APP_ID", "") or ""
+        player_id = player_id_for(self.request.user)
+
+        context["app_id"] = app_id
+        context["player_id"] = player_id
+        context["wall_url"] = (
+            f"https://api.adgem.com/v1/wall?appid={app_id}&playerid={player_id}"
+            if app_id
+            else ""
+        )
+        return context

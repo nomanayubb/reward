@@ -6,6 +6,7 @@ signature-validated and stores the raw payload for disputes (docs/DRD.md §23-24
 """
 import logging
 from datetime import datetime, time
+from decimal import Decimal
 
 from django.db import transaction
 from django.utils import timezone
@@ -85,6 +86,30 @@ def catalog_rows(user, country: str = ""):
         else:
             unavailable.append(row)
     return available, unavailable
+
+
+def _offer_from_postback(provider, normalized) -> Offer:
+    """Find or create the offer referenced by an offerwall conversion.
+
+    Offerwall traffic (no click) still names the offer; we provision it from
+    the postback data so rewards and history have a stable reference. The
+    compliance flag comes from the provider config, so nothing pays until the
+    network's incentivized-traffic consent is recorded there.
+    """
+    raw = normalized.raw or {}
+    data = raw.get("data") or {}
+    offer, _ = Offer.objects.get_or_create(
+        provider=provider,
+        external_id=normalized.offer_external_id or "offerwall-unknown",
+        defaults={
+            "title": data.get("offer_name") or f"{provider.name} offer",
+            "payout": normalized.payout or Decimal("0"),
+            "user_reward": Decimal("0"),
+            "incentive_allowed": bool((provider.config or {}).get("incentive_allowed", False)),
+            "status": Offer.Status.ACTIVE,
+        },
+    )
+    return offer
 
 
 def record_click(user, offer: Offer, *, click_id: str, ip=None, device_hash="", user_agent="") -> OfferClick:
@@ -195,12 +220,23 @@ def process_postback(
         .filter(click_id=normalized.user_identifier)
         .first()
     )
-    if click is None:
-        postback.processing_result = "unknown_user"
-        postback.save(update_fields=["processing_result", "processing_note", "updated_at"])
-        return None, False
 
-    user, offer = click.user, click.offer
+    if click is not None:
+        user, offer = click.user, click.offer
+        device_hash = click.device_id_hash
+    else:
+        # Offerwall conversions arrive without a click: resolve the user from
+        # the stable player id and auto-provision the offer from postback data.
+        from apps.accounts.services import user_for_player_id
+
+        user = user_for_player_id(normalized.user_identifier)
+        if user is None:
+            postback.processing_result = "unknown_user"
+            postback.save(update_fields=["processing_result", "processing_note", "updated_at"])
+            return None, False
+        offer = _offer_from_postback(provider, normalized)
+        device_hash = ""
+
     country = getattr(user, "country", "") or ""
 
     if normalized.status != "approved":
@@ -214,7 +250,7 @@ def process_postback(
             user_reward=0,
             status=OfferConversion.Status.REJECTED,
             ip_address=ip,
-            device_id_hash=click.device_id_hash,
+            device_id_hash=device_hash,
         )
         postback.conversion = conversion
         postback.processing_result = "rejected_by_provider"
@@ -224,7 +260,7 @@ def process_postback(
     eligibility = evaluate_offer(
         user,
         offer,
-        context={"country": country, "device": click.device_id_hash and "mobile" or "", "os": ""},
+        context={"country": country, "device": "mobile" if device_hash else "", "os": ""},
     )
     if not eligibility.is_eligible:
         conversion = OfferConversion.objects.create(
@@ -237,7 +273,7 @@ def process_postback(
             user_reward=0,
             status=OfferConversion.Status.REJECTED,
             ip_address=ip,
-            device_id_hash=click.device_id_hash,
+            device_id_hash=device_hash,
         )
         postback.conversion = conversion
         postback.processing_result = "not_eligible"
@@ -255,7 +291,7 @@ def process_postback(
         user_reward=0,
         status=OfferConversion.Status.PENDING,
         ip_address=ip,
-        device_id_hash=click.device_id_hash,
+        device_id_hash=device_hash,
     )
 
     reward, _ = RewardService.award(

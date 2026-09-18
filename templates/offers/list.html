@@ -7,6 +7,9 @@
       Only offers you are eligible for are shown, with how many completions you have left.
       Daily limits reset at {{ next_reset_at|date:"H:i" }} local time.
     </p>
+    <p class="row">
+      <a class="pill ok" href="{% url 'adgem-offerwall' %}">Open offerwall (more offers)</a>
+    </p>
     {% if offers %}
       <table>
         <thead><tr><th>Offer</th><th>Reward</th><th>Left for you</th><th>Rules</th><th></th></tr></thead>

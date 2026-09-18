@@ -1,11 +1,48 @@
 # AdGem Integration
 
-Status: **adapter implemented and unit-tested**; live access blocked by the
-credential type — see "Current blocker" below.
+Status: **three integration paths implemented**:
+
+| Path | Credential needed | Status |
+| --- | --- | --- |
+| Web Offerwall (pre-built iframe) | **App ID** | page live at `/offers/offerwall/adgem/` — needs `ADGEM_APP_ID` |
+| Native offers (Offer API / Prism) | Offer API refresh token / Prism JWT | adapter built + tested; credential pending AdGem approval |
+| Reporting + reconciliation | dashboard API token | **working live** (`manage.py reconcile_provider adgem`) |
 
 ## 1. How AdGem's API works (verified from their docs)
 
-### Offer API (REST)
+### Web Offerwall (fastest path — needs only the App ID)
+
+```
+Direct link: https://api.adgem.com/v1/wall?appid=<APP_ID>&playerid=<PLAYER_ID>
+iFrame:      <iframe src="https://api.adgem.com/v1/wall?appid=<APP_ID>&playerid=<PLAYER_ID>">
+```
+
+- Create the property in **Properties & Apps** (platform: Desktop/Web) and wait
+  for approval; AdGem shows no offers until the app is approved.
+- `playerid` must be **lowercase, alphanumeric + hyphens/underscores, ≤255
+  characters, constant per user**. We use `u<uuid-hex>` (`player_id_for(user)`)
+  and reverse it on postbacks (`user_for_player_id`).
+- Rewards arrive through the same signed v3 postback; the platform auto-creates
+  the offer record from the postback data and pays via the reward engine.
+- Optional parameters we can add later: `limit`, `device`, `ip`, `useragent`,
+  `os_version`, `platform`, `placement`, `c1`-`c5`.
+
+### Reporting API (reconciliation)
+
+```
+GET https://dashboard.adgem.com/v1/report
+Authorization: Bearer <dashboard API token>   (generate in the dashboard)
+group_by[]=app_id&group_by[]=date&date_range[start_date]=Y-m-d H:i:s&...
+```
+
+Fields available: `app_id`, `app_name`, `date`, `country_name`,
+`platform_name`, `campaign_name`, `dau`, `payout`, `offerwall_loads`,
+`gross_clicks`, `distinct_clicks`, `conversions`, `ctr`, `cr`, `ecpm`.
+
+Note: Cloudflare fronts `dashboard.adgem.com` and blocks unknown client
+signatures — the adapter sends a normal User-Agent header for this reason.
+
+### Offer API (REST, native UI)
 
 ```
 1. Exchange the refresh token for a short-lived access token:
@@ -61,44 +98,56 @@ static postback IP and allow it in your firewall/proxy.
 ## 2. Environment keys
 
 ```
-ADGEM_REFRESH_TOKEN=   # dashboard → Properties & Apps (Offer API refresh token)
-ADGEM_API_KEY=         # optional alias for the same value
+ADGEM_APP_ID=          # Properties & Apps → app id (Web Offerwall)
 ADGEM_POSTBACK_KEY=    # Postback Options → generate key (shown once)
+ADGEM_REPORT_TOKEN=    # dashboard API token (Reporting API / reconciliation)
+ADGEM_API_KEY=         # alias accepted for the report token
+ADGEM_REFRESH_TOKEN=   # Offer API refresh token (native offers only)
 ADGEM_API_BASE=https://offer-api.adgem.com
 ```
 
-## 3. Current blocker (checked live)
+## 3. Reconciliation
 
-The credential provided so far was tested against **both** AdGem APIs:
+```bash
+python manage.py reconcile_provider adgem --days 7
+```
 
-| Endpoint | Auth method | Result |
+Outputs reported vs. local conversions and payout, and flags mismatches. Run it
+daily; raise disputes within AdGem's 14-day window (T&C §10.3).
+
+Verified live: the reporting API accepted the dashboard token and the command
+ran end-to-end (0 conversions so far — no traffic yet).
+
+## 4. Current blocker (checked live)
+
+| Endpoint | Auth | Result |
 | --- | --- | --- |
-| `POST https://offer-api.adgem.com/v1/users/token` | refresh-token exchange | `401 {"error":"Unauthenticated."}` |
-| `POST https://prism.adgem.com/v1/offers` | JWT bearer (Prism GraphQL) | `401 {"message":"Unauthorized"}` |
+| `dashboard.adgem.com/v1/report` | dashboard Bearer token | ✅ **works** |
+| `offer-api.adgem.com/v1/users/token` | refresh-token exchange | `401 Unauthenticated` (token is not an Offer-API refresh token) |
+| `prism.adgem.com/v1/offers` | JWT bearer | `401 Unauthorized` (JWT carries `"scopes":[]`) |
 
-The token itself is a valid JWT but carries `"scopes":[]` (no permissions) —
-consistent with an app that is **not approved/activated yet** or a token
-issued before API access was enabled. No code change can fix this; AdGem has
-to activate the app and issue credentials for it.
+So the dashboard token is valid for reporting. To start earning you need:
 
-Ask your AdGem Publisher Support Advocate, in one message:
+1. **App ID** (Properties & Apps) → set `ADGEM_APP_ID` → the Web Offerwall goes
+   live immediately at `/offers/offerwall/adgem/` (once AdGem approves the app).
+2. **Postback Key** (Postback Options → generate; shown once) → set
+   `ADGEM_POSTBACK_KEY` → rewards from the offerwall start crediting.
+3. **Offer API refresh token** only if you later want offers listed natively
+   inside our own UI.
+
+Ask your Publisher Support Advocate, in one message:
 
 1. "Please confirm my app is approved/active." (dashboard → Properties & Apps)
-2. "Please enable **API access** for app `<app id>` and tell me exactly where to
-   copy the credentials: the **Offer API refresh token** and/or the **Prism
-   JWT**."
+2. "Please give me the **App ID** for the Web Offerwall property."
 3. "Please enable **Server Postback** and give me the **Postback Key** and your
    **static postback IP** for whitelisting."
 4. "Please confirm in writing that **incentivized traffic is allowed** for my
    account (T&C §11.3) — required before I can show your offers."
 
-When working credentials arrive: put them in `.env`, run
-`/admin-panel/providers/?tab=cpa` → **Test** → **Sync now**. The REST adapter
-is already built and unit-tested; if AdGem gives you Prism (GraphQL)
-credentials instead, say so and a Prism client will be added the same way
-(both are supported paths in our adapter design).
+Then set `incentive_allowed: true` in the provider config in
+`/admin-panel/providers/?tab=cpa` so imported offerwall offers can pay.
 
-## 4. Compliance notes
+## 5. Compliance notes
 
 - Incentivized traffic requires **prior written consent** (T&C §11.3). The
   adapter imports offers with `incentive_allowed = false` until you set

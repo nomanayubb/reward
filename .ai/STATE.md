@@ -138,6 +138,12 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   `/sitemap.xml` (landing + published CMS pages) and per-path metadata from
   `SEOConfig` (title, description, robots, canonical, OG tags) via a cached
   context processor. 5 tests (199 total).
+- AdGem integration paths live: (1) **Web Offerwall** page at
+  `/offers/offerwall/adgem/` using a stable `u<uuid>` player id (needs only
+  `ADGEM_APP_ID`); (2) offerwall postbacks resolve users by player id and
+  auto-provision offers, with compliance gating; (3) **Reporting API** client +
+  `manage.py reconcile_provider <code> --days N` (verified live with the
+  dashboard token). 20 tests (223 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,

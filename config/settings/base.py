@@ -324,9 +324,12 @@ NOWPAYMENTS_SANDBOX = env.bool("NOWPAYMENTS_SANDBOX", default=True)
 # CPA networks
 # --------------------------------------------------------------------------
 ADGEM_REFRESH_TOKEN = env("ADGEM_REFRESH_TOKEN", default="")
-ADGEM_API_KEY = env("ADGEM_API_KEY", default="")  # alias for the refresh token
+ADGEM_API_KEY = env("ADGEM_API_KEY", default="")  # dashboard reporting/API token
 ADGEM_POSTBACK_KEY = env("ADGEM_POSTBACK_KEY", default="")
 ADGEM_API_BASE = env("ADGEM_API_BASE", default="https://offer-api.adgem.com")
+ADGEM_APP_ID = env("ADGEM_APP_ID", default="")
+ADGEM_REPORT_TOKEN = env("ADGEM_REPORT_TOKEN", default="")
+ADGEM_REPORT_BASE = env("ADGEM_REPORT_BASE", default="https://dashboard.adgem.com")
 
 # --------------------------------------------------------------------------
 # Logging
