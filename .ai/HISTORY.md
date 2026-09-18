@@ -103,6 +103,12 @@
   rate). Payouts intentionally raise `NotImplementedError` until payout API
   verification. Setup + sandbox checklist in `docs/integrations/NOWPAYMENTS.md`.
   8 tests (92 total). Live verification pending credentials.
+- Added the server-rendered frontend: base layout + navigation, auth pages
+  (login/register/logout with Django forms), dashboard (balances, recent
+  rewards), wallet, transaction history, games/offers/surveys catalogs,
+  withdraw page (payout methods + request form), deposit page (payment
+  instructions) and alerts. Fixed a class-shadowing bug where the page login
+  view inherited from the DRF login view. 19 new tests (111 total).
 
 ### Tests
 

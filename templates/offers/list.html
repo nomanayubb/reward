@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Offers{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Offers</h1>
+    <p class="muted">Only offers you are eligible for are shown. Conditions are always visible.</p>
+    {% if offers %}
+      <table>
+        <thead><tr><th>Offer</th><th>Reward</th><th>Limits</th><th>Requirements</th></tr></thead>
+        <tbody>
+          {% for offer in offers %}
+            <tr>
+              <td>
+                <strong>{{ offer.title }}</strong><br />
+                <span class="muted">{{ offer.provider.name }}{% if offer.category %} · {{ offer.category.name }}{% endif %}</span>
+              </td>
+              <td>
+                {{ offer.user_reward }} {{ offer.currency }}
+                {% if offer.points_reward %}<br /><span class="muted">{{ offer.points_reward }} pts</span>{% endif %}
+              </td>
+              <td class="muted">
+                {{ offer.daily_user_limit }}/day · {{ offer.lifetime_user_limit }} lifetime
+              </td>
+              <td class="muted">
+                {% if offer.countries %}Countries: {{ offer.countries|join:", " }}{% else %}All countries{% endif %}
+                {% if offer.devices %}<br />Devices: {{ offer.devices|join:", " }}{% endif %}
+                {% if offer.min_age %}<br />Age {{ offer.min_age }}+{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No offers available right now. Check back soon.</p>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -32,7 +32,10 @@ def user(django_user_model):
 # --------------------------------------------------------------------------
 def test_reward_percentage_rule(user):
     rule = RewardRule.objects.create(
-        name="40% offer share", source=RewardRule.Source.OFFER, user_percentage=Decimal("40")
+        name="40% offer share",
+        source=RewardRule.Source.OFFER,
+        user_percentage=Decimal("40"),
+        reward_currency="USD",
     )
     reward, created = RewardService.award(
         user=user,
@@ -45,11 +48,12 @@ def test_reward_percentage_rule(user):
     assert created is True
     assert reward.user_reward == Decimal("0.80")
     assert reward.platform_share == Decimal("1.20")
+    assert reward.currency == "USD"
 
     reward.refresh_from_db()
     assert reward.status == Reward.Status.APPROVED
-    assert get_account(user, WalletAccount.Type.CASH).balance == Decimal("0.80")
-    assert get_account(user, WalletAccount.Type.PENDING).balance == Decimal("0")
+    assert get_account(user, WalletAccount.Type.CASH, "USD").balance == Decimal("0.80")
+    assert get_account(user, WalletAccount.Type.PENDING, "USD").balance == Decimal("0")
 
 
 def test_reward_fixed_points_rule(user):
@@ -72,7 +76,7 @@ def test_reward_fixed_points_rule(user):
 # --------------------------------------------------------------------------
 def test_reward_idempotent_for_same_reference(user):
     rule = RewardRule.objects.create(
-        name="50%", source=RewardRule.Source.OFFER, user_percentage=Decimal("50")
+        name="50%", source=RewardRule.Source.OFFER, user_percentage=Decimal("50"), reward_currency="USD"
     )
     first, created_first = RewardService.award(
         user=user,
@@ -92,7 +96,7 @@ def test_reward_idempotent_for_same_reference(user):
     assert created_first is True
     assert created_second is False
     assert first.pk == second.pk
-    assert get_account(user, WalletAccount.Type.CASH).balance == Decimal("1.00")
+    assert get_account(user, WalletAccount.Type.CASH, "USD").balance == Decimal("1.00")
     assert Reward.objects.filter(user=user).count() == 1
 
 
@@ -113,8 +117,8 @@ def test_ledger_rejects_unbalanced_transaction(user):
 
 def test_ledger_idempotency_key_returns_existing(user):
     entries = [
-        (system_account(WalletAccount.Type.CASH), Decimal("-3.00")),
-        (get_account(user, WalletAccount.Type.CASH), Decimal("3.00")),
+        (system_account(WalletAccount.Type.CASH, "USD"), Decimal("-3.00")),
+        (get_account(user, WalletAccount.Type.CASH, "USD"), Decimal("3.00")),
     ]
     txn1, created1 = post_transaction(
         type=LedgerTransaction.Type.ADJUSTMENT, entries=entries, idempotency_key="same-key"
@@ -126,24 +130,24 @@ def test_ledger_idempotency_key_returns_existing(user):
     assert created1 is True
     assert created2 is False
     assert txn1.pk == txn2.pk
-    assert get_account(user, WalletAccount.Type.CASH).balance == Decimal("3.00")
+    assert get_account(user, WalletAccount.Type.CASH, "USD").balance == Decimal("3.00")
 
 
 def test_reversal_creates_compensating_entries(user):
     txn, _ = post_transaction(
         type=LedgerTransaction.Type.ADJUSTMENT,
         entries=[
-            (system_account(WalletAccount.Type.CASH), Decimal("-7.00")),
-            (get_account(user, WalletAccount.Type.CASH), Decimal("7.00")),
+            (system_account(WalletAccount.Type.CASH, "USD"), Decimal("-7.00")),
+            (get_account(user, WalletAccount.Type.CASH, "USD"), Decimal("7.00")),
         ],
         idempotency_key="to-reverse",
     )
-    assert get_account(user, WalletAccount.Type.CASH).balance == Decimal("7.00")
+    assert get_account(user, WalletAccount.Type.CASH, "USD").balance == Decimal("7.00")
 
     reversal, created = reverse_transaction(txn, reason="test")
     assert created is True
     assert reversal.type == LedgerTransaction.Type.REVERSAL
-    assert get_account(user, WalletAccount.Type.CASH).balance == Decimal("0")
+    assert get_account(user, WalletAccount.Type.CASH, "USD").balance == Decimal("0")
     txn.refresh_from_db()
     assert txn.status == LedgerTransaction.Status.REVERSED
 
@@ -152,8 +156,8 @@ def test_ledger_entries_are_immutable(user):
     txn, _ = post_transaction(
         type=LedgerTransaction.Type.ADJUSTMENT,
         entries=[
-            (system_account(WalletAccount.Type.CASH), Decimal("-1.00")),
-            (get_account(user, WalletAccount.Type.CASH), Decimal("1.00")),
+            (system_account(WalletAccount.Type.CASH, "USD"), Decimal("-1.00")),
+            (get_account(user, WalletAccount.Type.CASH, "USD"), Decimal("1.00")),
         ],
         idempotency_key="immutable-test",
     )
@@ -168,20 +172,20 @@ def test_ledger_entries_are_immutable(user):
 # --------------------------------------------------------------------------
 def test_withdrawal_reserves_funds_and_blocks_double_spend(user):
     RewardService.award_fixed(
-        user=user, source=Reward.Source.PROMOTION, cash=Decimal("10.00"), source_reference="topup"
+        user=user, source=Reward.Source.PROMOTION, cash=Decimal("1000.00"), source_reference="topup"
     )
     method = WithdrawalMethod.objects.create(user=user, type=WithdrawalMethod.Type.EASYPAISA)
 
-    first = request_withdrawal(user=user, method=method, amount=Decimal("8.00"))
+    first = request_withdrawal(user=user, method=method, amount=Decimal("800.00"))
     assert first.status == Withdrawal.Status.REQUESTED
-    assert get_account(user, WalletAccount.Type.CASH).balance == Decimal("2.00")
-    assert get_account(user, WalletAccount.Type.LOCKED).balance == Decimal("8.00")
+    assert get_account(user, WalletAccount.Type.CASH).balance == Decimal("200.00")
+    assert get_account(user, WalletAccount.Type.LOCKED).balance == Decimal("800.00")
 
     with pytest.raises(WithdrawalError):
-        request_withdrawal(user=user, method=method, amount=Decimal("5.00"))
+        request_withdrawal(user=user, method=method, amount=Decimal("500.00"))
 
     reject_withdrawal(first, reason="test rejection")
-    assert get_account(user, WalletAccount.Type.CASH).balance == Decimal("10.00")
+    assert get_account(user, WalletAccount.Type.CASH).balance == Decimal("1000.00")
     assert get_account(user, WalletAccount.Type.LOCKED).balance == Decimal("0")
 
 

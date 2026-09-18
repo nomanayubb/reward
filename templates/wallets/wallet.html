@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Wallet{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Wallet</h1>
+    {% for currency, buckets in balances.items %}
+      <h2>{{ currency }}</h2>
+      <div class="grid">
+        <div><div class="muted">Cash</div><div class="stat">{{ buckets.cash|default:"0" }}</div></div>
+        <div><div class="muted">Pending</div><div class="stat">{{ buckets.pending|default:"0" }}</div></div>
+        <div><div class="muted">Locked</div><div class="stat">{{ buckets.locked|default:"0" }}</div></div>
+        <div><div class="muted">Bonus</div><div class="stat">{{ buckets.bonus|default:"0" }}</div></div>
+      </div>
+    {% endfor %}
+    <p class="muted" style="margin-top:1rem;">Points: {{ points }} · Primary currency: {{ wallet.currency }}</p>
+    <div class="row">
+      <a class="pill" href="{% url 'deposit-page' %}">Deposit</a>
+      <a class="pill" href="{% url 'withdraw-page' %}">Withdraw</a>
+      <a class="pill" href="{% url 'transaction-page' %}">Transaction history</a>
+    </div>
+  </div>
+{% endblock %}

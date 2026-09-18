@@ -1,10 +1,12 @@
-"""Wallet API views.
+"""Wallet API views and the wallet page.
 
 Read-only balance information for the authenticated user. All balance
-arithmetic stays in the ledger/service layer — this view only serializes.
+arithmetic stays in the ledger/service layer — views only serialize/render.
 """
 from decimal import Decimal
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -68,3 +70,33 @@ class WalletSummaryView(APIView):
             "accounts": [a for a in accounts if a.currency in SUPPORTED_CURRENCIES],
         }
         return Response(WalletSummarySerializer(data).data)
+
+
+class WalletPageView(LoginRequiredMixin, TemplateView):
+    """Server-rendered wallet page with per-currency balances."""
+
+    template_name = "wallets/wallet.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        wallet = get_wallet(self.request.user)
+        accounts = list(wallet.accounts.all())
+
+        by_currency: dict[str, dict[str, Decimal]] = {}
+        for account in accounts:
+            if account.currency not in SUPPORTED_CURRENCIES:
+                continue
+            by_currency.setdefault(account.currency, {})[account.type] = account.balance
+
+        context["wallet"] = wallet
+        context["balances"] = by_currency
+        context["points"] = next(
+            (
+                account.balance
+                for account in accounts
+                if account.type == WalletAccount.Type.POINTS
+                and account.currency == POINTS_CURRENCY
+            ),
+            ZERO,
+        )
+        return context

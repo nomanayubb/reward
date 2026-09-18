@@ -53,6 +53,10 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - NOWPayments adapter implemented (`create_payment`, `check_payment`,
   HMAC-SHA512 IPN verification, status mapping); PKR deposits convert to USD
   with the stored rate. 8 tests (92 total). Live verification pending creds.
+- Frontend live (server-rendered): base layout + nav, login/register/logout,
+  dashboard, wallet, transactions, games/offers/surveys catalogs, withdraw
+  (with payout methods), deposit (with instructions), alerts. 19 new tests
+  (111 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
@@ -71,13 +75,12 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Next
 
-1. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
-2. Frontend templates (home, earn, wallet, withdraw, dashboard)
-3. Custom admin UI (dashboard, withdrawal queue, config center)
+1. Real provider adapters (CPA, survey, EasyPaisa) — needs network choices
+2. Custom admin UI (dashboard, withdrawal queue, config center)
+3. Ads serving (models only today)
 
 ## Known Problems
 
-- All frontend pages missing except the game player (`/play/<slug>/`)
 - Custom admin UI not built (Django admin works; dashboard/queue/config UI do not)
 - NOWPayments adapter is implemented and unit-tested but **not verified against
   the live/sandbox API** — credentials required (see docs/integrations/NOWPAYMENTS.md)

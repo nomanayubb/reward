@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Transactions{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Transactions</h1>
+    {% if entries %}
+      <table>
+        <thead><tr><th>Date</th><th>Type</th><th>Account</th><th>Amount</th><th>Status</th><th>Reference</th></tr></thead>
+        <tbody>
+          {% for entry in entries %}
+            <tr>
+              <td>{{ entry.created_at|date:"Y-m-d H:i" }}</td>
+              <td>{{ entry.transaction.get_type_display }}</td>
+              <td>{{ entry.account.get_type_display }} ({{ entry.account.currency }})</td>
+              <td>{{ entry.amount }}</td>
+              <td><span class="pill {% if entry.transaction.status == 'posted' %}ok{% endif %}">{{ entry.transaction.get_status_display }}</span></td>
+              <td class="muted">{{ entry.transaction.reference|default:"—" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if is_paginated %}
+        <p class="muted">
+          {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">← Newer</a>{% endif %}
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Older →</a>{% endif %}
+        </p>
+      {% endif %}
+    {% else %}
+      <p class="muted">No transactions yet.</p>
+    {% endif %}
+  </div>
+{% endblock %}

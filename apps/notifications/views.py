@@ -1,4 +1,6 @@
-"""Notification API views: list, mark read, unread count."""
+"""Notification API views and the notifications page."""
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -47,3 +49,14 @@ class NotificationUnreadCountView(APIView):
     def get(self, request):
         count = Notification.objects.filter(user=request.user, is_read=False).count()
         return Response({"unread": count})
+
+
+class NotificationPageView(LoginRequiredMixin, ListView):
+    """Server-rendered notification list."""
+
+    template_name = "notifications/list.html"
+    context_object_name = "notifications"
+    paginate_by = 25
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user).order_by("-created_at")

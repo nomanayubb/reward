@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Alerts{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Alerts</h1>
+    {% if notifications %}
+      <ul style="list-style:none;padding:0;">
+        {% for notification in notifications %}
+          <li style="border-bottom:1px solid var(--line);padding:.6rem 0;">
+            <strong>{{ notification.title }}</strong>
+            {% if not notification.is_read %}<span class="pill">new</span>{% endif %}
+            <div class="muted">{{ notification.body }}</div>
+            <div class="muted" style="font-size:.8rem;">{{ notification.created_at|date:"Y-m-d H:i" }} · {{ notification.get_kind_display }}</div>
+          </li>
+        {% endfor %}
+      </ul>
+      {% if is_paginated %}
+        <p class="muted">
+          {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">← Newer</a>{% endif %}
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Older →</a>{% endif %}
+        </p>
+      {% endif %}
+    {% else %}
+      <p class="muted">No alerts yet.</p>
+    {% endif %}
+  </div>
+{% endblock %}

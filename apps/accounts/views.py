@@ -1,14 +1,19 @@
-"""Auth API views for the accounts module.
+"""Auth API views and page views for the accounts module.
 
-Thin views: validate input, call the service layer, serialize the result.
+Thin views: validate input, call the service layer, serialize/render the result.
 """
 from django.contrib.auth import login, logout
+from django.contrib.auth.views import LoginView as DjangoLoginView
+from django.contrib.auth.views import LogoutView as DjangoLogoutView
+from django.urls import reverse_lazy
+from django.views.generic import FormView
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
+from .forms import EmailAuthenticationForm, RegisterForm
 from .serializers import LoginSerializer, RegisterSerializer, UserSerializer
 
 
@@ -51,3 +56,27 @@ class MeView(APIView):
 
     def get(self, request):
         return Response(UserSerializer(request.user).data)
+
+
+# --------------------------------------------------------------------------
+# Page views (server-rendered)
+# --------------------------------------------------------------------------
+class LoginPageView(DjangoLoginView):
+    template_name = "accounts/login.html"
+    authentication_form = EmailAuthenticationForm
+    redirect_authenticated_user = True
+
+
+class LogoutPageView(DjangoLogoutView):
+    next_page = reverse_lazy("login-page")
+
+
+class RegisterPageView(FormView):
+    template_name = "accounts/register.html"
+    form_class = RegisterForm
+    success_url = reverse_lazy("dashboard")
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return super().form_valid(form)

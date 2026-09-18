@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Deposit{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Deposit</h1>
+    {% if created_deposit %}
+      <div class="card" style="background:#121a26;">
+        <h2 style="margin-top:0;">Payment instructions</h2>
+        <p>Send exactly <strong>{{ created_deposit.amount }} {{ created_deposit.currency }}</strong> using the details below.</p>
+        <ul>
+          {% for key, value in created_deposit.payment_instructions.items %}
+            {% if value %}<li><span class="muted">{{ key }}:</span> <code>{{ value }}</code></li>{% endif %}
+          {% endfor %}
+        </ul>
+        <p class="muted">Status: {{ created_deposit.get_status_display }}
+          {% if created_deposit.expires_at %}· expires {{ created_deposit.expires_at|date:"Y-m-d H:i" }}{% endif %}
+        </p>
+      </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% for field in form %}
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {{ field.errors }}
+      {% endfor %}
+      <p><button class="primary" type="submit">Create payment</button></p>
+    </form>
+    {% if not form.fields.provider.queryset %}
+      <p class="muted">No deposit providers are enabled yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Recent deposits</h2>
+    {% if deposits %}
+      <table>
+        <thead><tr><th>Date</th><th>Amount</th><th>Provider</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for deposit in deposits %}
+            <tr>
+              <td>{{ deposit.created_at|date:"Y-m-d H:i" }}</td>
+              <td>{{ deposit.amount }} {{ deposit.currency }}</td>
+              <td>{{ deposit.provider.name }}</td>
+              <td><span class="pill {% if deposit.status == 'confirmed' %}ok{% elif deposit.status == 'failed' %}bad{% endif %}">{{ deposit.get_status_display }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No deposits yet.</p>
+    {% endif %}
+  </div>
+{% endblock %}

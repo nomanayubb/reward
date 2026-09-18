@@ -27,7 +27,7 @@
 - [x] Withdrawal request/list endpoints (+ payout methods)
 - [x] Deposit create/list endpoints (+ manual provider adapter)
 - [x] Notifications endpoints (list, read, read-all, unread count)
-- [ ] Frontend templates (home, earn, wallet, withdraw, dashboard)
+- [x] Frontend templates (home, earn, wallet, withdraw, dashboard, alerts, auth)
 
 ## P1 — Games
 

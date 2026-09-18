@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Games{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Games</h1>
+    <p class="muted">Play, earn rewards, and check your wallet after each round.</p>
+    <div class="grid">
+      {% for game in games %}
+        <div class="card" style="margin:0;">
+          <h2 style="margin:.2rem 0;">{{ game.title }}</h2>
+          {% if game.category %}<span class="pill">{{ game.category.name }}</span>{% endif %}
+          <p class="muted">{{ game.description|default:"Play and earn." }}</p>
+          <a class="pill ok" href="{% url 'game-player' game.slug %}">Play</a>
+        </div>
+      {% empty %}
+        <p class="muted">No games available yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

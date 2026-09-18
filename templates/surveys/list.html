@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Surveys{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Surveys</h1>
+    <p class="muted">Complete a survey and earn after the provider confirms it.</p>
+    {% if surveys %}
+      <table>
+        <thead><tr><th>Survey</th><th>Reward</th><th>Time</th><th>Eligibility</th></tr></thead>
+        <tbody>
+          {% for survey in surveys %}
+            <tr>
+              <td><strong>{{ survey.title }}</strong><br /><span class="muted">{{ survey.provider.name }}</span></td>
+              <td>{{ survey.user_reward }} {{ survey.currency }}</td>
+              <td class="muted">{% if survey.estimated_minutes %}~{{ survey.estimated_minutes }} min{% else %}—{% endif %}</td>
+              <td class="muted">
+                {% if survey.country %}{{ survey.country }}{% else %}All countries{% endif %}
+                {% if survey.device %} · {{ survey.device }}{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No surveys available right now.</p>
+    {% endif %}
+  </div>
+{% endblock %}

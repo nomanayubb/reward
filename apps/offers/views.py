@@ -1,10 +1,11 @@
-"""Offer API views.
+"""Offer API views and the offers page.
 
-The list endpoint returns only offers the requesting user is actually
-eligible for, using the shared eligibility engine (DRD §18). Eligibility is
-evaluated after the cheap queryset filters; the serializer never exposes
-tracking URLs or internal flags.
+The list endpoints return only offers the requesting user is actually
+eligible for, using the shared eligibility engine (DRD §18). Serializers never
+expose tracking URLs or internal flags.
 """
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -41,3 +42,26 @@ class OfferListView(ListAPIView):
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
+
+
+class OfferListPageView(LoginRequiredMixin, TemplateView):
+    """Server-rendered eligible-offer catalog."""
+
+    template_name = "offers/list.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        country = getattr(user, "country", "") or ""
+
+        candidates = (
+            Offer.objects.filter(status=Offer.Status.ACTIVE, incentive_allowed=True)
+            .select_related("provider", "category", "quota")
+            .order_by("-rank_score", "-payout")[:100]
+        )
+        context["offers"] = [
+            offer
+            for offer in candidates
+            if evaluate_offer(user, offer, context={"country": country}).is_eligible
+        ]
+        return context

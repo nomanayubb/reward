@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Withdraw{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Withdraw</h1>
+    {% if methods %}
+      <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {{ field.errors }}
+        {% endfor %}
+        <p><button class="primary" type="submit">Request withdrawal</button></p>
+      </form>
+    {% else %}
+      <p class="muted">Add a payout method below to request a withdrawal.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Payout methods</h2>
+    {% if methods %}
+      <ul>
+        {% for method in methods %}
+          <li>{{ method.get_type_display }}{% if method.label %} — {{ method.label }}{% endif %}
+            <span class="muted">({{ method.details.account_number|default:"—" }})</span></li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add_method" />
+      {% for field in method_form %}
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {{ field.errors }}
+      {% endfor %}
+      <p><button type="submit">Add method</button></p>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Recent withdrawals</h2>
+    {% if withdrawals %}
+      <table>
+        <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th><th>Reference</th></tr></thead>
+        <tbody>
+          {% for withdrawal in withdrawals %}
+            <tr>
+              <td>{{ withdrawal.requested_at|date:"Y-m-d H:i" }}</td>
+              <td>{{ withdrawal.amount }} {{ withdrawal.currency }}</td>
+              <td>{{ withdrawal.method.get_type_display }}</td>
+              <td>
+                <span class="pill {% if withdrawal.status == 'paid' %}ok{% elif withdrawal.status == 'rejected' %}bad{% endif %}">
+                  {{ withdrawal.get_status_display }}
+                </span>
+              </td>
+              <td class="muted">{{ withdrawal.payment_reference|default:"—" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No withdrawals yet.</p>
+    {% endif %}
+  </div>
+{% endblock %}

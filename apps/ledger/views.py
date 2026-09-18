@@ -1,4 +1,6 @@
-"""Ledger API views: the authenticated user's transaction history."""
+"""Ledger API views and the transaction history page."""
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
@@ -29,3 +31,18 @@ class LedgerTransactionListView(ListAPIView):
         if status:
             queryset = queryset.filter(transaction__status=status)
         return queryset
+
+
+class TransactionPageView(LoginRequiredMixin, ListView):
+    """Server-rendered transaction history."""
+
+    template_name = "ledger/transactions.html"
+    context_object_name = "entries"
+    paginate_by = 25
+
+    def get_queryset(self):
+        return (
+            LedgerEntry.objects.filter(account__wallet__user=self.request.user)
+            .select_related("transaction", "account")
+            .order_by("-created_at")
+        )

@@ -21,6 +21,18 @@ urlpatterns = [
         name="swagger-ui",
     ),
     path("api/v1/", include("apps.api_urls")),
+    # Server-rendered pages
+    path("", include("apps.users.web_urls")),
+    path("accounts/", include("apps.accounts.web_urls")),
+    path("wallet/", include("apps.wallets.web_urls")),
+    path("transactions/", include("apps.ledger.web_urls")),
+    path("games/", include("apps.games.web_urls")),
+    path("offers/", include("apps.offers.web_urls")),
+    path("surveys/", include("apps.surveys.web_urls")),
+    path("withdraw/", include("apps.withdrawals.web_urls")),
+    path("deposit/", include("apps.deposits.web_urls")),
+    path("alerts/", include("apps.notifications.web_urls")),
+    # Game hosting
     path("play/<slug:slug>/", GamePlayerView.as_view(), name="game-player"),
     path("games/<slug:slug>/<path:asset>", GameAssetView.as_view(), name="game-asset"),
 ]

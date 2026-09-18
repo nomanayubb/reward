@@ -265,6 +265,20 @@ payout-API verification). Setup + sandbox checklist in
 
 Commit: `feat(payments): add NOWPayments adapter with IPN verification`.
 
+## 20. Frontend (server-rendered pages)
+
+**User:** "next".
+
+**Agent:** Built the frontend: base layout + navigation, auth pages (login,
+register, logout via Django forms), dashboard (balances, recent rewards,
+quick links), wallet page (per-currency buckets), transaction history,
+games/offers/surveys catalogs (offers eligibility-filtered), withdraw page
+(payout methods + request form), deposit page (payment instructions) and
+alerts. Fixed a name-shadowing bug where the page login view inherited from
+the DRF login view (page POSTs returned JSON 400s). 19 tests (111 total).
+
+Commit: `feat(web): add server-rendered pages for earning, wallet and payments`.
+
 ---
 
 ## Decisions made this session
