@@ -22,6 +22,7 @@ urlpatterns = [
     ),
     path("api/v1/", include("apps.api_urls")),
     # Server-rendered pages
+    path("", include("apps.cms.web_urls")),
     path("", include("apps.users.web_urls")),
     path("accounts/", include("apps.accounts.web_urls")),
     path("wallet/", include("apps.wallets.web_urls")),

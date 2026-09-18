@@ -35,7 +35,7 @@ def test_compiled_catalogue_is_usable():
 def test_default_language_is_ltr_english(client, user):
     client.force_login(user)
 
-    response = client.get("/")
+    response = client.get("/dashboard/")
 
     assert response.status_code == 200
     assert b'lang="en"' in response.content
@@ -46,10 +46,10 @@ def test_default_language_is_ltr_english(client, user):
 def test_switch_to_urdu_renders_rtl_and_translations(client, user):
     client.force_login(user)
 
-    response = client.post("/i18n/setlang/", {"language": "ur", "next": "/"})
+    response = client.post("/i18n/setlang/", {"language": "ur", "next": "/dashboard/"})
     assert response.status_code == 302
 
-    content = client.get("/").content.decode("utf-8")
+    content = client.get("/dashboard/").content.decode("utf-8")
     assert 'dir="rtl"' in content
     assert "گیمز" in content
     assert "والٹ" in content

@@ -477,6 +477,20 @@ the admin. 6 tests (188 total).
 
 Commit: `feat(adminpanel): add network catalog and provider scaffolding command`.
 
+## 35. Public pages (provider review readiness)
+
+**User:** reported that AdGem asks for a website URL and no domain is bought
+yet.
+
+**Agent:** Built the public pages reviewers look for: a landing page at `/`
+(how it works, ways to earn, clear-rules section; authenticated users redirect
+to `/dashboard/`), CMS-driven pages at `/p/<slug>/` (about, terms, privacy,
+contact, FAQ) with footer links everywhere, and `manage.py seed_cms_pages`
+(starter content with bracketed placeholders flagged for replacement).
+Existing tests updated for the new `/dashboard/` route. 6 tests (194 total).
+
+Commit: `feat(cms): add public landing and policy pages`.
+
 ---
 
 ## Decisions made this session

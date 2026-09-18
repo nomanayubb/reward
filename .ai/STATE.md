@@ -117,6 +117,10 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   `manage.py scaffold_provider <kind> <code>` which generates a full adapter
   stub (CPA / survey / payment) with TODOs and prints the adapter path.
   6 tests (188 total).
+- Public pages live: landing page at `/` (redirects logged-in users to
+  `/dashboard/`) and CMS-driven pages at `/p/<slug>/` (about, terms, privacy,
+  contact, FAQ) seeded by `manage.py seed_cms_pages`; footer links on every
+  page. These are the pages payment/CPA reviewers check. 6 tests (194 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,

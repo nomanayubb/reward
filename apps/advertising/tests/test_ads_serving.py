@@ -116,7 +116,7 @@ def test_dashboard_renders_ad(client, provider, placement, user):
     _campaign(provider, placement)
 
     client.force_login(user)
-    response = client.get("/")
+    response = client.get("/dashboard/")
 
     assert response.status_code == 200
     assert b"Sponsored" in response.content

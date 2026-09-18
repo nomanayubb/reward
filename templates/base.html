@@ -86,5 +86,12 @@
     {% endif %}
     {% block content %}{% endblock %}
   </main>
+
+  <footer style="max-width:960px;margin:0 auto;padding:0 1rem 2rem;color:var(--muted);font-size:.85rem;display:flex;gap:1rem;flex-wrap:wrap;">
+    <a href="{% url 'cms-page' 'about' %}">{% trans "About" %}</a>
+    <a href="{% url 'cms-page' 'terms' %}">{% trans "Terms" %}</a>
+    <a href="{% url 'cms-page' 'privacy' %}">{% trans "Privacy" %}</a>
+    <a href="{% url 'cms-page' 'contact' %}">{% trans "Contact" %}</a>
+  </footer>
 </body>
 </html>

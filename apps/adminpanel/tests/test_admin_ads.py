@@ -88,7 +88,7 @@ def test_created_campaign_is_served(client, staff, player, provider, placement):
     campaign.placements.add(placement)
 
     client.force_login(player)
-    content = client.get("/").content.decode("utf-8")
+    content = client.get("/dashboard/").content.decode("utf-8")
 
     assert "House banner" in content
     assert "Sponsored" in content
@@ -122,7 +122,7 @@ def test_network_snippet_renders_verbatim(client, staff, player, provider, place
     campaign.placements.add(placement)
 
     client.force_login(player)
-    content = client.get("/").content.decode("utf-8")
+    content = client.get("/dashboard/").content.decode("utf-8")
 
     assert 'id="network-slot-tag"' in content
     assert "NETWORK_AD" in content

@@ -21,7 +21,7 @@ pytestmark = pytest.mark.django_db
 STRONG_PASSWORD = "StrongPass123!"
 
 PROTECTED_URLS = [
-    "/",
+    "/dashboard/",
     "/wallet/",
     "/transactions/",
     "/games/",
@@ -67,7 +67,7 @@ def test_register_page_creates_and_logs_in(client):
     assert response.status_code == 302
     user = get_user_model().objects.get(email="new-web@example.com")
     assert user.wallet.accounts.exists()
-    assert client.get("/").status_code == 200
+    assert client.get("/dashboard/").status_code == 200
 
 
 def test_login_page(client, user):
@@ -76,7 +76,7 @@ def test_login_page(client, user):
     )
 
     assert response.status_code == 302
-    assert client.get("/").status_code == 200
+    assert client.get("/dashboard/").status_code == 200
 
 
 def test_dashboard_shows_balance(client, user):
@@ -85,7 +85,7 @@ def test_dashboard_shows_balance(client, user):
     )
     client.force_login(user)
 
-    response = client.get("/")
+    response = client.get("/dashboard/")
 
     assert response.status_code == 200
     assert b"500" in response.content

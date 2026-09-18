@@ -181,6 +181,12 @@
   `manage.py scaffold_provider` command that generates a complete adapter stub
   (CPA/survey/payment) with TODOs, refuses to overwrite, and prints the
   adapter path for the admin. 6 tests (188 total).
+- Added public pages for provider review: a landing page at `/` (how it works,
+  ways to earn, clear-rules section; logged-in users redirect to
+  `/dashboard/`), CMS-driven pages at `/p/<slug>/` for about, terms, privacy,
+  contact and FAQ, footer links on every page, and `manage.py seed_cms_pages`
+  with starter content (placeholders flagged for replacement). 6 tests
+  (194 total).
 
 ### Tests
 

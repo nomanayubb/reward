@@ -98,7 +98,7 @@
 ## P7 — SEO / CMS
 
 - [x] Models (pages, versions, blog, SEO config)
-- [ ] Public pages + sitemaps
+- [x] Public pages (landing + CMS terms/privacy/about/contact/FAQ) for provider review
 - [ ] Blog rendering
 - [ ] Structured data + performance budget
 - [x] Urdu/i18n + RTL (language switcher, translated nav, pure-Python .mo compiler)

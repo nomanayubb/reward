@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Earn rewards for games, offers and surveys{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Earn real rewards</h1>
+    <p class="muted">
+      Play HTML5 games, complete surveys and finish verified offers. Every
+      reward is recorded in your wallet with its own transaction history.
+      Payouts via EasyPaisa / JazzCash / bank transfer, and crypto where supported.
+    </p>
+    <p class="row">
+      <a class="pill ok" href="{% url 'register-page' %}">Create free account</a>
+      <a class="pill" href="{% url 'login-page' %}">Log in</a>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">How it works</h2>
+    <ol class="muted">
+      <li>Create an account (email only).</li>
+      <li>Play games, complete surveys or finish offers you are eligible for.</li>
+      <li>Rewards appear as <strong>pending</strong>, then become available in your wallet after verification.</li>
+      <li>Request a withdrawal and track it until it is paid.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Ways to earn</h2>
+    <div class="grid">
+      <div><div class="stat">Games</div><div class="muted">Play HTML5 games with server-verified scores.</div></div>
+      <div><div class="stat">Surveys</div><div class="muted">Answer surveys from research providers.</div></div>
+      <div><div class="stat">Offers</div><div class="muted">Complete eligible app installs and tasks.</div></div>
+      <div><div class="stat">Bonuses</div><div class="muted">Referral and activity bonuses where enabled.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Clear rules, no surprises</h2>
+    <ul class="muted">
+      <li>Each offer shows its full requirements before you start (country, device, limits).</li>
+      <li>Only campaigns that allow incentivized traffic are shown here.</li>
+      <li>Rewards can be reversed if a provider rejects a conversion — you will see this in your history.</li>
+      <li>Withdrawals may require identity verification above a threshold.</li>
+    </ul>
+    <p class="muted">
+      Read our
+      <a href="{% url 'cms-page' 'terms' %}">Terms</a>,
+      <a href="{% url 'cms-page' 'privacy' %}">Privacy Policy</a> and
+      <a href="{% url 'cms-page' 'contact' %}">Contact</a> pages.
+    </p>
+  </div>
+{% endblock %}
