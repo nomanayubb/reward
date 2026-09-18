@@ -98,6 +98,11 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - Network ad snippets supported: staff-authored HTML tags (AdSense/Adsterra/
   Monetag) render verbatim in placements, audit-logged; network tags handle
   their own clicks. 1 test (169 total).
+- Multi-network console live (`/admin-panel/providers/?tab=...`): tabs for
+  CPA / surveys / payments / ads plus an overview with emergency switches;
+  per-network inventory counts, health, enable/disable, connection **Test**,
+  manual syncs, and an "Add network" form (JSON config validated). Onboarding
+  checklist in `docs/integrations/CPA_ONBOARDING.md`. 8 tests (176 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,

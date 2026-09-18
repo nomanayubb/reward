@@ -28,7 +28,7 @@ from apps.withdrawals.services import (
 )
 
 from .audit import log_action
-from .forms import AdCampaignForm, AdjustBalanceForm, RestrictionForm
+from .forms import AdCampaignForm, AdjustBalanceForm, NetworkForm, RestrictionForm
 from .models import ConfigurationVersion, FeatureFlag, PlatformSetting
 from .settings import get_setting, set_setting
 
@@ -375,6 +375,8 @@ def _provider_model(kind: str):
 
 
 class AdminProvidersView(StaffRequiredMixin, TemplateView):
+    """Multi-network console: tabs per network type + emergency switches."""
+
     template_name = "adminpanel/providers.html"
 
     def get_context_data(self, **kwargs):
@@ -384,18 +386,45 @@ class AdminProvidersView(StaffRequiredMixin, TemplateView):
         from apps.surveys.models import SurveyProvider
 
         context = super().get_context_data(**kwargs)
-        context["cpa_providers"] = CPAProvider.objects.order_by("priority", "name")
-        context["survey_providers"] = SurveyProvider.objects.order_by("priority", "name")
-        context["payment_providers"] = PaymentProvider.objects.order_by("name")
-        context["ad_providers"] = AdProvider.objects.order_by("name")
+        tab = self.request.GET.get("tab", "overview")
+        valid_tabs = [key for key, _ in NETWORK_TABS]
+        context["tab"] = tab if tab in valid_tabs else "overview"
+        context["tabs"] = NETWORK_TABS
+
+        context["cpa_providers"] = CPAProvider.objects.annotate(
+            offers_count=Count("offers")
+        ).order_by("priority", "name")
+        context["survey_providers"] = SurveyProvider.objects.annotate(
+            surveys_count=Count("surveys")
+        ).order_by("priority", "name")
+        context["payment_providers"] = PaymentProvider.objects.annotate(
+            transactions_count=Count("transactions")
+        ).order_by("name")
+        context["ad_providers"] = AdProvider.objects.annotate(
+            campaigns_count=Count("campaigns")
+        ).order_by("name")
+
         context["switches"] = [
             {"key": key, "enabled": get_setting(key, True)} for key in EMERGENCY_SWITCHES
         ]
+        tab_kind = {"cpa": "cpa", "surveys": "survey", "payments": "payment", "ads": "ad"}.get(
+            context["tab"], "cpa"
+        )
+        context.setdefault("network_form", NetworkForm(initial={"kind": tab_kind}))
         return context
 
 
+NETWORK_TABS = [
+    ("overview", "Overview & switches"),
+    ("cpa", "CPA networks"),
+    ("surveys", "Survey providers"),
+    ("payments", "Payment providers"),
+    ("ads", "Ad providers"),
+]
+
+
 class AdminProviderActionView(StaffRequiredMixin, View):
-    """Kill switches, per-provider toggles and manual syncs."""
+    """Kill switches, per-provider toggles, tests, syncs and network creation."""
 
     def post(self, request):
         action = request.POST.get("action", "")
@@ -422,6 +451,25 @@ class AdminProviderActionView(StaffRequiredMixin, View):
                 request=request,
             )
             messages.success(request, f"{key} is now {'ON' if enabled else 'OFF'}.")
+
+        elif action == "add_network":
+            form = NetworkForm(request.POST)
+            if form.is_valid():
+                provider = self._create_network(form)
+                if provider is not None:
+                    log_action(
+                        actor=request.user,
+                        action="network.create",
+                        obj=provider,
+                        request=request,
+                    )
+                    messages.success(request, f"{provider.name} added.")
+                    return redirect(f"/admin-panel/providers/?tab={form.cleaned_data['kind']}")
+            else:
+                messages.error(request, "Could not add network — check the form.")
+
+        elif action == "test":
+            self._test_provider(request)
 
         elif action == "toggle_provider":
             model = _provider_model(request.POST.get("kind", ""))
@@ -462,6 +510,102 @@ class AdminProviderActionView(StaffRequiredMixin, View):
             messages.error(request, "Unknown action.")
 
         return redirect("admin-providers")
+
+    @staticmethod
+    def _create_network(form: NetworkForm):
+        from apps.advertising.models import AdProvider
+        from apps.cpa.models import CPAProvider
+        from apps.payments.models import PaymentProvider
+        from apps.surveys.models import SurveyProvider
+
+        data = form.cleaned_data
+        kind = data["kind"]
+        common = {
+            "code": data["code"],
+            "name": data["name"],
+            "is_enabled": data["is_enabled"],
+        }
+
+        if kind == "cpa":
+            return CPAProvider.objects.create(
+                **common,
+                adapter_path=data["adapter_path"],
+                priority=data["priority"],
+                config=data["config"],
+            )
+        if kind == "survey":
+            return SurveyProvider.objects.create(
+                **common,
+                adapter_path=data["adapter_path"],
+                priority=data["priority"],
+                config=data["config"],
+            )
+        if kind == "payment":
+            config = dict(data["config"])
+            if data["adapter_path"]:
+                config["adapter_path"] = data["adapter_path"]
+            return PaymentProvider.objects.create(
+                **common,
+                kind=data["payment_kind"],
+                supports_deposits=data["supports_deposits"],
+                supports_withdrawals=data["supports_withdrawals"],
+                config=config,
+            )
+        return AdProvider.objects.create(
+            **common,
+            kind=data["ad_kind"],
+            config=data["config"],
+        )
+
+    @staticmethod
+    def _test_provider(request):
+        from django.conf import settings as django_settings
+
+        kind = request.POST.get("kind", "")
+        model = _provider_model(kind)
+        provider = get_object_or_404(model, pk=request.POST.get("provider_id"))
+
+        try:
+            if kind == "cpa":
+                from apps.cpa.providers.base import load_adapter
+
+                offers = load_adapter(provider).get_offers()
+                messages.success(
+                    request, f"{provider.name}: adapter OK — {len(offers)} offers available."
+                )
+            elif kind == "survey":
+                from apps.surveys.providers.base import load_adapter
+
+                surveys = load_adapter(provider).get_surveys()
+                messages.success(
+                    request, f"{provider.name}: adapter OK — {len(surveys)} surveys available."
+                )
+            elif kind == "payment":
+                from apps.payments.providers.base import load_adapter
+
+                load_adapter(provider)
+                missing = []
+                if provider.code == "nowpayments":
+                    if not getattr(django_settings, "NOWPAYMENTS_API_KEY", ""):
+                        missing.append("NOWPAYMENTS_API_KEY")
+                    if not getattr(django_settings, "NOWPAYMENTS_IPN_SECRET", ""):
+                        missing.append("NOWPAYMENTS_IPN_SECRET")
+                if missing:
+                    messages.error(
+                        request,
+                        f"{provider.name}: adapter loaded, but missing credentials: "
+                        f"{', '.join(missing)} (add them to .env).",
+                    )
+                else:
+                    messages.success(
+                        request, f"{provider.name}: adapter loaded and credentials present."
+                    )
+            else:
+                messages.info(request, "Ad providers have no connection test.")
+        except Exception as exc:  # report honestly, never fake success
+            messages.error(request, f"{provider.name}: test failed — {exc}")
+
+        log_action(actor=request.user, action="provider.test", obj=provider, request=request)
 
 
 class AdminKYCQueueView(StaffRequiredMixin, ListView):

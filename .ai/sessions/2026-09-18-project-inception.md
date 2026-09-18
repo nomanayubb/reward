@@ -411,6 +411,21 @@ unchanged. 1 test (169 total).
 
 Commit: `feat(advertising): render network ad snippets in placements`.
 
+## 31. Multi-network console + CPA onboarding
+
+**User:** asked which CPAs to use, how to provide them, and for a multi-network
+system with tabs/functions.
+
+**Agent:** Wrote `docs/integrations/CPA_ONBOARDING.md` (exact questions to ask
+each network, what credentials to send, our postback URL, candidate list) and
+rebuilt the providers admin into a tabbed multi-network console: overview with
+emergency switches, CPA / surveys / payments / ads tabs, inventory counts,
+health, enable/disable, connection **Test** (honest errors when adapters or
+credentials are missing), manual syncs, and an Add-network form with validated
+JSON config. 8 tests (176 total).
+
+Commit: `feat(adminpanel): add multi-network console with tabs and connection tests`.
+
 ---
 
 ## Decisions made this session

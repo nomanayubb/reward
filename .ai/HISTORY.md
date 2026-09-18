@@ -158,6 +158,12 @@
   Adsterra/Monetag) render verbatim in placements and are audit-logged;
   network tags handle their own clicks (no internal redirect). 1 test
   (169 total).
+- Added the multi-network admin console: tabs per network type (overview with
+  emergency switches, CPA, surveys, payments, ads), inventory counts, health,
+  enable/disable, connection tests (honest failures when adapters/credentials
+  are missing), manual syncs, and an Add-network form with validated JSON
+  config. Added `docs/integrations/CPA_ONBOARDING.md` (what to get from each
+  network and what to send). 8 tests (176 total).
 
 ### Tests
 

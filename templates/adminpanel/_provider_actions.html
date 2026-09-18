@@ -1,0 +1,15 @@
+{% comment %}Shared per-provider actions (test / enable-disable). Expects `kind`.{% endcomment %}
+<form class="inline" method="post" action="{% url 'admin-provider-action' %}">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="test" />
+  <input type="hidden" name="kind" value="{{ kind }}" />
+  <input type="hidden" name="provider_id" value="{{ provider.id }}" />
+  <button type="submit">Test</button>
+</form>
+<form class="inline" method="post" action="{% url 'admin-provider-action' %}">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="toggle_provider" />
+  <input type="hidden" name="kind" value="{{ kind }}" />
+  <input type="hidden" name="provider_id" value="{{ provider.id }}" />
+  <button type="submit">{% if provider.is_enabled %}Disable{% else %}Enable{% endif %}</button>
+</form>

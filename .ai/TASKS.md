@@ -46,7 +46,8 @@
 - [x] Click tracking + conversions + postbacks
 - [x] Eligibility engine + campaign quotas
 - [x] Idempotency on (provider, external_conversion_id)
-- [ ] First real CPA provider adapter
+- [x] Multi-network admin console (tabs per network type; add / test / toggle / sync)
+- [x] CPA onboarding checklist (`docs/integrations/CPA_ONBOARDING.md`)
 - [ ] Second CPA provider adapter
 - [x] Remaining-limit visibility (offers: today/lifetime left; games: plays left)
 - [x] Offer click-through (Start → click recorded → provider redirect with subid)
