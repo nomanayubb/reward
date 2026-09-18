@@ -46,6 +46,10 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - Notifications API live: list/unread filter, mark read, read-all, unread count
 - Game session API live: start session, report event, end session (server-side
   validation + reward) — 77 tests total
+- Game SDK live (`static/game-sdk/game-sdk.js` + `game-host.js`), player page
+  at `/play/<slug>/`, asset serving at `/games/<slug>/<asset>`, and the first
+  playable game `games/tap-target/` with its own documentation; seed command
+  `manage.py seed_reference_game` — 84 tests total
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
@@ -64,15 +68,13 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Next
 
-1. Game SDK + first game package
-2. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
-3. Frontend templates (home, earn, wallet, withdraw, dashboard)
-4. Custom admin UI (dashboard, withdrawal queue, config center)
+1. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
+2. Frontend templates (home, earn, wallet, withdraw, dashboard)
+3. Custom admin UI (dashboard, withdrawal queue, config center)
 
 ## Known Problems
 
-- All frontend pages still missing (APIs are ready)
-- Game SDK and first game package not built (session API is ready)
+- All frontend pages missing except the game player (`/play/<slug>/`)
 - Custom admin UI not built (Django admin works; dashboard/queue/config UI do not)
 - Test coverage gaps: postback end-to-end, quota edge cases, true parallel
   concurrency

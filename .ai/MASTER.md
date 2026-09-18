@@ -127,7 +127,7 @@ Django admin registered for every model; `adminpanel` provides RBAC
 | EasyPaisa (local) | interface only |
 | CPA networks | interface only |
 | Survey providers | interface only |
-| Game SDK | not implemented |
+| Game SDK | implemented (`static/game-sdk/`); reference game `tap-target` |
 | Email/SMS | Django email backend wired; SMS logs only |
 
 ## Environment variables

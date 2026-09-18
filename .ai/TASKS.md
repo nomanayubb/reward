@@ -34,9 +34,9 @@
 - [x] Game / category / session / event models
 - [x] Server-side session validation + reward rules
 - [x] Game session / event / end API (Game SDK server side)
-- [ ] Game SDK (`static/game-sdk/`)
-- [ ] Game iframe wrapper view + origin checks
-- [ ] First game package (`games/<slug>/` + docs)
+- [x] Game SDK (`static/game-sdk/`)
+- [x] Game iframe wrapper view + origin checks
+- [x] First game package (`games/tap-target/` + docs)
 - [ ] Game player page + reward rules display
 
 ## P2 — Offers / CPA

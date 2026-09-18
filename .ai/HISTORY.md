@@ -91,6 +91,13 @@
   count) and the game session API (start/report event/end) that the Game SDK
   will call; ending a session runs server-side validation and pays rewards.
   12 new tests (77 total).
+- Added the Game SDK (`static/game-sdk/game-sdk.js` iframe side +
+  `game-host.js` platform side with source/origin validation), the player page
+  (`/play/<slug>/`), development asset serving (`/games/<slug>/<asset>` with
+  path-traversal protection), and the first playable game
+  `games/tap-target/` with its own documentation. Added
+  `manage.py seed_reference_game` to create the game + starter rule.
+  7 new tests (84 total).
 
 ### Tests
 
