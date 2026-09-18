@@ -88,6 +88,7 @@
 - [x] Configuration center UI (settings + versioning + audit)
 - [x] User management UI (freeze, restrictions, balance adjustments)
 - [x] Provider management + kill switches UI (toggles, syncs, emergency switches)
+- [x] Reports/exports (CSV: users, financial, withdrawals, offers)
 
 ## P7 — SEO / CMS
 

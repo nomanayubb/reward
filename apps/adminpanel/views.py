@@ -518,3 +518,33 @@ class AdminKYCActionView(StaffRequiredMixin, View):
             messages.error(request, "Unknown action.")
 
         return redirect("admin-kyc")
+
+
+class AdminReportsView(StaffRequiredMixin, TemplateView):
+    template_name = "adminpanel/reports.html"
+
+    def get_context_data(self, **kwargs):
+        from apps.reports.models import ReportJob
+
+        context = super().get_context_data(**kwargs)
+        context["kinds"] = ReportJob.Kind.choices
+        context["jobs"] = ReportJob.objects.order_by("-created_at")[:25]
+        return context
+
+    def post(self, request):
+        from apps.reports.models import ReportJob
+        from apps.reports.tasks import run_report_job
+
+        kind = request.POST.get("kind", "")
+        if kind not in dict(ReportJob.Kind.choices):
+            messages.error(request, "Unknown report kind.")
+            return redirect("admin-reports")
+
+        job = ReportJob.objects.create(kind=kind, requested_by=request.user)
+        # Small exports are generated inline; switch to run_report_job.delay()
+        # once a Celery worker is deployed.
+        run_report_job(str(job.id))
+
+        log_action(actor=request.user, action="report.generate", obj=job, request=request)
+        messages.success(request, f"Report '{job.get_kind_display()}' generated.")
+        return redirect("admin-reports")

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Admin · Reports{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Reports</h1>
+    {% include "adminpanel/_nav.html" %}
+
+    <form method="post" class="row">
+      {% csrf_token %}
+      <select name="kind">
+        {% for value, label in kinds %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button class="primary" type="submit">Generate CSV</button>
+    </form>
+    <p class="muted">Reports are CSV exports of the transactional tables and expire after 24 hours.</p>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Recent reports</h2>
+    {% if jobs %}
+      <table>
+        <thead><tr><th>When</th><th>Kind</th><th>Status</th><th>By</th><th>File</th></tr></thead>
+        <tbody>
+          {% for job in jobs %}
+            <tr>
+              <td>{{ job.created_at|date:"Y-m-d H:i" }}</td>
+              <td>{{ job.get_kind_display }}</td>
+              <td>
+                <span class="pill {% if job.status == 'ready' %}ok{% elif job.status == 'failed' %}bad{% endif %}">{{ job.get_status_display }}</span>
+                {% if job.error %}<br /><span class="muted">{{ job.error }}</span>{% endif %}
+              </td>
+              <td class="muted">{{ job.requested_by.email|default:"—" }}</td>
+              <td>
+                {% if job.file %}<a href="{{ job.file.url }}">Download</a>
+                {% else %}<span class="muted">—</span>{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No reports generated yet.</p>
+    {% endif %}
+  </div>
+{% endblock %}

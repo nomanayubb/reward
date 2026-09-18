@@ -8,6 +8,7 @@ from .views import (
     AdminKYCQueueView,
     AdminProviderActionView,
     AdminProvidersView,
+    AdminReportsView,
     AdminSettingsView,
     AdminUserActionView,
     AdminUserDetailView,
@@ -41,4 +42,5 @@ urlpatterns = [
     ),
     path("kyc/", AdminKYCQueueView.as_view(), name="admin-kyc"),
     path("kyc/<uuid:pk>/action/", AdminKYCActionView.as_view(), name="admin-kyc-action"),
+    path("reports/", AdminReportsView.as_view(), name="admin-reports"),
 ]

@@ -342,6 +342,17 @@ approve/reject + audit logging. 7 tests (146 total).
 
 Commit: `feat(kyc): add user KYC submission and admin review`.
 
+## 26. CSV reports
+
+**User:** "NEXT".
+
+**Agent:** Added CSV report generation (`apps/reports/services.py` +
+Celery-safe `run_report_job` task) for users, financial/rewards, withdrawals
+and offer conversions, with the admin page `/admin-panel/reports/` (generate
++ download, 24-hour expiry) and audit logging. 4 tests (150 total).
+
+Commit: `feat(reports): add CSV report generation and admin reports page`.
+
 ---
 
 ## Decisions made this session

@@ -76,6 +76,9 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - KYC flow live: user submission page (`/kyc/`, basic + full levels with
   private document uploads) and the admin review queue
   (`/admin-panel/kyc/`) with approve/reject + audit. 7 tests (146 total).
+- Reports live: CSV exports (users, financial/rewards, withdrawals, offers)
+  generated via `apps/reports` services + Celery task, with the admin page
+  `/admin-panel/reports/` (24h expiry). 4 tests (150 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
@@ -94,10 +97,10 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Next
 
-1. Reports/exports (CSV) for admin
-2. Real provider adapters (CPA, survey, EasyPaisa) — needs network choices
+1. Real provider adapters (CPA, survey, EasyPaisa) — needs network choices
    (`.ai/REQUIREMENTS.md`)
-3. Urdu/i18n + RTL, ad network integration
+2. Urdu/i18n + RTL, ad network integration
+3. Deeper analytics dashboards, reconciliation workflow
 
 ## Known Problems
 
@@ -106,6 +109,7 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - No CPA / survey / EasyPaisa adapters yet (interfaces + manual provider only)
 - Ad network integration not done (house/direct serving is live; networks need
   policy verification first — ADR-013)
+- Reports run inline (switch to Celery `.delay()` once a worker is deployed)
 - Test coverage gaps: postback end-to-end, quota edge cases, true parallel
   concurrency
 
