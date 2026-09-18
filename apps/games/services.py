@@ -13,7 +13,7 @@ from django.utils import timezone
 from apps.rewards.models import Reward
 from apps.rewards.services import RewardService
 
-from .models import Game, GameRewardRule, GameSession
+from .models import Game, GameEvent, GameRewardRule, GameSession
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +35,20 @@ def start_session(user, game: Game, *, ip=None, device_hash="") -> GameSession:
         session_token=secrets.token_urlsafe(24),
         ip_address=ip,
         device_id_hash=device_hash,
+    )
+
+
+@transaction.atomic
+def report_event(
+    session: GameSession, *, event_type: str, payload: dict | None = None
+) -> GameEvent:
+    """Record a telemetry event from an active session (never a reward by itself)."""
+    if session.status != GameSession.Status.ACTIVE:
+        raise ValueError("Session is not active.")
+    if not event_type:
+        raise ValueError("event_type is required.")
+    return GameEvent.objects.create(
+        session=session, event_type=event_type[:64], payload=payload or {}
     )
 
 

@@ -84,3 +84,9 @@ def mark_read(user, notification_ids: list) -> int:
     return Notification.objects.filter(user=user, pk__in=notification_ids, is_read=False).update(
         is_read=True, read_at=timezone.now()
     )
+
+
+def mark_all_read(user) -> int:
+    return Notification.objects.filter(user=user, is_read=False).update(
+        is_read=True, read_at=timezone.now()
+    )

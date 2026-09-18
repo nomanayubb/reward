@@ -26,13 +26,14 @@
 - [x] Offers / surveys / games listing endpoints
 - [x] Withdrawal request/list endpoints (+ payout methods)
 - [x] Deposit create/list endpoints (+ manual provider adapter)
-- [ ] Notifications endpoints
+- [x] Notifications endpoints (list, read, read-all, unread count)
 - [ ] Frontend templates (home, earn, wallet, withdraw, dashboard)
 
 ## P1 — Games
 
 - [x] Game / category / session / event models
 - [x] Server-side session validation + reward rules
+- [x] Game session / event / end API (Game SDK server side)
 - [ ] Game SDK (`static/game-sdk/`)
 - [ ] Game iframe wrapper view + origin checks
 - [ ] First game package (`games/<slug>/` + docs)

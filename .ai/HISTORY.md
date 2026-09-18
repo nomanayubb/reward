@@ -87,6 +87,10 @@
   via the service layer), `GET/POST /api/v1/withdrawals/methods/` (ownership
   enforced) and `GET/POST /api/v1/deposits/`; added a `manual` payment
   provider adapter for development/testing. 10 new tests (65 total).
+- Added notifications API (list, unread filter, mark read, read-all, unread
+  count) and the game session API (start/report event/end) that the Game SDK
+  will call; ending a session runs server-side validation and pays rewards.
+  12 new tests (77 total).
 
 ### Tests
 

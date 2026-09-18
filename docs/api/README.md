@@ -13,10 +13,10 @@ OpenAPI schema: `/api/v1/schema/` · Swagger UI: `/api/v1/docs/`
 | `/api/v1/rewards/` | rewards | planned (stub) |
 | `/api/v1/deposits/` | deposits | **live** — create/list (manual provider for dev) |
 | `/api/v1/withdrawals/` | withdrawals | **live** — request/list + methods |
-| `/api/v1/games/` | games | **live** — active catalog |
+| `/api/v1/games/` | games | **live** — catalog + sessions (`<slug>/sessions/`, `sessions/<token>/events|end/`) |
 | `/api/v1/surveys/` | surveys | **live** — active catalog |
 | `/api/v1/offers/` | offers | **live** — eligibility-filtered |
-| `/api/v1/notifications/` | notifications | planned (stub) |
+| `/api/v1/notifications/` | notifications | **live** — list, read, read-all, unread count |
 | `/api/v1/postbacks/<provider_code>/` | offers | **live** |
 | `/api/v1/webhooks/<provider_code>/` | payments | **live** |
 
