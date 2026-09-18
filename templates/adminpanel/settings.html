@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Admin · Settings{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Configuration</h1>
+    {% include "adminpanel/_nav.html" %}
+    <p class="muted">Values are stored as JSON when possible (numbers, booleans, strings). Every change is versioned and audit-logged.</p>
+
+    {% for group, settings in groups.items %}
+      <h2>{{ group }}</h2>
+      <table>
+        <thead><tr><th>Key</th><th>Value</th><th></th></tr></thead>
+        <tbody>
+          {% for setting in settings %}
+            <tr>
+              <td>
+                <code>{{ setting.key }}</code>
+                {% if setting.description %}<br /><span class="muted">{{ setting.description }}</span>{% endif %}
+              </td>
+              <td>
+                <form class="row" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="key" value="{{ setting.key }}" />
+                  <input type="text" name="value" value="{{ setting.value }}" style="min-width:14rem;" />
+                  <button type="submit">Save</button>
+                </form>
+              </td>
+              <td class="muted">{{ setting.updated_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% empty %}
+      <p class="muted">No settings stored yet — defaults from configuration apply.</p>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Recent configuration changes</h2>
+    {% if recent_changes %}
+      <table>
+        <thead><tr><th>When</th><th>Key</th><th>Old</th><th>New</th><th>By</th></tr></thead>
+        <tbody>
+          {% for change in recent_changes %}
+            <tr>
+              <td>{{ change.created_at|date:"Y-m-d H:i" }}</td>
+              <td><code>{{ change.key }}</code></td>
+              <td class="muted">{{ change.old_value }}</td>
+              <td>{{ change.new_value }}</td>
+              <td class="muted">{{ change.changed_by.email|default:"—" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No changes recorded yet.</p>
+    {% endif %}
+  </div>
+{% endblock %}

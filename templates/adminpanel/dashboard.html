@@ -3,6 +3,7 @@
 {% block content %}
   <div class="card">
     <h1 style="margin-top:0;">Operations dashboard</h1>
+    {% include "adminpanel/_nav.html" %}
     <div class="grid">
       <div><div class="muted">Users</div><div class="stat">{{ users_total }}</div><div class="muted">+{{ users_today }} today</div></div>
       <div><div class="muted">Provider revenue (USD)</div><div class="stat">{{ provider_revenue_usd|floatformat:2 }}</div></div>

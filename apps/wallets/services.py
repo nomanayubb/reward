@@ -121,3 +121,34 @@ def total_liability(currency: str = "USD") -> Decimal:
         .aggregate(total=Sum("balance"))["total"]
     )
     return total or Decimal("0")
+
+
+@transaction.atomic
+def adjust_balance(*, user, amount, currency: str = "PKR", reason: str = "", actor=None):
+    """Admin balance adjustment: positive credits, negative debits.
+
+    Always creates an immutable ledger transaction; callers must also write an
+    audit-log entry with the reason (DRD §56).
+    """
+    from apps.ledger import services as ledger
+    from apps.ledger.models import LedgerTransaction
+
+    amount = Decimal(str(amount))
+    if amount == 0:
+        raise ValueError("Adjustment amount must not be zero.")
+
+    account = get_account(user, WalletAccount.Type.CASH, currency)
+    counterpart = system_account(WalletAccount.Type.CASH, currency)
+
+    txn, _ = ledger.post_transaction(
+        type=LedgerTransaction.Type.ADJUSTMENT,
+        entries=[(counterpart, -amount), (account, amount)],
+        reference=f"admin-adjustment:{user.pk}",
+        description=reason or "Admin balance adjustment",
+        metadata={
+            "user_id": str(user.pk),
+            "actor_id": str(getattr(actor, "pk", "")) if actor else "",
+            "reason": reason,
+        },
+    )
+    return txn

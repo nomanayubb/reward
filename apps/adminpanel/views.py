@@ -1,8 +1,11 @@
-"""Admin panel views: dashboard metrics and the withdrawal review queue."""
+"""Admin panel views: dashboard, withdrawal queue, users, settings, flags."""
+import json
+
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, Sum
+from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.views import View
@@ -13,7 +16,8 @@ from apps.fraud.models import FraudEvent
 from apps.offers.models import OfferConversion
 from apps.rewards.models import Reward
 from apps.surveys.models import SurveyCompletion
-from apps.wallets.services import total_liability
+from apps.users.models import UserRestriction
+from apps.wallets.services import adjust_balance, get_wallet, total_liability
 from apps.withdrawals.models import Withdrawal
 from apps.withdrawals.services import (
     WithdrawalError,
@@ -23,6 +27,11 @@ from apps.withdrawals.services import (
 )
 
 from .audit import log_action
+from .forms import AdjustBalanceForm, RestrictionForm
+from .models import ConfigurationVersion, FeatureFlag, PlatformSetting
+from .settings import set_setting
+
+User = get_user_model()
 
 OPEN_WITHDRAWAL_STATUSES = [
     Withdrawal.Status.REQUESTED,
@@ -152,3 +161,187 @@ class WithdrawalActionView(StaffRequiredMixin, View):
             messages.success(request, f"Withdrawal {action} applied.")
 
         return redirect("admin-withdrawals")
+
+
+class AdminUserListView(StaffRequiredMixin, ListView):
+    template_name = "adminpanel/users.html"
+    context_object_name = "users"
+    paginate_by = 50
+
+    def get_queryset(self):
+        queryset = User.objects.order_by("-date_joined")
+        query = self.request.GET.get("q", "").strip()
+        if query:
+            queryset = queryset.filter(
+                Q(email__icontains=query)
+                | Q(username__icontains=query)
+                | Q(phone__icontains=query)
+            )
+        status_filter = self.request.GET.get("status")
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["query"] = self.request.GET.get("q", "")
+        context["statuses"] = User.Status.choices
+        context["current_status"] = self.request.GET.get("status", "")
+        return context
+
+
+class AdminUserDetailView(StaffRequiredMixin, TemplateView):
+    template_name = "adminpanel/user_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        target = get_object_or_404(User, pk=self.kwargs["pk"])
+        wallet = get_wallet(target)
+
+        context["target"] = target
+        context["wallet"] = wallet
+        context["accounts"] = wallet.accounts.all()
+        context["restrictions"] = target.restrictions.filter(is_active=True)
+        context["rewards"] = Reward.objects.filter(user=target).order_by("-created_at")[:10]
+        context["withdrawals"] = Withdrawal.objects.filter(user=target).order_by(
+            "-requested_at"
+        )[:10]
+        context["adjust_form"] = AdjustBalanceForm()
+        context["restriction_form"] = RestrictionForm()
+        return context
+
+
+class AdminUserActionView(StaffRequiredMixin, View):
+    """Freeze/unfreeze, restrict/unrestrict and balance adjustments."""
+
+    def post(self, request, pk):
+        target = get_object_or_404(User, pk=pk)
+        action = request.POST.get("action", "")
+
+        if action in {"freeze", "unfreeze"}:
+            target.status = (
+                User.Status.FROZEN if action == "freeze" else User.Status.ACTIVE
+            )
+            target.save(update_fields=["status", "updated_at"])
+            log_action(actor=request.user, action=f"user.{action}", obj=target, request=request)
+            messages.success(request, f"User {action}d.")
+
+        elif action == "restrict":
+            form = RestrictionForm(request.POST)
+            if form.is_valid():
+                UserRestriction.objects.update_or_create(
+                    user=target,
+                    type=form.cleaned_data["type"],
+                    is_active=True,
+                    defaults={"reason": form.cleaned_data.get("reason", "")},
+                )
+                log_action(
+                    actor=request.user,
+                    action="user.restrict",
+                    obj=target,
+                    new_value=form.cleaned_data["type"],
+                    reason=form.cleaned_data.get("reason", ""),
+                    request=request,
+                )
+                messages.success(request, "Restriction applied.")
+            else:
+                messages.error(request, "Invalid restriction form.")
+
+        elif action == "unrestrict":
+            UserRestriction.objects.filter(
+                pk=request.POST.get("restriction_id"), user=target
+            ).update(is_active=False)
+            log_action(actor=request.user, action="user.unrestrict", obj=target, request=request)
+            messages.success(request, "Restriction removed.")
+
+        elif action == "adjust":
+            form = AdjustBalanceForm(request.POST)
+            if form.is_valid():
+                try:
+                    adjust_balance(
+                        user=target,
+                        amount=form.cleaned_data["amount"],
+                        currency=form.cleaned_data["currency"],
+                        reason=form.cleaned_data["reason"],
+                        actor=request.user,
+                    )
+                except Exception as exc:  # ledger/service errors must be visible
+                    messages.error(request, str(exc))
+                else:
+                    log_action(
+                        actor=request.user,
+                        action="wallet.adjust",
+                        obj=target,
+                        new_value=str(form.cleaned_data["amount"]),
+                        reason=form.cleaned_data["reason"],
+                        request=request,
+                    )
+                    messages.success(request, "Balance adjusted.")
+            else:
+                messages.error(request, "Invalid adjustment form.")
+        else:
+            messages.error(request, "Unknown action.")
+
+        return redirect("admin-user-detail", pk=target.pk)
+
+
+class AdminSettingsView(StaffRequiredMixin, TemplateView):
+    """Runtime configuration center (PlatformSetting, versioned + audited)."""
+
+    template_name = "adminpanel/settings.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        groups: dict[str, list] = {}
+        for setting in PlatformSetting.objects.order_by("group", "key"):
+            groups.setdefault(setting.group, []).append(setting)
+        context["groups"] = groups
+        context["recent_changes"] = ConfigurationVersion.objects.order_by("-created_at")[:10]
+        return context
+
+    def post(self, request):
+        key = request.POST.get("key", "").strip()
+        raw = request.POST.get("value", "")
+        if not key:
+            messages.error(request, "Missing setting key.")
+            return redirect("admin-settings")
+
+        try:
+            value = json.loads(raw)
+        except json.JSONDecodeError:
+            value = raw
+
+        set_setting(key, value, updated_by=request.user, note="admin panel edit")
+        log_action(
+            actor=request.user,
+            action="settings.update",
+            object_type="PlatformSetting",
+            object_id=key,
+            new_value=value,
+            request=request,
+        )
+        messages.success(request, f"Setting '{key}' updated.")
+        return redirect("admin-settings")
+
+
+class AdminFeatureFlagsView(StaffRequiredMixin, TemplateView):
+    template_name = "adminpanel/flags.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["flags"] = FeatureFlag.objects.order_by("key")
+        return context
+
+    def post(self, request):
+        flag = get_object_or_404(FeatureFlag, pk=request.POST.get("flag_id"))
+        flag.is_enabled = not flag.is_enabled
+        flag.save(update_fields=["is_enabled", "updated_at"])
+        log_action(
+            actor=request.user,
+            action="feature_flag.toggle",
+            obj=flag,
+            new_value=flag.is_enabled,
+            request=request,
+        )
+        messages.success(request, f"{flag.key} is now {'on' if flag.is_enabled else 'off'}.")
+        return redirect("admin-flags")

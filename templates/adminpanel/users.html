@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Admin · Users{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Users</h1>
+    {% include "adminpanel/_nav.html" %}
+
+    <form method="get" class="row">
+      <input type="text" name="q" value="{{ query }}" placeholder="email, username or phone" />
+      <select name="status">
+        <option value="">all statuses</option>
+        {% for value, label in statuses %}
+          <option value="{{ value }}" {% if value == current_status %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit">Search</button>
+    </form>
+
+    <table>
+      <thead><tr><th>Email</th><th>Status</th><th>Country</th><th>Joined</th><th></th></tr></thead>
+      <tbody>
+        {% for row in users %}
+          <tr>
+            <td>{{ row.email }}</td>
+            <td><span class="pill">{{ row.get_status_display }}</span></td>
+            <td class="muted">{{ row.country }}</td>
+            <td class="muted">{{ row.date_joined|date:"Y-m-d" }}</td>
+            <td><a href="{% url 'admin-user-detail' row.id %}">Open</a></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="muted">No users found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if is_paginated %}
+      <p class="muted">
+        {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&q={{ query }}">← Previous</a>{% endif %}
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&q={{ query }}">Next →</a>{% endif %}
+      </p>
+    {% endif %}
+  </div>
+{% endblock %}

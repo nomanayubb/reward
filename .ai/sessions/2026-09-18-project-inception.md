@@ -292,6 +292,19 @@ login. 7 tests (118 total).
 
 Commit: `feat(adminpanel): add operations dashboard and withdrawal queue`.
 
+## 22. Admin user management + configuration center
+
+**User:** "nsxt" (next).
+
+**Agent:** Added user management (search, detail page, freeze/unfreeze,
+granular restrictions with removal, audited balance adjustments backed by a
+ledger `ADJUSTMENT` transaction) and the configuration center (edit
+`PlatformSetting` values as JSON, `ConfigurationVersion` history, recent
+changes list, feature-flag toggles). Admin sub-navigation added across all
+admin pages. 7 tests (125 total).
+
+Commit: `feat(adminpanel): add user management and configuration center`.
+
 ---
 
 ## Decisions made this session

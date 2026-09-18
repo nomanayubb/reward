@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Admin · Feature flags{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Feature flags</h1>
+    {% include "adminpanel/_nav.html" %}
+    <table>
+      <thead><tr><th>Key</th><th>Description</th><th>State</th><th></th></tr></thead>
+      <tbody>
+        {% for flag in flags %}
+          <tr>
+            <td><code>{{ flag.key }}</code></td>
+            <td class="muted">{{ flag.description|default:"—" }}</td>
+            <td><span class="pill {% if flag.is_enabled %}ok{% else %}bad{% endif %}">{{ flag.is_enabled|yesno:"on,off" }}</span></td>
+            <td>
+              <form class="inline" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="flag_id" value="{{ flag.id }}" />
+                <button type="submit">Toggle</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4" class="muted">No feature flags defined. Add them in Django admin.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

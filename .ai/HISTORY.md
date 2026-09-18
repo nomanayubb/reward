@@ -114,6 +114,11 @@
   user liability, open fraud events) and the withdrawal review queue with
   approve/pay/reject actions, all audit-logged via `AuditLog`. 7 tests
   (118 total).
+- Added admin user management (search, detail, freeze/unfreeze, granular
+  restrictions, audited balance adjustments via a ledger `ADJUSTMENT`
+  transaction) and the configuration center (editable `PlatformSetting`
+  values with `ConfigurationVersion` history + audit, feature-flag toggles).
+  7 tests (125 total).
 
 ### Tests
 

@@ -84,8 +84,8 @@
 - [x] RBAC models, settings, feature flags, audit log
 - [x] Admin dashboard (metrics)
 - [x] Withdrawal review queue UI (approve / pay / reject + audit)
-- [ ] Configuration center UI
-- [ ] User management UI (limits, restrictions, adjustments)
+- [x] Configuration center UI (settings + versioning + audit)
+- [x] User management UI (freeze, restrictions, balance adjustments)
 - [ ] Provider management + kill switches UI
 
 ## P7 — SEO / CMS
