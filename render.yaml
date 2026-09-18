@@ -1,0 +1,34 @@
+# Free deployment on Render (stable https://<name>.onrender.com URL)
+#
+# 1. Push this repository to GitHub (already done).
+# 2. Render dashboard → New → Blueprint → pick this repo.
+# 3. Render reads this file and creates the web service.
+# 4. Open the service URL, create your admin account, and use it for provider
+#    applications (AdGem etc.).
+#
+# Notes for the free plan:
+# - The service sleeps after ~15 minutes idle; the first visit wakes it (slow).
+# - No persistent disk on free: SQLite data resets on redeploy/restart. Fine for
+#   provider review/demo; move to Render Postgres + Redis for real traffic.
+services:
+  - type: web
+    name: reward-platform
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /accounts/login/
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
+      - key: SITE_URL
+        value: https://reward-platform.onrender.com
+      - key: DATABASE_URL
+        value: sqlite:////app/db.sqlite3
+      - key: SECURE_SSL_REDIRECT
+        value: "True"

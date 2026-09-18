@@ -491,6 +491,21 @@ Existing tests updated for the new `/dashboard/` route. 6 tests (194 total).
 
 Commit: `feat(cms): add public landing and policy pages`.
 
+## 36. Free deployment path
+
+**User:** "not we can give free from any" — they want a free URL for AdGem,
+no paid domain.
+
+**Agent:** Added free deployment options: `render.yaml` (Render blueprint:
+Docker service, production settings, generated SECRET_KEY, SQLite, auto-seeded
+content, health check), `docker/start.sh` container entrypoint (migrate →
+collectstatic → seed → gunicorn), `scripts/public-tunnel.ps1` (instant
+temporary public URL via cloudflared) and production settings that run without
+Redis and auto-trust Render's hostname. Deployment docs rewritten with the
+three free options. 194 tests still green.
+
+Commit: `chore(deploy): add free deployment path (Render blueprint and tunnel script)`.
+
 ---
 
 ## Decisions made this session

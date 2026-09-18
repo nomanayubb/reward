@@ -121,6 +121,11 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   `/dashboard/`) and CMS-driven pages at `/p/<slug>/` (about, terms, privacy,
   contact, FAQ) seeded by `manage.py seed_cms_pages`; footer links on every
   page. These are the pages payment/CPA reviewers check. 6 tests (194 total).
+- Free deployment path ready: `render.yaml` (Docker blueprint, production
+  settings, generated SECRET_KEY, SQLite, auto-seeded) and
+  `scripts/public-tunnel.ps1` (instant temporary URL via cloudflared);
+  `docker/start.sh` is the container entrypoint (migrate → collectstatic →
+  seed → gunicorn); production settings work without Redis.
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,

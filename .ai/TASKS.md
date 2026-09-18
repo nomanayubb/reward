@@ -107,6 +107,7 @@
 
 - [x] Dockerfile + docker-compose + Nginx config
 - [x] CI (GitHub Actions: check, migrations, tests; lint currently non-blocking)
+- [x] Free deployment path (Render blueprint + Cloudflare tunnel script)
 - [ ] HTTPS + domain/security headers verification
 - [ ] Monitoring/alerting
 - [ ] Backups + restore drill

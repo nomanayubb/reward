@@ -187,6 +187,12 @@
   contact and FAQ, footer links on every page, and `manage.py seed_cms_pages`
   with starter content (placeholders flagged for replacement). 6 tests
   (194 total).
+- Added a free deployment path: `render.yaml` blueprint (Docker, production
+  settings, generated SECRET_KEY, SQLite, health check), `docker/start.sh`
+  entrypoint (migrate → collectstatic → seed → gunicorn) and
+  `scripts/public-tunnel.ps1` for an instant temporary public URL. Production
+  settings now run without Redis (locmem fallback) and trust Render's
+  hostname automatically. Deployment docs updated.
 
 ### Tests
 
