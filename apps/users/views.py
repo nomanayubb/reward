@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 
+from apps.advertising.services import serve_ad
 from apps.notifications.models import Notification
 from apps.rewards.models import Reward
 from apps.wallets.models import WalletAccount
@@ -38,4 +39,5 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context["unread_notifications"] = Notification.objects.filter(
             user=user, is_read=False
         ).count()
+        context["ad_slot"] = serve_ad("dashboard", self.request)
         return context

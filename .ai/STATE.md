@@ -69,6 +69,10 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - Admin provider management live: per-provider enable/disable, manual
   offer/survey syncs, and emergency kill switches (games/offers/surveys/
   deposits/withdrawals) enforced across services. 7 tests (132 total).
+- Ad serving live: weighted rotation, frequency caps (hour/day/interval),
+  impression + click tracking, `/ads/click/<impression>/` redirect, slots on
+  the dashboard and games pages; `manage.py seed_ad_placements` creates the
+  standard placements. 7 tests (139 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
@@ -89,16 +93,16 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 1. Real provider adapters (CPA, survey, EasyPaisa) — needs network choices
    (`.ai/REQUIREMENTS.md`)
-2. Ads serving (models only today)
-3. KYC flow UI, reports/exports, Urdu/i18n
+2. KYC flow UI, reports/exports, Urdu/i18n
+3. Ad network integration (after per-campaign policy verification)
 
 ## Known Problems
 
-- Admin UI complete for operations; deeper analytics/reporting still pending
 - NOWPayments adapter is implemented and unit-tested but **not verified against
   the live/sandbox API** — credentials required (see docs/integrations/NOWPAYMENTS.md)
 - No CPA / survey / EasyPaisa adapters yet (interfaces + manual provider only)
-- No ads rendering (models only)
+- Ad network integration not done (house/direct serving is live; networks need
+  policy verification first — ADR-013)
 - Test coverage gaps: postback end-to-end, quota edge cases, true parallel
   concurrency
 

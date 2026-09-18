@@ -151,3 +151,10 @@ class GameListPageView(LoginRequiredMixin, ListView):
             .select_related("category")
             .order_by("sort_order", "title")
         )
+
+    def get_context_data(self, **kwargs):
+        from apps.advertising.services import serve_ad
+
+        context = super().get_context_data(**kwargs)
+        context["ad_slot"] = serve_ad("games", self.request)
+        return context

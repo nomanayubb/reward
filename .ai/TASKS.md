@@ -109,9 +109,9 @@
 
 - [x] Models: providers, campaigns, placements, impressions, clicks
 - [x] Frequency caps + weighted rotation fields
-- [ ] Ad rendering/placement service + rotation logic
-- [ ] Frequency-cap enforcement at serve time
-- [ ] House ads / direct sponsorship (first monetization, no policy risk)
+- [x] Ad rendering/placement service + rotation logic
+- [x] Frequency-cap enforcement at serve time
+- [x] House ads / direct sponsorship (first monetization, no policy risk)
 - [ ] Ad-network integration (PropellerAds/Adsterra/Monetag — verify each campaign policy)
 - [ ] Google AdSense only on SEO content pages — never on reward/game pages
       (incentivized clicks violate policy; see DECISIONS.md ADR-013)

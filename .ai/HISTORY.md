@@ -124,6 +124,12 @@
   emergency kill switches (`GAMES_ENABLED`, `OFFERS_ENABLED`,
   `SURVEYS_ENABLED`, `DEPOSITS_ENABLED`, `WITHDRAWALS_ENABLED`) enforced in
   the services and catalog views. 7 tests (132 total).
+- Added ad serving (ADR-013 house-first): weighted rotation, frequency caps
+  (per hour / per day / minimum interval), impression recording, click
+  tracking with redirect (`/ads/click/<impression>/`), an ad slot partial
+  rendered on the dashboard and games pages, and
+  `manage.py seed_ad_placements`. Ad clicks are never rewarded. 7 tests
+  (139 total).
 
 ### Tests
 

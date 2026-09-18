@@ -318,6 +318,19 @@ catalog views, all audit-logged. 7 tests (132 total).
 
 Commit: `feat(adminpanel): add provider management and emergency kill switches`.
 
+## 24. Ad serving
+
+**User:** "NEXT".
+
+**Agent:** Implemented ad serving per ADR-013 (house/direct first): weighted
+rotation across eligible campaigns, frequency caps (per hour, per day, minimum
+interval), impression recording, click tracking with redirect at
+`/ads/click/<impression>/`, an ad-slot partial rendered on the dashboard and
+games pages, and `manage.py seed_ad_placements` (8 standard placements).
+Ad clicks are never rewarded. 7 tests (139 total).
+
+Commit: `feat(advertising): add ad serving with rotation and frequency caps`.
+
 ---
 
 ## Decisions made this session
