@@ -230,6 +230,27 @@ Commits: `377a14f` (slice 3), slice 4 commit. 48 tests total.
   development/testing so deposits can be exercised without a real PSP. 10 tests
   (65 total). Commit `4069e64`.
 
+## 17. Notifications + game session APIs
+
+**User:** "next".
+
+**Agent:** Added the notifications API (list/unread filter, mark read,
+read-all, unread count) and the game session API (`<slug>/sessions/`,
+`sessions/<token>/events/`, `sessions/<token>/end/`) with server-side
+validation and reward payment on end. 12 tests (77 total). Commit `903ee7b`.
+
+## 18. Game SDK + first playable game
+
+**User:** "next".
+
+**Agent:** Built the Game SDK (iframe side `game-sdk.js` + platform side
+`game-host.js` with `event.source`/origin validation), the player page
+(`/play/<slug>/`), dev asset serving (`/games/<slug>/<asset>` with
+path-traversal protection) and the reference game `games/tap-target/`
+(game.html + js/css + its own `documentation/`). Added
+`manage.py seed_reference_game` (creates the game + starter points rule).
+7 tests (84 total). Commit `f5b93f3`.
+
 ---
 
 ## Decisions made this session
