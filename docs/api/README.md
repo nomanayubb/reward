@@ -13,9 +13,9 @@ OpenAPI schema: `/api/v1/schema/` · Swagger UI: `/api/v1/docs/`
 | `/api/v1/rewards/` | rewards | planned (stub) |
 | `/api/v1/deposits/` | deposits | planned (stub) |
 | `/api/v1/withdrawals/` | withdrawals | planned (stub) |
-| `/api/v1/games/` | games | planned (stub) |
-| `/api/v1/surveys/` | surveys | planned (stub) |
-| `/api/v1/offers/` | offers | planned (stub) |
+| `/api/v1/games/` | games | **live** — active catalog |
+| `/api/v1/surveys/` | surveys | **live** — active catalog |
+| `/api/v1/offers/` | offers | **live** — eligibility-filtered |
 | `/api/v1/notifications/` | notifications | planned (stub) |
 | `/api/v1/postbacks/<provider_code>/` | offers | **live** |
 | `/api/v1/webhooks/<provider_code>/` | payments | **live** |

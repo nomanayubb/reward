@@ -79,6 +79,10 @@
 - ADR-015 slice 4 (migration complete): wallet summary returns per-currency
   buckets (`balances` list, PKR primary + USD) alongside the primary-currency
   fields; API docs updated to mark auth/wallets/ledger as live. 48 tests.
+- Added earning-catalog APIs: `GET /api/v1/games/` (active games),
+  `GET /api/v1/offers/` (only offers the user is eligible for, via the shared
+  eligibility engine; tracking URLs never exposed) and `GET /api/v1/surveys/`
+  (active surveys). 7 new tests (55 total).
 
 ### Tests
 

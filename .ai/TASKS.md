@@ -23,7 +23,7 @@
 - [x] PKR migration: slice 2 exchange-rate service + USD→PKR reward conversion
 - [x] PKR migration: slice 3 withdrawal/deposit limits + fees in PKR
 - [x] PKR migration: slice 4 API/tests/docs updates
-- [ ] Offers / surveys / games listing endpoints
+- [x] Offers / surveys / games listing endpoints
 - [ ] Withdrawal request/list endpoints
 - [ ] Notifications endpoints
 - [ ] Frontend templates (home, earn, wallet, withdraw, dashboard)

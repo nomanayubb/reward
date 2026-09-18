@@ -37,7 +37,9 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   (Django check + migrations + tests + lint)
 - Auth API live: `/api/v1/auth/register|login|logout|me/` with 8 tests
 - Wallet + ledger read API live: `GET /api/v1/wallets/summary/`,
-  `GET /api/v1/ledger/transactions/` with 8 tests (27 tests total)
+  `GET /api/v1/ledger/transactions/` with 8 tests (55 tests total)
+- Earning catalog APIs live: `GET /api/v1/games/`, `GET /api/v1/offers/`
+  (eligibility-filtered), `GET /api/v1/surveys/`
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
@@ -56,27 +58,19 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Next
 
-1. **PKR migration (ADR-015)** — slice 1: multi-currency wallets + per-currency
-   ledger integrity (PKR default); slice 2: exchange-rate service + USD→PKR
-   reward conversion; slice 3: PKR withdrawal/deposit settings; slice 4: API +
-   tests + docs
-2. Offers / games / surveys listing endpoints
-3. Withdrawal request/list endpoints
-4. Game SDK + first game package
-5. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
-6. Frontend templates (home, earn, wallet, withdraw, dashboard)
-7. Custom admin UI (dashboard, withdrawal queue, config center)
+1. Withdrawal request/list endpoints (+ deposit create/list)
+2. Game SDK + first game package
+3. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
+4. Frontend templates (home, earn, wallet, withdraw, dashboard)
+5. Custom admin UI (dashboard, withdrawal queue, config center)
 
 ## Known Problems
 
-- Currency migration (ADR-015): **complete** — multi-currency wallets,
-  per-currency ledger integrity, PKR rewards with stored exchange rate,
-  PKR-based withdrawal limits, dual-currency wallet summary
-- User-facing layer incomplete: auth + wallet + ledger read APIs done;
-  offers/withdrawals endpoints and all pages still missing
+- User-facing layer incomplete: auth + wallet + ledger + catalog read APIs
+  done; withdrawal/deposit endpoints and all pages still missing
 - Custom admin UI not built (Django admin works; dashboard/queue/config UI do not)
-- Test coverage gaps: deposits, postback end-to-end, quotas/eligibility,
-  true parallel concurrency
+- Test coverage gaps: deposits, postback end-to-end, quotas/eligibility edge
+  cases, true parallel concurrency
 - No real provider adapters yet (interfaces only); no ads rendering (models only)
 
 ## Important Decisions
