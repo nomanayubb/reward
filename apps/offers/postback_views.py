@@ -33,7 +33,11 @@ def provider_postback(request, provider_code: str):
 
     headers = dict(request.headers.items())
     conversion, created = process_postback(
-        provider, payload, headers=headers, ip=request.META.get("REMOTE_ADDR")
+        provider,
+        payload,
+        headers=headers,
+        ip=request.META.get("REMOTE_ADDR"),
+        raw_body=request.body,
     )
 
     if conversion is None:

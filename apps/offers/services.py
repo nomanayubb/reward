@@ -145,11 +145,14 @@ def bump_quota(offer: Offer, *, country: str = "") -> CampaignQuota:
 
 
 @transaction.atomic
-def process_postback(provider, payload: dict, headers: dict | None = None, ip=None):
+def process_postback(
+    provider, payload: dict, headers: dict | None = None, ip=None, raw_body: bytes | None = None
+):
     """Ingest a provider postback. Returns ``(conversion, created)``.
 
     A replayed postback returns the original conversion with ``created=False``
-    and never pays twice.
+    and never pays twice. ``raw_body`` is required by providers whose signature
+    is computed over the raw request bytes (e.g. AdGem v3).
     """
     from apps.cpa.providers.base import load_adapter
 
@@ -161,14 +164,14 @@ def process_postback(provider, payload: dict, headers: dict | None = None, ip=No
         ip_address=ip,
     )
 
-    if not adapter.validate_signature(payload, headers):
+    if not adapter.validate_signature(payload, headers, raw_body):
         postback.processing_result = "invalid_signature"
         postback.save(update_fields=["processing_result", "updated_at"])
         logger.warning("Rejected postback with invalid signature from %s", provider.code)
         return None, False
 
     try:
-        normalized = adapter.process_postback(payload, headers)
+        normalized = adapter.process_postback(payload, headers, raw_body)
     except Exception as exc:  # malformed payload from provider
         postback.processing_result = "parse_error"
         postback.processing_note = str(exc)[:255]

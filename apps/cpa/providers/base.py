@@ -9,6 +9,14 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 
 
+class ProviderConfigurationError(Exception):
+    """Raised when a provider adapter is missing required configuration."""
+
+
+class ProviderRequestError(Exception):
+    """Raised when a provider API call fails (network or HTTP error)."""
+
+
 @dataclass
 class NormalizedOffer:
     external_id: str
@@ -59,10 +67,14 @@ class CPAProviderAdapter(ABC):
         """Return the provider tracking URL for the user, or '' if unsupported."""
         return ""
 
-    def process_postback(self, payload: dict, headers: dict | None = None) -> NormalizedConversion:
+    def process_postback(
+        self, payload: dict, headers: dict | None = None, raw_body: bytes | None = None
+    ) -> NormalizedConversion:
         raise NotImplementedError
 
-    def validate_signature(self, payload: dict, headers: dict | None = None) -> bool:
+    def validate_signature(
+        self, payload: dict, headers: dict | None = None, raw_body: bytes | None = None
+    ) -> bool:
         return True
 
     def validate_conversion(self, conversion: NormalizedConversion) -> bool:

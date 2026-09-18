@@ -4,6 +4,14 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 
 
+class ProviderConfigurationError(Exception):
+    """Raised when a provider adapter is missing required configuration."""
+
+
+class ProviderRequestError(Exception):
+    """Raised when a provider API call fails (network or HTTP error)."""
+
+
 @dataclass
 class NormalizedSurvey:
     external_id: str

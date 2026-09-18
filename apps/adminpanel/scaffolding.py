@@ -32,7 +32,9 @@ class {class_name}Adapter(CPAProviderAdapter):
         """Fetch the offer feed. TODO: call the {name} API/feed URL."""
         raise NotImplementedError("Implement get_offers for {name}.")
 
-    def process_postback(self, payload: dict, headers: dict | None = None) -> NormalizedConversion:
+    def process_postback(
+        self, payload: dict, headers: dict | None = None, raw_body: bytes | None = None
+    ) -> NormalizedConversion:
         """Map the provider payload into our normalized conversion. TODO: verify field names."""
         return NormalizedConversion(
             external_conversion_id=str(payload.get("transaction_id", "")),
@@ -43,14 +45,16 @@ class {class_name}Adapter(CPAProviderAdapter):
             raw=payload,
         )
 
-    def validate_signature(self, payload: dict, headers: dict | None = None) -> bool:
+    def validate_signature(
+        self, payload: dict, headers: dict | None = None, raw_body: bytes | None = None
+    ) -> bool:
         """TODO: replace with the provider's documented signature algorithm."""
         secret = self.config.get("secret", "")
         if not secret:
             return False
         signature = (headers or {}).get("x-signature", "")
         expected = hmac.new(
-            secret.encode(), str(payload).encode(), hashlib.sha256
+            secret.encode(), (raw_body or str(payload).encode()), hashlib.sha256
         ).hexdigest()
         return hmac.compare_digest(expected, signature)
 '''
