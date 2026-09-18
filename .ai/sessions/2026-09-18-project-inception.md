@@ -379,6 +379,26 @@ provider link exists). 5 tests (158 total).
 
 Commit: `feat(offers,surveys): add click-through and survey start actions`.
 
+## 29. Local server + direct-ads management
+
+**User:** asked to run the site locally (admin + user) to try it, then "next".
+
+**Agent:**
+
+- Started the dev server; discovered **port 8000 is occupied by a different
+  Django project** on the machine (sports-betting app) — left it untouched and
+  ran ours on `127.0.0.1:8010`. Created demo accounts
+  (`demo@example.com / Demo1234!` with Rs 5,000, and staff
+  `admin@example.com / Admin1234!`).
+- Added remaining-limit visibility (offers: today/lifetime/campaign left +
+  reset time, unavailable section with reasons; games: plays left + reward).
+  6 tests (164 total). Commit `2207fdc`.
+- Added direct-ads management at `/admin-panel/ads/`: create direct/house
+  campaigns with image upload, placements, schedule, weight, frequency caps;
+  impressions/clicks/CTR stats; pause/activate + audit. 4 tests (168 total).
+
+Commit: `feat(adminpanel): add direct ad campaign management`.
+
 ---
 
 ## Decisions made this session

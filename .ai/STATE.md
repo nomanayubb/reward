@@ -91,6 +91,10 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   left (today + lifetime + campaign) with the reset time, and exhausted offers
   appear in a "Not available right now" section with the reason; the games
   page shows plays left today and the reward per game. 6 tests (164 total).
+- Direct-ads management live (`/admin-panel/ads/`): create banner/native/
+  sponsorship campaigns with image upload, placements, schedule, weight and
+  frequency caps; impressions/clicks/CTR stats; pause/activate with audit.
+  4 tests (168 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,

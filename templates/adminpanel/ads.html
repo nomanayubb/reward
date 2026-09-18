@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Admin · Ads{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Ad campaigns (direct & house)</h1>
+    {% include "adminpanel/_nav.html" %}
+    <p class="muted">
+      Direct sponsorships and house ads. Users are never rewarded for clicking ads.
+      Network snippets (AdSense/Adsterra) require policy review per ADR-013.
+    </p>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% for field in form %}
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {{ field.errors }}
+      {% endfor %}
+      <p><button class="primary" type="submit">Create campaign</button></p>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Campaigns</h2>
+    {% if rows %}
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Provider</th><th>Type</th><th>Placements</th><th>Impr.</th><th>Clicks</th><th>CTR</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              <td>{{ row.campaign.name }}{% if row.campaign.target_url %}<br /><span class="muted">{{ row.campaign.target_url|truncatechars:40 }}</span>{% endif %}</td>
+              <td class="muted">{{ row.campaign.provider.name }}</td>
+              <td class="muted">{{ row.campaign.get_ad_type_display }}</td>
+              <td class="muted">
+                {% for placement in row.campaign.placements.all %}{{ placement.code }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}
+              </td>
+              <td>{{ row.impressions }}</td>
+              <td>{{ row.clicks }}</td>
+              <td>{{ row.ctr }}%</td>
+              <td><span class="pill {% if row.campaign.status == 'active' %}ok{% elif row.campaign.status == 'paused' %}bad{% endif %}">{{ row.campaign.get_status_display }}</span></td>
+              <td>
+                <form class="inline" method="post" action="{% url 'admin-ad-action' row.campaign.id %}">
+                  {% csrf_token %}
+                  <button type="submit">{% if row.campaign.status == 'active' %}Pause{% else %}Activate{% endif %}</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No ad campaigns yet. Create one above (you need an ad provider first — Providers → Ad providers).</p>
+    {% endif %}
+  </div>
+{% endblock %}

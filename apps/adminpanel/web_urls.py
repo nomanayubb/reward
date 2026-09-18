@@ -2,6 +2,8 @@
 from django.urls import path
 
 from .views import (
+    AdminAdActionView,
+    AdminAdsView,
     AdminDashboardView,
     AdminFeatureFlagsView,
     AdminKYCActionView,
@@ -43,4 +45,6 @@ urlpatterns = [
     path("kyc/", AdminKYCQueueView.as_view(), name="admin-kyc"),
     path("kyc/<uuid:pk>/action/", AdminKYCActionView.as_view(), name="admin-kyc-action"),
     path("reports/", AdminReportsView.as_view(), name="admin-reports"),
+    path("ads/", AdminAdsView.as_view(), name="admin-ads"),
+    path("ads/<uuid:pk>/action/", AdminAdActionView.as_view(), name="admin-ad-action"),
 ]

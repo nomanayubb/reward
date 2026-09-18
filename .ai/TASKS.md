@@ -120,4 +120,4 @@
 - [ ] Ad-network integration (PropellerAds/Adsterra/Monetag — verify each campaign policy)
 - [ ] Google AdSense only on SEO content pages — never on reward/game pages
       (incentivized clicks violate policy; see DECISIONS.md ADR-013)
-- [ ] Ad admin UI + reporting
+- [x] Ad admin UI + reporting (direct/house campaign management with stats)

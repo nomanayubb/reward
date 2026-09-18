@@ -28,7 +28,7 @@ from apps.withdrawals.services import (
 )
 
 from .audit import log_action
-from .forms import AdjustBalanceForm, RestrictionForm
+from .forms import AdCampaignForm, AdjustBalanceForm, RestrictionForm
 from .models import ConfigurationVersion, FeatureFlag, PlatformSetting
 from .settings import get_setting, set_setting
 
@@ -548,3 +548,78 @@ class AdminReportsView(StaffRequiredMixin, TemplateView):
         log_action(actor=request.user, action="report.generate", obj=job, request=request)
         messages.success(request, f"Report '{job.get_kind_display()}' generated.")
         return redirect("admin-reports")
+
+
+class AdminAdsView(StaffRequiredMixin, TemplateView):
+    """Direct / house ad campaigns: create, stats, pause."""
+
+    template_name = "adminpanel/ads.html"
+
+    def get_context_data(self, **kwargs):
+        from apps.advertising.models import AdCampaign
+
+        context = super().get_context_data(**kwargs)
+        campaigns = (
+            AdCampaign.objects.select_related("provider")
+            .annotate(
+                impressions_count=Count("impressions", distinct=True),
+                clicks_count=Count("clicks", distinct=True),
+            )
+            .order_by("-created_at")
+        )
+
+        rows = []
+        for campaign in campaigns:
+            impressions = campaign.impressions_count
+            clicks = campaign.clicks_count
+            rows.append(
+                {
+                    "campaign": campaign,
+                    "impressions": impressions,
+                    "clicks": clicks,
+                    "ctr": round(clicks * 100 / impressions, 2) if impressions else 0,
+                }
+            )
+        context["rows"] = rows
+        context.setdefault("form", AdCampaignForm())
+        return context
+
+    def post(self, request):
+        from apps.advertising.models import AdCampaign
+
+        form = AdCampaignForm(request.POST, request.FILES)
+        if form.is_valid():
+            campaign = form.save(commit=False)
+            campaign.status = AdCampaign.Status.ACTIVE
+            campaign.save()
+            form.save_m2m()
+            log_action(
+                actor=request.user, action="ad_campaign.create", obj=campaign, request=request
+            )
+            messages.success(request, f"Ad campaign '{campaign.name}' created and active.")
+            return redirect("admin-ads")
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+class AdminAdActionView(StaffRequiredMixin, View):
+    def post(self, request, pk):
+        from apps.advertising.models import AdCampaign
+
+        campaign = get_object_or_404(AdCampaign, pk=pk)
+        campaign.status = (
+            AdCampaign.Status.PAUSED
+            if campaign.status == AdCampaign.Status.ACTIVE
+            else AdCampaign.Status.ACTIVE
+        )
+        campaign.save(update_fields=["status", "updated_at"])
+        log_action(
+            actor=request.user,
+            action="ad_campaign.toggle",
+            obj=campaign,
+            new_value=campaign.status,
+            request=request,
+        )
+        messages.success(
+            request, f"'{campaign.name}' is now {campaign.get_status_display().lower()}."
+        )
+        return redirect("admin-ads")

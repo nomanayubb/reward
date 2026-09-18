@@ -150,6 +150,10 @@
   completions left plus the daily reset time, exhausted offers move to a
   "Not available right now" section with reasons; the games page shows plays
   left today and the reward per game. 6 tests (164 total).
+- Added direct-ads management (`/admin-panel/ads/`): create direct/house
+  campaigns (banner, native, sponsorship) with image upload, placements,
+  schedule, weight and frequency caps, plus impressions/clicks/CTR stats and
+  pause/activate actions, all audit-logged. 4 tests (168 total).
 
 ### Tests
 
