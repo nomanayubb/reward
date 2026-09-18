@@ -21,7 +21,7 @@
 - [x] Wallet + ledger read endpoints (`/wallets/summary/`, `/ledger/transactions/`) + 8 tests
 - [x] PKR migration (ADR-015): slice 1 multi-currency wallets + per-currency ledger check
 - [x] PKR migration: slice 2 exchange-rate service + USD→PKR reward conversion
-- [ ] PKR migration: slice 3 withdrawal/deposit limits + fees in PKR
+- [x] PKR migration: slice 3 withdrawal/deposit limits + fees in PKR
 - [ ] PKR migration: slice 4 API/tests/docs updates
 - [ ] Offers / surveys / games listing endpoints
 - [ ] Withdrawal request/list endpoints

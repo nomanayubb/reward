@@ -72,6 +72,10 @@
   reward currency; wallet default currency is PKR; deposits/withdrawals
   default to the wallet currency; platform share is computed in the revenue
   currency. Global test cache clearing added. 42 tests total.
+- ADR-015 slice 3: withdrawal limits are configured in PKR
+  (`MIN/MAX_WITHDRAWAL_PKR`, `KYC_THRESHOLD_PKR`, `AUTO_PAYOUT_MAX_PKR`,
+  `DUAL_APPROVAL_THRESHOLD_PKR`) and converted per wallet currency; 5 new
+  limit tests (47 total). Docs updated (DRD W5/W6).
 
 ### Tests
 

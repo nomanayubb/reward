@@ -129,9 +129,10 @@ USER
   available balance.
 - **W5** Risk level from the user's risk score; high-risk and large amounts go
   to the manual queue. Dual approval is required above
-  `DUAL_APPROVAL_THRESHOLD_USD`.
+  `DUAL_APPROVAL_THRESHOLD_PKR` (limits are configured in PKR per ADR-015 and
+  converted for other wallet currencies).
 - **W6** Payout mode `auto | manual | hybrid`; hybrid auto-pays below
-  `AUTO_PAYOUT_MAX_USD`.
+  `AUTO_PAYOUT_MAX_PKR`.
 - **W7** Payment reference and proof are stored and shown to the user.
 
 ## 9. Deposits and payments (apps/deposits, apps/payments)

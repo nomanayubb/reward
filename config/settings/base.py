@@ -293,8 +293,13 @@ PLATFORM_DEFAULTS = {
     "DEFAULT_CURRENCY": "PKR",
     "SUPPORTED_CURRENCIES": ["PKR", "USD", "POINTS"],
     "EXCHANGE_RATE_USD_PKR": "280.00",
-    "MIN_WITHDRAWAL_USD": "5.00",
-    "MAX_WITHDRAWAL_USD": "500.00",
+    # User-facing limits are expressed in PKR (ADR-015); other wallet
+    # currencies convert from these values.
+    "MIN_WITHDRAWAL_PKR": "500.00",
+    "MAX_WITHDRAWAL_PKR": "100000.00",
+    "KYC_THRESHOLD_PKR": "5000.00",
+    "AUTO_PAYOUT_MAX_PKR": "1500.00",
+    "DUAL_APPROVAL_THRESHOLD_PKR": "25000.00",
 }
 
 # Root folder holding self-contained HTML5 games (see docs/GAME_INTEGRATION.md)

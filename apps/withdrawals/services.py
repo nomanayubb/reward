@@ -14,6 +14,7 @@ from django.utils import timezone
 from apps.adminpanel.settings import get_setting
 from apps.ledger import services as ledger
 from apps.ledger.models import LedgerTransaction
+from apps.payments.services import convert
 from apps.wallets.models import WalletAccount
 from apps.wallets.services import get_account, system_account
 
@@ -26,13 +27,22 @@ class WithdrawalError(Exception):
     """Raised when a withdrawal cannot be requested or transitioned."""
 
 
+def _limit_in_currency(key: str, currency: str, default: str) -> Decimal:
+    """Limits are configured in PKR and converted for other wallet currencies."""
+    pkr_value = Decimal(str(get_setting(key, default)))
+    if currency == "PKR" or pkr_value == 0:
+        return pkr_value
+    converted, _ = convert(pkr_value, "PKR", currency)
+    return converted
+
+
 def _fee_for(amount: Decimal) -> Decimal:
     percent = Decimal(str(get_setting("WITHDRAWAL_FEE_PERCENT", 0)))
     fixed = Decimal(str(get_setting("WITHDRAWAL_FEE_FIXED", 0)))
     return (amount * percent / Decimal("100") + fixed).quantize(Decimal("0.00000001"))
 
 
-def _validate_request(user, amount: Decimal, method: WithdrawalMethod) -> None:
+def _validate_request(user, amount: Decimal, method: WithdrawalMethod, currency: str) -> None:
     from apps.kyc.models import KYCVerification
     from apps.users.models import UserRestriction
 
@@ -44,14 +54,14 @@ def _validate_request(user, amount: Decimal, method: WithdrawalMethod) -> None:
     ).exists():
         raise WithdrawalError("Withdrawals are disabled for this account.")
 
-    minimum = Decimal(str(get_setting("MIN_WITHDRAWAL_USD", "5.00")))
-    maximum = Decimal(str(get_setting("MAX_WITHDRAWAL_USD", "500.00")))
+    minimum = _limit_in_currency("MIN_WITHDRAWAL_PKR", currency, "500.00")
+    maximum = _limit_in_currency("MAX_WITHDRAWAL_PKR", currency, "100000.00")
     if amount < minimum:
-        raise WithdrawalError(f"Minimum withdrawal is {minimum}.")
+        raise WithdrawalError(f"Minimum withdrawal is {minimum} {currency}.")
     if amount > maximum:
-        raise WithdrawalError(f"Maximum withdrawal is {maximum}.")
+        raise WithdrawalError(f"Maximum withdrawal is {maximum} {currency}.")
 
-    kyc_threshold = Decimal(str(get_setting("KYC_THRESHOLD_USD", "0")))
+    kyc_threshold = _limit_in_currency("KYC_THRESHOLD_PKR", currency, "5000.00")
     if kyc_threshold > 0 and amount >= kyc_threshold:
         kyc = KYCVerification.objects.filter(user=user, status=KYCVerification.Status.APPROVED).exists()
         if not kyc:
@@ -79,7 +89,7 @@ def request_withdrawal(
     amount = Decimal(str(amount)).quantize(Decimal("0.00000001"))
     if currency is None:
         currency = get_wallet(user).currency
-    _validate_request(user, amount, method)
+    _validate_request(user, amount, method, currency)
 
     account = get_account(user, WalletAccount.Type.CASH, currency)
     locked_account = WalletAccount.objects.select_for_update().get(pk=account.pk)
@@ -88,7 +98,7 @@ def request_withdrawal(
 
     fee = _fee_for(amount)
     payout_mode = get_setting("PAYOUT_MODE", "manual")
-    auto_threshold = Decimal(str(get_setting("AUTO_PAYOUT_MAX_USD", "5.00")))
+    auto_threshold = _limit_in_currency("AUTO_PAYOUT_MAX_PKR", currency, "1500.00")
     if payout_mode == "auto":
         resolved_mode = "auto"
     elif payout_mode == "hybrid":
@@ -115,7 +125,8 @@ def request_withdrawal(
         status=Withdrawal.Status.REQUESTED,
         risk_level=risk_level,
         payout_mode=resolved_mode,
-        requires_dual_approval=amount >= Decimal(str(get_setting("DUAL_APPROVAL_THRESHOLD_USD", "0"))),
+        requires_dual_approval=amount
+        >= _limit_in_currency("DUAL_APPROVAL_THRESHOLD_PKR", currency, "25000.00"),
     )
 
     txn, _ = ledger.post_transaction(
