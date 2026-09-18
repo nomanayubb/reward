@@ -53,6 +53,13 @@
 - Added `.ai/sessions/` conversation-log convention (one append-only log per
   session with requests, actions, decisions, blockers; the newest log is read
   at session start) and logged this session.
+- Added wallet + ledger read APIs: `GET /api/v1/wallets/summary/` and
+  `GET /api/v1/ledger/transactions/` (type/status filters, paginated,
+  user-scoped) with 8 tests (27 total).
+- Fixed two reward-engine bugs found while building the wallet API: points
+  were credited twice (award + approve) and duplicate points accounts existed
+  (USD + POINTS currency). Points now use a system pending-points holding
+  account and approved-reward reversal unwinds both postings (ADR-014).
 
 ### Tests
 

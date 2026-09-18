@@ -1,4 +1,8 @@
-"""URL routes for the ledger module (mounted under /api/v1/ledger/)."""
+"""Ledger routes (mounted under /api/v1/ledger/)."""
+from django.urls import path
+
+from .views import LedgerTransactionListView
 
 urlpatterns = [
+    path("transactions/", LedgerTransactionListView.as_view(), name="ledger-transactions"),
 ]

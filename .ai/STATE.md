@@ -36,7 +36,10 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - Ruff configured (`ruff.toml`); `scripts/project-check` passes end-to-end
   (Django check + migrations + tests + lint)
 - Auth API live: `/api/v1/auth/register|login|logout|me/` with 8 tests
-  (19 tests total)
+- Wallet + ledger read API live: `GET /api/v1/wallets/summary/`,
+  `GET /api/v1/ledger/transactions/` with 8 tests (27 tests total)
+- Fixed reward-engine bugs found while building the wallet API: points were
+  double-credited and duplicate points accounts existed (ADR-014)
 - Requirements traceability matrix: `.ai/REQUIREMENTS.md` (50 areas +
   integration status + decisions needed)
 - Session conversation logs: `.ai/sessions/` (one append-only log per session;
@@ -49,21 +52,20 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Next
 
-1. Wallet + ledger read endpoints (balance summary, transaction history)
-2. Offers / games / surveys listing endpoints
-3. Withdrawal request/list endpoints
-4. Game SDK + first game package
-5. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
-6. Frontend templates (home, earn, wallet, withdraw, dashboard)
-7. Custom admin UI (dashboard, withdrawal queue, config center)
+1. Offers / games / surveys listing endpoints
+2. Withdrawal request/list endpoints
+3. Game SDK + first game package
+4. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
+5. Frontend templates (home, earn, wallet, withdraw, dashboard)
+6. Custom admin UI (dashboard, withdrawal queue, config center)
 
 ## Known Problems
 
-- User-facing layer incomplete: auth API done; wallet/offers/withdrawals
-  endpoints and all pages still missing
+- User-facing layer incomplete: auth + wallet + ledger read APIs done;
+  offers/withdrawals endpoints and all pages still missing
 - Custom admin UI not built (Django admin works; dashboard/queue/config UI do not)
 - Test coverage gaps: deposits, postback end-to-end, quotas/eligibility,
-  true parallel concurrency, points ledger
+  true parallel concurrency
 - No real provider adapters yet (interfaces only); no ads rendering (models only)
 
 ## Important Decisions

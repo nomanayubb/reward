@@ -18,7 +18,7 @@
 - [ ] Extra test coverage: deposits, postback end-to-end, quotas/eligibility,
       true parallel concurrency, points ledger
 - [x] Auth API (register/login/logout/me) + 8 tests
-- [ ] Wallet + ledger read endpoints
+- [x] Wallet + ledger read endpoints (`/wallets/summary/`, `/ledger/transactions/`) + 8 tests
 - [ ] Offers / surveys / games listing endpoints
 - [ ] Withdrawal request/list endpoints
 - [ ] Notifications endpoints
