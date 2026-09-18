@@ -67,6 +67,7 @@
 - [ ] NOWPayments adapter (code implemented + IPN tests; sandbox verification pending credentials)
 - [ ] EasyPaisa adapter (real, subject to merchant availability)
 - [ ] Reconciliation + payment proof workflow (admin UI)
+- [x] KYC flow UI (user submission + admin review queue)
 - [ ] Payout automation for hybrid/auto modes
 
 ## P5 — Fraud / Risk

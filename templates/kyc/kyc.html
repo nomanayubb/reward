@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Identity verification{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">Identity verification (KYC)</h1>
+
+    {% if kyc %}
+      <p>
+        Status:
+        <span class="pill {% if kyc.status == 'approved' %}ok{% elif kyc.status == 'rejected' %}bad{% endif %}">
+          {{ kyc.get_status_display }}
+        </span>
+        {% if kyc.level != 'none' %}<span class="muted">· level: {{ kyc.get_level_display }}</span>{% endif %}
+      </p>
+      {% if kyc.rejection_reason %}
+        <p class="muted">Reason: {{ kyc.rejection_reason }}</p>
+      {% endif %}
+      {% if kyc.status == 'under_review' %}
+        <p class="muted">Your documents are being reviewed. You can resubmit if they are rejected.</p>
+      {% elif kyc.status == 'approved' %}
+        <p class="muted">Your identity is verified. No further action needed.</p>
+      {% endif %}
+    {% else %}
+      <p class="muted">Verify your identity to unlock larger withdrawals. Documents are stored privately.</p>
+    {% endif %}
+
+    {% if not kyc or kyc.status == 'rejected' or kyc.status == 'not_started' %}
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {{ field.errors }}
+        {% endfor %}
+        <p><button class="primary" type="submit">Submit for review</button></p>
+      </form>
+      <p class="muted">Only upload what is required for payments. Files are never shown publicly.</p>
+    {% endif %}
+  </div>
+{% endblock %}

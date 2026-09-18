@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Admin · KYC{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1 style="margin-top:0;">KYC review</h1>
+    {% include "adminpanel/_nav.html" %}
+    <p class="muted">
+      Filter:
+      <a href="?">all</a>
+      {% for value, label in statuses %}
+        · <a href="?status={{ value }}">{{ label }}</a>
+      {% endfor %}
+    </p>
+
+    {% if verifications %}
+      <table>
+        <thead><tr><th>User</th><th>Status</th><th>Level</th><th>Submitted</th><th>Documents</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for kyc in verifications %}
+            <tr>
+              <td>{{ kyc.user.email }}<br /><span class="muted">{{ kyc.full_name }}</span></td>
+              <td>
+                <span class="pill {% if kyc.status == 'approved' %}ok{% elif kyc.status == 'rejected' %}bad{% endif %}">{{ kyc.get_status_display }}</span>
+                {% if kyc.rejection_reason %}<br /><span class="muted">{{ kyc.rejection_reason }}</span>{% endif %}
+              </td>
+              <td class="muted">{{ kyc.get_level_display }}</td>
+              <td class="muted">{{ kyc.updated_at|date:"Y-m-d H:i" }}</td>
+              <td class="muted">
+                {% if kyc.document_front %}<a href="{{ kyc.document_front.url }}" rel="noopener">front</a>{% endif %}
+                {% if kyc.document_back %} · <a href="{{ kyc.document_back.url }}" rel="noopener">back</a>{% endif %}
+                {% if kyc.selfie %} · <a href="{{ kyc.selfie.url }}" rel="noopener">selfie</a>{% endif %}
+                {% if not kyc.document_front and not kyc.selfie %}—{% endif %}
+              </td>
+              <td>
+                {% if kyc.status == 'under_review' or kyc.status == 'pending' %}
+                  <form class="inline" method="post" action="{% url 'admin-kyc-action' kyc.id %}">
+                    {% csrf_token %}<input type="hidden" name="action" value="approve" />
+                    <button type="submit">Approve</button>
+                  </form>
+                  <form class="inline" method="post" action="{% url 'admin-kyc-action' kyc.id %}">
+                    {% csrf_token %}<input type="hidden" name="action" value="reject" />
+                    <input type="text" name="reason" placeholder="reason" />
+                    <button type="submit">Reject</button>
+                  </form>
+                {% else %}
+                  <span class="muted">—</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if is_paginated %}
+        <p class="muted">
+          {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">← Previous</a>{% endif %}
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Next →</a>{% endif %}
+        </p>
+      {% endif %}
+    {% else %}
+      <p class="muted">No KYC submissions.</p>
+    {% endif %}
+  </div>
+{% endblock %}

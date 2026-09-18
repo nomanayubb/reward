@@ -73,6 +73,9 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   impression + click tracking, `/ads/click/<impression>/` redirect, slots on
   the dashboard and games pages; `manage.py seed_ad_placements` creates the
   standard placements. 7 tests (139 total).
+- KYC flow live: user submission page (`/kyc/`, basic + full levels with
+  private document uploads) and the admin review queue
+  (`/admin-panel/kyc/`) with approve/reject + audit. 7 tests (146 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
@@ -91,10 +94,10 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Next
 
-1. Real provider adapters (CPA, survey, EasyPaisa) — needs network choices
+1. Reports/exports (CSV) for admin
+2. Real provider adapters (CPA, survey, EasyPaisa) — needs network choices
    (`.ai/REQUIREMENTS.md`)
-2. KYC flow UI, reports/exports, Urdu/i18n
-3. Ad network integration (after per-campaign policy verification)
+3. Urdu/i18n + RTL, ad network integration
 
 ## Known Problems
 

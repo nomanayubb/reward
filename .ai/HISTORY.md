@@ -130,6 +130,10 @@
   rendered on the dashboard and games pages, and
   `manage.py seed_ad_placements`. Ad clicks are never rewarded. 7 tests
   (139 total).
+- Added the KYC flow: user submission page (`/kyc/`) with basic and full
+  levels, private document uploads, resubmission rules, and the admin review
+  queue (`/admin-panel/kyc/`) with approve/reject and audit logging.
+  7 tests (146 total).
 
 ### Tests
 

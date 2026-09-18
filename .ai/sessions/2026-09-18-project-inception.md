@@ -331,6 +331,17 @@ Ad clicks are never rewarded. 7 tests (139 total).
 
 Commit: `feat(advertising): add ad serving with rotation and frequency caps`.
 
+## 25. KYC flow
+
+**User:** "NEXT".
+
+**Agent:** Added the KYC flow: user page at `/kyc/` (basic level with name/DOB,
+full level with private document/selfie uploads, resubmission rules while
+under review) and the staff review queue at `/admin-panel/kyc/` with
+approve/reject + audit logging. 7 tests (146 total).
+
+Commit: `feat(kyc): add user KYC submission and admin review`.
+
 ---
 
 ## Decisions made this session

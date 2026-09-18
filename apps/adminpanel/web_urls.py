@@ -4,6 +4,8 @@ from django.urls import path
 from .views import (
     AdminDashboardView,
     AdminFeatureFlagsView,
+    AdminKYCActionView,
+    AdminKYCQueueView,
     AdminProviderActionView,
     AdminProvidersView,
     AdminSettingsView,
@@ -37,4 +39,6 @@ urlpatterns = [
         AdminProviderActionView.as_view(),
         name="admin-provider-action",
     ),
+    path("kyc/", AdminKYCQueueView.as_view(), name="admin-kyc"),
+    path("kyc/<uuid:pk>/action/", AdminKYCActionView.as_view(), name="admin-kyc-action"),
 ]

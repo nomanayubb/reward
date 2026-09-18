@@ -462,3 +462,59 @@ class AdminProviderActionView(StaffRequiredMixin, View):
             messages.error(request, "Unknown action.")
 
         return redirect("admin-providers")
+
+
+class AdminKYCQueueView(StaffRequiredMixin, ListView):
+    template_name = "adminpanel/kyc.html"
+    context_object_name = "verifications"
+    paginate_by = 50
+
+    def get_queryset(self):
+        from apps.kyc.models import KYCVerification
+
+        queryset = (
+            KYCVerification.objects.select_related("user")
+            .exclude(status=KYCVerification.Status.NOT_STARTED)
+            .order_by("created_at")
+        )
+        status_filter = self.request.GET.get("status")
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        from apps.kyc.models import KYCVerification
+
+        context = super().get_context_data(**kwargs)
+        context["statuses"] = KYCVerification.Status.choices
+        return context
+
+
+class AdminKYCActionView(StaffRequiredMixin, View):
+    def post(self, request, pk):
+        from apps.kyc.models import KYCVerification
+        from apps.kyc.services import approve_verification, reject_verification
+
+        kyc = get_object_or_404(KYCVerification, pk=pk)
+        action = request.POST.get("action", "")
+
+        if action == "approve":
+            approve_verification(kyc, reviewer=request.user)
+            log_action(actor=request.user, action="kyc.approve", obj=kyc, request=request)
+            messages.success(request, "KYC approved.")
+        elif action == "reject":
+            reject_verification(
+                kyc, reviewer=request.user, reason=request.POST.get("reason", "")
+            )
+            log_action(
+                actor=request.user,
+                action="kyc.reject",
+                obj=kyc,
+                reason=request.POST.get("reason", ""),
+                request=request,
+            )
+            messages.success(request, "KYC rejected.")
+        else:
+            messages.error(request, "Unknown action.")
+
+        return redirect("admin-kyc")

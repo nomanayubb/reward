@@ -32,6 +32,7 @@ urlpatterns = [
     path("withdraw/", include("apps.withdrawals.web_urls")),
     path("deposit/", include("apps.deposits.web_urls")),
     path("alerts/", include("apps.notifications.web_urls")),
+    path("kyc/", include("apps.kyc.web_urls")),
     path("admin-panel/", include("apps.adminpanel.web_urls")),
     path("ads/", include("apps.advertising.urls")),
     # Game hosting
