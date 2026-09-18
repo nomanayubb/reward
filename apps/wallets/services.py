@@ -6,9 +6,10 @@ from django.db import transaction
 
 from .models import BalanceSnapshot, Wallet, WalletAccount
 
+POINTS_CURRENCY = "POINTS"
+
 DEFAULT_ACCOUNT_TYPES = [
     WalletAccount.Type.CASH,
-    WalletAccount.Type.POINTS,
     WalletAccount.Type.BONUS,
     WalletAccount.Type.PENDING,
     WalletAccount.Type.LOCKED,
@@ -35,6 +36,10 @@ def ensure_accounts(wallet: Wallet, currency: str | None = None) -> dict[str, Wa
             wallet=wallet, type=account_type, currency=currency
         )
         accounts[account_type] = account
+    points, _ = WalletAccount.objects.get_or_create(
+        wallet=wallet, type=WalletAccount.Type.POINTS, currency=POINTS_CURRENCY
+    )
+    accounts[WalletAccount.Type.POINTS] = points
     return accounts
 
 
@@ -61,9 +66,6 @@ def system_account(account_type: str, currency: str = "USD") -> WalletAccount:
     return WalletAccount.objects.get(wallet=wallet, type=account_type, currency=currency)
 
 
-POINTS_CURRENCY = "POINTS"
-
-
 def points_account(user) -> WalletAccount:
     wallet = get_wallet(user)
     account, _ = WalletAccount.objects.get_or_create(
@@ -76,6 +78,15 @@ def system_points_account() -> WalletAccount:
     wallet = get_system_wallet()
     account, _ = WalletAccount.objects.get_or_create(
         wallet=wallet, type=WalletAccount.Type.POINTS, currency=POINTS_CURRENCY
+    )
+    return account
+
+
+def system_pending_points_account() -> WalletAccount:
+    """Holding account for points awarded but not yet approved."""
+    wallet = get_system_wallet()
+    account, _ = WalletAccount.objects.get_or_create(
+        wallet=wallet, type=WalletAccount.Type.PENDING, currency=POINTS_CURRENCY
     )
     return account
 

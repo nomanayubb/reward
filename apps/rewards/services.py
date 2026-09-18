@@ -18,6 +18,7 @@ from apps.wallets.services import (
     get_account,
     points_account,
     system_account,
+    system_pending_points_account,
     system_points_account,
 )
 
@@ -258,7 +259,7 @@ class RewardService:
                 type=LedgerTransaction.Type.REWARD,
                 entries=[
                     (system_points_account(), -points),
-                    (points_account(user), points),
+                    (system_pending_points_account(), points),
                 ],
                 reference=str(reward.id),
                 description=f"Pending {source} points",
@@ -303,7 +304,7 @@ class RewardService:
             ledger.post_transaction(
                 type=LedgerTransaction.Type.REWARD,
                 entries=[
-                    (system_points_account(), -reward.points_reward),
+                    (system_pending_points_account(), -reward.points_reward),
                     (points_account(reward.user), reward.points_reward),
                 ],
                 reference=str(reward.id),
@@ -355,10 +356,16 @@ class RewardService:
         if reward.status == Reward.Status.PENDING:
             cls._reverse_pending(reward, reason=reason or "Reward reversed")
         else:
-            for key in (f"reward:{reward.id}:approve", f"reward:{reward.id}:approve:points"):
-                txn = LedgerTransaction.objects.filter(idempotency_key=key).first()
-                if txn and txn.status != LedgerTransaction.Status.REVERSED:
-                    ledger.reverse_transaction(txn, reason=reason or "Reward reversed")
+            cls._reverse_by_keys(
+                reward,
+                (
+                    f"reward:{reward.id}:approve",
+                    f"reward:{reward.id}:approve:points",
+                    f"reward:{reward.id}:pending",
+                    f"reward:{reward.id}:pending:points",
+                ),
+                reason=reason or "Reward reversed",
+            )
 
         reward.status = Reward.Status.REVERSED
         reward.metadata = {**(reward.metadata or {}), "reversal_reason": reason}
@@ -367,7 +374,15 @@ class RewardService:
 
     @staticmethod
     def _reverse_pending(reward: Reward, *, reason: str) -> None:
-        for key in (f"reward:{reward.id}:pending", f"reward:{reward.id}:pending:points"):
+        RewardService._reverse_by_keys(
+            reward,
+            (f"reward:{reward.id}:pending", f"reward:{reward.id}:pending:points"),
+            reason=reason,
+        )
+
+    @staticmethod
+    def _reverse_by_keys(reward: Reward, keys, *, reason: str) -> None:
+        for key in keys:
             txn = LedgerTransaction.objects.filter(idempotency_key=key).first()
             if txn and txn.status != LedgerTransaction.Status.REVERSED:
                 ledger.reverse_transaction(txn, reason=reason)

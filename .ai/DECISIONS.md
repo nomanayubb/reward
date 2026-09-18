@@ -96,3 +96,14 @@ Reason: incentivizing clicks or views violates AdSense policy (account-ban
 risk) and most networks restrict incentivized traffic. Rewarding ad clicks is
 never allowed unless the program explicitly permits it.
 Status: Accepted.
+
+## ADR-014 — Points follow the same pending → approved flow as cash
+
+Decision: awarded points are held in a system pending-points account and move
+to the user's points account only on approval. Reversing an approved reward
+unwinds both the pending and the approval postings. There is exactly one
+points account per wallet (currency `POINTS`).
+Reason: the first implementation credited points at award *and* approval
+(double-credit bug) and `ensure_accounts` created a second points account in
+wallet currency. One flow for every reward currency, one account per purpose.
+Status: Accepted.
