@@ -8,6 +8,9 @@ from .models import BalanceSnapshot, Wallet, WalletAccount
 
 POINTS_CURRENCY = "POINTS"
 
+# Currencies a wallet may hold (ADR-015: PKR primary, USD for crypto).
+SUPPORTED_CURRENCIES = ("PKR", "USD")
+
 DEFAULT_ACCOUNT_TYPES = [
     WalletAccount.Type.CASH,
     WalletAccount.Type.BONUS,
@@ -44,10 +47,13 @@ def ensure_accounts(wallet: Wallet, currency: str | None = None) -> dict[str, Wa
 
 
 def get_account(user, account_type: str, currency: str | None = None) -> WalletAccount:
+    """Fetch (or provision) one account for a user in a given currency."""
     wallet = get_wallet(user)
-    return WalletAccount.objects.get(
-        wallet=wallet, type=account_type, currency=currency or wallet.currency
+    currency = currency or wallet.currency
+    account, _ = WalletAccount.objects.get_or_create(
+        wallet=wallet, type=account_type, currency=currency
     )
+    return account
 
 
 @transaction.atomic
@@ -63,7 +69,10 @@ def get_system_wallet() -> Wallet:
 
 def system_account(account_type: str, currency: str = "USD") -> WalletAccount:
     wallet = get_system_wallet()
-    return WalletAccount.objects.get(wallet=wallet, type=account_type, currency=currency)
+    account, _ = WalletAccount.objects.get_or_create(
+        wallet=wallet, type=account_type, currency=currency
+    )
+    return account
 
 
 def points_account(user) -> WalletAccount:

@@ -104,3 +104,10 @@ Updated: 2026-09-18
 2. Confirm EasyPaisa merchant/API access (or choose another local method).
 3. Confirm KYC threshold policy and provider (manual review vs vendor).
 4. Confirm ad strategy timing (house ads first per ADR-013).
+
+## Product owner decisions received
+
+- **Currency: PKR-first** (ADR-015). User rewards paid directly in PKR;
+  dual wallets (PKR primary, USD for crypto); points engine kept but disabled
+  by default; USD revenue converted at an admin-set rate stored per
+  transaction. All limits/fees in PKR.

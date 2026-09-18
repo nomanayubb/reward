@@ -107,3 +107,27 @@ Reason: the first implementation credited points at award *and* approval
 (double-credit bug) and `ensure_accounts` created a second points account in
 wallet currency. One flow for every reward currency, one account per purpose.
 Status: Accepted.
+
+## ADR-015 — PKR-first currency model (dual wallets)
+
+Decision:
+- User rewards are paid **directly in PKR**; the points engine stays in the
+  codebase but is disabled by default (no points accounts required for new
+  wallets; points can be enabled later for streaks/bonuses).
+- Wallets are multi-currency: **PKR primary** (EasyPaisa/JazzCash/bank,
+  default rewards) and **USD secondary** (crypto payouts).
+- Provider revenue (USD) is converted to PKR at an admin-set exchange rate
+  (`PlatformSetting: EXCHANGE_RATE_USD_PKR`) and the rate used is stored on
+  every transaction. Historical transactions are never recalculated.
+- All user-facing limits and fees are expressed in PKR.
+
+Reason: the primary market is Pakistan; direct PKR is clearer and more
+trustworthy for users than points, and avoids a conversion layer in the user's
+head. Dual wallets keep crypto payouts possible without forcing USD on users.
+Status: Accepted.
+
+Migration slices (implemented in order):
+1. Multi-currency wallets + per-currency ledger integrity (PKR default).
+2. Exchange-rate service + USD→PKR conversion in the reward engine.
+3. Deposit/withdrawal settings in PKR (limits, fees, EasyPaisa flow).
+4. API/tests/docs updates (summary shows PKR + USD wallets).

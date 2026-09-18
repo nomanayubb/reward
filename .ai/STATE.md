@@ -40,6 +40,9 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   `GET /api/v1/ledger/transactions/` with 8 tests (27 tests total)
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
+- Currency migration (ADR-015): slice 1 done — wallets provision accounts per
+  currency, ledger enforces per-currency zero-sum (mixed-currency leakage
+  rejected). Default currency is still USD until slice 2 lands conversion.
 - Requirements traceability matrix: `.ai/REQUIREMENTS.md` (50 areas +
   integration status + decisions needed)
 - Session conversation logs: `.ai/sessions/` (one append-only log per session;
@@ -52,15 +55,22 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Next
 
-1. Offers / games / surveys listing endpoints
-2. Withdrawal request/list endpoints
-3. Game SDK + first game package
-4. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
-5. Frontend templates (home, earn, wallet, withdraw, dashboard)
-6. Custom admin UI (dashboard, withdrawal queue, config center)
+1. **PKR migration (ADR-015)** — slice 1: multi-currency wallets + per-currency
+   ledger integrity (PKR default); slice 2: exchange-rate service + USD→PKR
+   reward conversion; slice 3: PKR withdrawal/deposit settings; slice 4: API +
+   tests + docs
+2. Offers / games / surveys listing endpoints
+3. Withdrawal request/list endpoints
+4. Game SDK + first game package
+5. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
+6. Frontend templates (home, earn, wallet, withdraw, dashboard)
+7. Custom admin UI (dashboard, withdrawal queue, config center)
 
 ## Known Problems
 
+- Currency migration in progress (ADR-015): slice 1 done; wallets still
+  default to USD and rewards still use USD until slice 2 (exchange rate +
+  conversion) flips the default to PKR
 - User-facing layer incomplete: auth + wallet + ledger read APIs done;
   offers/withdrawals endpoints and all pages still missing
 - Custom admin UI not built (Django admin works; dashboard/queue/config UI do not)

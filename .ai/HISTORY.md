@@ -60,6 +60,12 @@
   were credited twice (award + approve) and duplicate points accounts existed
   (USD + POINTS currency). Points now use a system pending-points holding
   account and approved-reward reversal unwinds both postings (ADR-014).
+- Recorded ADR-015 (PKR-first currency model) after product-owner decision:
+  direct PKR rewards, dual wallets (PKR primary / USD for crypto), points
+  disabled by default, USD→PKR conversion with the rate stored per transaction.
+- ADR-015 slice 1: multi-currency wallet accounts (on-demand per currency) and
+  per-currency ledger integrity (each currency must balance; cross-currency
+  leakage rejected) with 4 tests (31 total).
 
 ### Tests
 

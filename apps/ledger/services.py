@@ -47,6 +47,16 @@ def post_transaction(
     if total != 0:
         raise LedgerError(f"Ledger entries must sum to zero, got {total}.")
 
+    # Multi-currency safety: every currency present in the transaction must
+    # balance on its own. This permits balanced multi-currency movements while
+    # making cross-currency leakage impossible.
+    totals: dict[str, Decimal] = {}
+    for account, amount in entries:
+        totals[account.currency] = totals.get(account.currency, Decimal("0")) + amount
+    unbalanced = {currency: total for currency, total in totals.items() if total != 0}
+    if unbalanced:
+        raise LedgerError(f"Ledger entries must sum to zero per currency, got {unbalanced}.")
+
     account_ids = {account.pk for account, _ in entries}
     locked = {
         account.pk: account
