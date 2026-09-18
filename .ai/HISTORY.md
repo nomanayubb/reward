@@ -47,6 +47,9 @@
   `POST /api/v1/auth/register/`, `login/`, `logout/`, `GET me/` — with 8 API
   tests (19 tests total). Registration reuses `register_user` (wallet +
   referral provisioning) and applies Django password validators.
+- Added `.ai/REQUIREMENTS.md`: traceability of the master spec (50 areas) to
+  done/partial/not-started, integration status (no CPA/survey/payment network
+  connected yet) and the decisions needed from the product owner.
 
 ### Tests
 

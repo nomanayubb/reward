@@ -37,6 +37,8 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   (Django check + migrations + tests + lint)
 - Auth API live: `/api/v1/auth/register|login|logout|me/` with 8 tests
   (19 tests total)
+- Requirements traceability matrix: `.ai/REQUIREMENTS.md` (50 areas +
+  integration status + decisions needed)
 - Git repository initialized; initial commit created
 
 ## In Progress

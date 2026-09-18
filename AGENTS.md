@@ -22,6 +22,7 @@ At the beginning of every new session, read these files in this order:
 .ai/STATE.md
 .ai/TASKS.md
 .ai/MASTER.md
+.ai/REQUIREMENTS.md
 ```
 
 Then read only the module-specific documentation relevant to the task.
