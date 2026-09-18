@@ -1,12 +1,28 @@
 # AdGem Integration
 
-Status: **three integration paths implemented**:
+Status: **property created (App ID 33592, pending AdGem approval)**.
+Postback chain **verified end-to-end** locally with the real Postback Key:
+signed v3 postback accepted → reward 224 PKR (40% of $2 × 280) credited →
+replay detected as duplicate → tampered signature rejected.
 
 | Path | Credential needed | Status |
 | --- | --- | --- |
-| Web Offerwall (pre-built iframe) | **App ID** | page live at `/offers/offerwall/adgem/` — needs `ADGEM_APP_ID` |
-| Native offers (Offer API / Prism) | Offer API refresh token / Prism JWT | adapter built + tested; credential pending AdGem approval |
+| Web Offerwall (pre-built iframe) | **App ID** ✅ have it | page live at `/offers/offerwall/adgem/`; shows offers after AdGem approves |
+| Native offers (Offer API / Prism) | Offer API refresh token / Prism JWT | adapter built + tested; credential pending AdGem support |
 | Reporting + reconciliation | dashboard API token | **working live** (`manage.py reconcile_provider adgem`) |
+
+Secrets (App ID, Postback Key) live in `.env` / host environment variables —
+never in this repository.
+
+## Compliance switch (do this before launch)
+
+The provider config ships with `incentive_allowed: false`, so offerwall
+conversions are stored but **not paid** until AdGem confirms incentivized
+traffic in writing (T&C §11.3). Once your affiliate manager confirms:
+
+1. `/admin-panel/providers/?tab=cpa` → AdGem → config
+2. set `"incentive_allowed": true`
+3. keep the confirmation email on file.
 
 ## 1. How AdGem's API works (verified from their docs)
 
