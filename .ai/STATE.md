@@ -41,18 +41,22 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Next
 
-1. Implement user-facing REST API (auth/register/login/me, wallet, ledger,
-   offers, withdrawals, notifications) — start with `apps/accounts` auth
-2. Build Game SDK + first game package
-3. Implement real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
-4. Frontend templates (homepage, earn pages, wallet, withdraw, dashboard)
-5. Admin configuration UI beyond Django admin
+1. Ruff config so `scripts/project-check` passes end-to-end
+2. User REST API — start with auth (register/login/logout/me) + tests
+3. Wallet + ledger read endpoints
+4. Game SDK + first game package
+5. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
+6. Frontend templates (home, earn, wallet, withdraw, dashboard)
+7. Custom admin UI (dashboard, withdrawal queue, config center)
 
 ## Known Problems
 
 - Business API endpoints are empty stubs (only schema/docs/callbacks exist)
-- No real provider adapters implemented yet (interfaces only)
-- No frontend templates yet
+- User-facing layer missing: no pages, no auth endpoints
+- Custom admin UI not built (Django admin works; dashboard/queue/config UI do not)
+- Test coverage gaps: deposits, postback end-to-end, quotas/eligibility,
+  true parallel concurrency, points ledger
+- No real provider adapters yet (interfaces only); no ads rendering (models only)
 - `ruff` reports 321 findings (no config yet) — `scripts/project-check` fails
   at the lint step until configured/fixed
 

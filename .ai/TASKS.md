@@ -14,6 +14,9 @@
 - [x] Admin registrations for all models
 - [x] Critical business-rule tests (11 passing)
 - [x] AI development protocol (.ai memory, AGENTS.md, scripts)
+- [ ] Ruff configuration (project-check lint step currently fails — 321 findings)
+- [ ] Extra test coverage: deposits, postback end-to-end, quotas/eligibility,
+      true parallel concurrency, points ledger
 - [ ] User-facing REST API (auth, wallet, ledger, offers, withdrawals, notifications)
 - [ ] Frontend templates (home, earn, wallet, withdraw, dashboard)
 
@@ -85,9 +88,21 @@
 ## P8 — Production
 
 - [x] Dockerfile + docker-compose + Nginx config
-- [ ] CI (GitHub Actions: check, tests, lint)
+- [x] CI (GitHub Actions: check, migrations, tests; lint currently non-blocking)
 - [ ] HTTPS + domain/security headers verification
 - [ ] Monitoring/alerting
 - [ ] Backups + restore drill
 - [ ] Load testing
 - [ ] Security audit (OWASP)
+
+## P9 — Advertising
+
+- [x] Models: providers, campaigns, placements, impressions, clicks
+- [x] Frequency caps + weighted rotation fields
+- [ ] Ad rendering/placement service + rotation logic
+- [ ] Frequency-cap enforcement at serve time
+- [ ] House ads / direct sponsorship (first monetization, no policy risk)
+- [ ] Ad-network integration (PropellerAds/Adsterra/Monetag — verify each campaign policy)
+- [ ] Google AdSense only on SEO content pages — never on reward/game pages
+      (incentivized clicks violate policy; see DECISIONS.md ADR-013)
+- [ ] Ad admin UI + reporting

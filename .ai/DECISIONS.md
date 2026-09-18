@@ -85,3 +85,14 @@ commit; commit + push after verification.
 Reason: persistent project memory, minimal repeated context, safe incremental
 development.
 Status: Accepted.
+
+## ADR-013 — Ad monetization policy
+
+Decision: monetize with house ads and direct sponsorships first; ad-network
+integration (PropellerAds/Adsterra/Monetag) only after per-campaign policy
+verification; Google AdSense only on SEO content pages, never on
+reward/game/offer pages.
+Reason: incentivizing clicks or views violates AdSense policy (account-ban
+risk) and most networks restrict incentivized traffic. Rewarding ad clicks is
+never allowed unless the program explicitly permits it.
+Status: Accepted.

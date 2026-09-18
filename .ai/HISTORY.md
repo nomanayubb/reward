@@ -37,6 +37,9 @@
 - Adopted the AI development protocol: `.ai/` project memory (GOAL, RULES,
   STATE, TASKS, HISTORY, MASTER, DECISIONS, SESSION), `AGENTS.md`, and
   `scripts/project-check` / `scripts/session-finish`.
+- Aligned `.ai/TASKS.md` and `.ai/STATE.md` with the verified status
+  (admin/user-app gaps, test-coverage gaps, ads status) and recorded
+  ADR-013 (ad monetization policy).
 
 ### Tests
 
