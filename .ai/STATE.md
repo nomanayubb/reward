@@ -50,6 +50,9 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   at `/play/<slug>/`, asset serving at `/games/<slug>/<asset>`, and the first
   playable game `games/tap-target/` with its own documentation; seed command
   `manage.py seed_reference_game` — 84 tests total
+- NOWPayments adapter implemented (`create_payment`, `check_payment`,
+  HMAC-SHA512 IPN verification, status mapping); PKR deposits convert to USD
+  with the stored rate. 8 tests (92 total). Live verification pending creds.
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
@@ -76,10 +79,12 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 - All frontend pages missing except the game player (`/play/<slug>/`)
 - Custom admin UI not built (Django admin works; dashboard/queue/config UI do not)
+- NOWPayments adapter is implemented and unit-tested but **not verified against
+  the live/sandbox API** — credentials required (see docs/integrations/NOWPAYMENTS.md)
+- No CPA / survey / EasyPaisa adapters yet (interfaces + manual provider only)
+- No ads rendering (models only)
 - Test coverage gaps: postback end-to-end, quota edge cases, true parallel
   concurrency
-- No real provider adapters yet (interfaces + manual provider only); no ads
-  rendering (models only)
 
 ## Important Decisions
 

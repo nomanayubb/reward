@@ -64,7 +64,7 @@
 - [x] Payment provider interface
 - [x] Deposit + withdrawal services and state machines
 - [x] Webhook endpoint + signature hook
-- [ ] NOWPayments adapter (real)
+- [ ] NOWPayments adapter (code implemented + IPN tests; sandbox verification pending credentials)
 - [ ] EasyPaisa adapter (real, subject to merchant availability)
 - [ ] Reconciliation + payment proof workflow (admin UI)
 - [ ] Payout automation for hybrid/auto modes

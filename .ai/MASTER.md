@@ -123,7 +123,7 @@ Django admin registered for every model; `adminpanel` provides RBAC
 
 | Integration | Status |
 | --- | --- |
-| NOWPayments (crypto) | interface only |
+| NOWPayments (crypto) | adapter implemented; sandbox verification pending credentials |
 | EasyPaisa (local) | interface only |
 | CPA networks | interface only |
 | Survey providers | interface only |

@@ -98,6 +98,11 @@
   `games/tap-target/` with its own documentation. Added
   `manage.py seed_reference_game` to create the game + starter rule.
   7 new tests (84 total).
+- Implemented the NOWPayments adapter (real HTTP client, HMAC-SHA512 IPN
+  verification, status mapping, PKR→USD invoice conversion with the stored
+  rate). Payouts intentionally raise `NotImplementedError` until payout API
+  verification. Setup + sandbox checklist in `docs/integrations/NOWPAYMENTS.md`.
+  8 tests (92 total). Live verification pending credentials.
 
 ### Tests
 

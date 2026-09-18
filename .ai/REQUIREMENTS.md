@@ -43,7 +43,7 @@ Updated: 2026-09-18
 | --- | --- | --- | --- |
 | 21 | Deposits with state machine | 🟡 | Service + states; real payment adapter missing |
 | 22 | Withdrawals with reserve/review/pay | ✅ | Service + states + tests |
-| 23 | NOWPayments adapter | ⬜ | Interface only; needs credentials |
+| 23 | NOWPayments adapter | 🟡 | Adapter + IPN tests done; live/sandbox verification pending credentials |
 | 24 | EasyPaisa adapter | ⬜ | Interface only; verify merchant/API availability |
 | 25 | Reconciliation | ⬜ | Planned (P4) |
 | 26 | Payment proof + reference | 🟡 | Fields exist; admin UI pending |

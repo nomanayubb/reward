@@ -251,6 +251,20 @@ path-traversal protection) and the reference game `games/tap-target/`
 `manage.py seed_reference_game` (creates the game + starter points rule).
 7 tests (84 total). Commit `f5b93f3`.
 
+## 19. NOWPayments adapter
+
+**User:** "next" (and interrupted the check run with another "next" — the
+adapter work was completed and verified after).
+
+**Agent:** Implemented the NOWPayments adapter (real HTTP client via stdlib
+urllib, HMAC-SHA512 IPN signature verification with constant-time compare,
+status mapping, PKR→USD invoice conversion using the stored exchange rate,
+`check_payment`, and an honest `NotImplementedError` for payouts pending
+payout-API verification). Setup + sandbox checklist in
+`docs/integrations/NOWPAYMENTS.md`. 8 tests (92 total).
+
+Commit: `feat(payments): add NOWPayments adapter with IPN verification`.
+
 ---
 
 ## Decisions made this session

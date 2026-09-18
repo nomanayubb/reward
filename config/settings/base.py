@@ -306,6 +306,13 @@ PLATFORM_DEFAULTS = {
 GAMES_ROOT = BASE_DIR / "games"
 
 # --------------------------------------------------------------------------
+# Payment providers (secrets come from the environment; never hard-code)
+# --------------------------------------------------------------------------
+NOWPAYMENTS_API_KEY = env("NOWPAYMENTS_API_KEY", default="")
+NOWPAYMENTS_IPN_SECRET = env("NOWPAYMENTS_IPN_SECRET", default="")
+NOWPAYMENTS_SANDBOX = env.bool("NOWPAYMENTS_SANDBOX", default=True)
+
+# --------------------------------------------------------------------------
 # Logging
 # --------------------------------------------------------------------------
 LOGGING = {
