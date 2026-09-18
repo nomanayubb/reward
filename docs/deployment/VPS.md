@@ -95,7 +95,44 @@ docker compose -f docker-compose.prod.yml up -d --build
 
 Migrations run automatically on boot.
 
-## 8. Optional hardening
+## 8. Moving to another server (VPS → VPS)
+
+Because everything runs from Docker + GitHub and **the domain stays the same**,
+providers never need reconfiguring — their postback URLs keep working.
+
+On the **old** server:
+
+```bash
+docker compose -f docker-compose.prod.yml exec -T db pg_dump -U reward reward | gzip > reward.sql.gz
+tar czf media.tar.gz -C . media          # KYC files, proofs (if any)
+# copy both files to your machine or the new server (scp)
+```
+
+On the **new** server:
+
+```bash
+# 1. base setup
+curl -fsSL https://get.docker.com | sh
+git clone https://github.com/nayubb/reward.git && cd reward
+cp /path/to/your/.env .env               # the same secrets file
+
+# 2. start the database only, then restore the dump
+docker compose -f docker-compose.prod.yml up -d db redis
+gunzip -c reward.sql.gz | docker compose -f docker-compose.prod.yml exec -T db psql -U reward reward
+tar xzf media.tar.gz                     # restore media/ into the project
+
+# 3. start the rest (migrations are already in the dump; the entrypoint re-checks)
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+Finally: change your DNS `A` records to the new server IP. Caddy requests a
+fresh certificate automatically, and **no provider dashboard needs any change**
+(website and postback URLs are identical because the domain is the same).
+
+If you move before launch (no real data yet): skip the dump/restore, just
+deploy fresh and re-run `createsuperuser`.
+
+## 9. Optional hardening
 
 - `ufw allow 22,80,443/tcp && ufw enable`
 - Fail2ban for SSH
