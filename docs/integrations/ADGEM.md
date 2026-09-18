@@ -69,26 +69,34 @@ ADGEM_API_BASE=https://offer-api.adgem.com
 
 ## 3. Current blocker (checked live)
 
-Calling the token endpoint with the credential provided so far returns:
+The credential provided so far was tested against **both** AdGem APIs:
 
-```
-HTTP 401 {"error":"Unauthenticated."}
-```
+| Endpoint | Auth method | Result |
+| --- | --- | --- |
+| `POST https://offer-api.adgem.com/v1/users/token` | refresh-token exchange | `401 {"error":"Unauthenticated."}` |
+| `POST https://prism.adgem.com/v1/offers` | JWT bearer (Prism GraphQL) | `401 {"message":"Unauthorized"}` |
 
-That means the value is not an Offer-API **refresh token** (or the app is not
-active yet). Ask your AdGem Publisher Support Advocate, in one message:
+The token itself is a valid JWT but carries `"scopes":[]` (no permissions) —
+consistent with an app that is **not approved/activated yet** or a token
+issued before API access was enabled. No code change can fix this; AdGem has
+to activate the app and issue credentials for it.
 
-1. "Please confirm my app is approved/active."
-2. "Please issue an **Offer API refresh token** for app `<app id>` (dashboard →
-   Properties & Apps), or tell me exactly where to copy it."
+Ask your AdGem Publisher Support Advocate, in one message:
+
+1. "Please confirm my app is approved/active." (dashboard → Properties & Apps)
+2. "Please enable **API access** for app `<app id>` and tell me exactly where to
+   copy the credentials: the **Offer API refresh token** and/or the **Prism
+   JWT**."
 3. "Please enable **Server Postback** and give me the **Postback Key** and your
    **static postback IP** for whitelisting."
 4. "Please confirm in writing that **incentivized traffic is allowed** for my
    account (T&C §11.3) — required before I can show your offers."
 
-When the correct refresh token arrives: put it in `.env`, run
-`/admin-panel/providers/?tab=cpa` → **Test** → **Sync now**. The adapter is
-already tested against their documented payloads.
+When working credentials arrive: put them in `.env`, run
+`/admin-panel/providers/?tab=cpa` → **Test** → **Sync now**. The REST adapter
+is already built and unit-tested; if AdGem gives you Prism (GraphQL)
+credentials instead, say so and a Prism client will be added the same way
+(both are supported paths in our adapter design).
 
 ## 4. Compliance notes
 
