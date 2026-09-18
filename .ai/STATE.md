@@ -112,6 +112,11 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   limits, campaign cap, min age, expiry) plus an offer detail page
   (`/offers/<id>/`). Catalog row builders centralized in services. 6 tests
   (182 total).
+- Flexibility tooling: `docs/integrations/NETWORK_CATALOG.md` (34 catalogued
+  platforms + per-network credential requirements) and
+  `manage.py scaffold_provider <kind> <code>` which generates a full adapter
+  stub (CPA / survey / payment) with TODOs and prints the adapter path.
+  6 tests (188 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,

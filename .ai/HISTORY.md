@@ -175,6 +175,12 @@
   offer detail page. Catalog row logic centralized in
   `games.services.catalog_rows` / `offers.services.catalog_rows`. 6 tests
   (182 total).
+- Added flexibility tooling: `docs/integrations/NETWORK_CATALOG.md` (34
+  platforms across offerwalls, surveys, CPA and ad networks, with the six
+  credential values needed per network) and the
+  `manage.py scaffold_provider` command that generates a complete adapter stub
+  (CPA/survey/payment) with TODOs, refuses to overwrite, and prints the
+  adapter path for the admin. 6 tests (188 total).
 
 ### Tests
 

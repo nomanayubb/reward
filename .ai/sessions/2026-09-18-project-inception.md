@@ -461,6 +461,22 @@ Terms §11.3 require **prior written consent** for incentivized traffic and
 PayPal) / $100 (BTC) with no setup fee; BitLabs (Prodege) is net-30; AdGate
 Media is now part of Prodege.
 
+## 34. Network catalog + scaffolding (flexibility)
+
+**User:** asked for ten more platforms, a total list of what is required, and
+to keep the project flexible for adding more later.
+
+**Agent:** Wrote `docs/integrations/NETWORK_CATALOG.md`: 34 catalogued
+platforms (13 offerwalls/installs, 6 surveys, 7 CPA/lead-gen, 8 ad networks)
+with verified/candidate status, the six credential values needed per network
+and the exact "add a network" workflow. Added
+`manage.py scaffold_provider <kind> <code> [--name] [--dry-run]` which
+generates a full adapter stub (CPA / survey / payment) with TODO markers,
+never overwrites an existing file, and prints the adapter path to paste into
+the admin. 6 tests (188 total).
+
+Commit: `feat(adminpanel): add network catalog and provider scaffolding command`.
+
 ---
 
 ## Decisions made this session

@@ -47,6 +47,7 @@
 - [x] Eligibility engine + campaign quotas
 - [x] Idempotency on (provider, external_conversion_id)
 - [x] Multi-network admin console (tabs per network type; add / test / toggle / sync)
+- [x] Network catalog (34 platforms) + provider scaffolding command
 - [x] CPA onboarding checklist (`docs/integrations/CPA_ONBOARDING.md`)
 - [ ] Second CPA provider adapter
 - [x] Earn hub tabs (games / offers / surveys) with full per-offer rules
