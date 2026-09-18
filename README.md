@@ -35,8 +35,11 @@ pip install -r requirements/development.txt
 copy .env.example .env          # then edit
 python manage.py migrate
 python manage.py createsuperuser
-python manage.py runserver
+python manage.py runserver 127.0.0.1:8010
 ```
+
+> Dev server port is always **8010** (port 8000 is reserved for another
+> project on this machine). `scripts/dev.ps1` does this for you.
 
 ## Docker
 

@@ -24,7 +24,7 @@ env.read_env(str(BASE_DIR / ".env"))
 SECRET_KEY = env("SECRET_KEY", default="insecure-dev-key-change-me")
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
-SITE_URL = env("SITE_URL", default="http://localhost:8000")
+SITE_URL = env("SITE_URL", default="http://127.0.0.1:8010")
 
 # --------------------------------------------------------------------------
 # Applications

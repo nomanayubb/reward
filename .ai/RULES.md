@@ -147,6 +147,13 @@ Speed means efficient engineering. It does not mean skipping tests,
 migrations, validation, security, accounting controls or provider
 verification.
 
+## Rule 21 — Fixed Dev Port (8010)
+
+The reward platform dev server always runs on **127.0.0.1:8010**
+(`scripts/dev.ps1`, `python manage.py runserver 127.0.0.1:8010`). Port 8000 is
+reserved for another project on the developer's machine and must never be
+started, bound or claimed by this project (Docker publishes `8010:8000`).
+
 ## Detailed rule files
 
 - `.ai/CODING_RULES.md` — layering, style, naming, errors, tests
