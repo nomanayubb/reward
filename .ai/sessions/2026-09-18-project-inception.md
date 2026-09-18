@@ -366,6 +366,19 @@ comparing against Python's `gettext` module). 3 tests (153 total).
 
 Commit: `feat(i18n): add Urdu translations, language switcher and RTL support`.
 
+## 28. Offer click-through + survey start
+
+**User:** "next".
+
+**Agent:** Completed the user-facing earning actions: the offers page now has
+a Start button that runs eligibility, records an `OfferClick`, and redirects
+to the provider tracking URL tagged with the click id as `subid` (adapter
+tracking with graceful fallback); the surveys page has Start, which creates a
+`SurveySession` and redirects to the provider URL (graceful error when no
+provider link exists). 5 tests (158 total).
+
+Commit: `feat(offers,surveys): add click-through and survey start actions`.
+
 ---
 
 ## Decisions made this session

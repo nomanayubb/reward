@@ -142,6 +142,14 @@
   styles), and a pure-Python `.po`→`.mo` compiler
   (`scripts/compile_messages.py`) so translations build without gettext.
   3 tests (153 total).
+- Completed the earning actions: the offers page now has a Start action that
+  records an `OfferClick` and redirects to the provider tracking URL tagged
+  with the click id as `subid`; the surveys page has Start, which creates a
+  `SurveySession` and redirects to the provider URL. 5 tests (158 total).
+- Added remaining-limit visibility: offers show today/lifetime/campaign
+  completions left plus the daily reset time, exhausted offers move to a
+  "Not available right now" section with reasons; the games page shows plays
+  left today and the reward per game. 6 tests (164 total).
 
 ### Tests
 

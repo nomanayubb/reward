@@ -3,35 +3,72 @@
 {% block content %}
   <div class="card">
     <h1 style="margin-top:0;">Offers</h1>
-    <p class="muted">Only offers you are eligible for are shown. Conditions are always visible.</p>
+    <p class="muted">
+      Only offers you are eligible for are shown, with how many completions you have left.
+      Daily limits reset at {{ next_reset_at|date:"H:i" }} local time.
+    </p>
     {% if offers %}
       <table>
-        <thead><tr><th>Offer</th><th>Reward</th><th>Limits</th><th>Requirements</th></tr></thead>
+        <thead><tr><th>Offer</th><th>Reward</th><th>Left for you</th><th>Requirements</th><th></th></tr></thead>
         <tbody>
-          {% for offer in offers %}
+          {% for row in offers %}
             <tr>
               <td>
-                <strong>{{ offer.title }}</strong><br />
-                <span class="muted">{{ offer.provider.name }}{% if offer.category %} · {{ offer.category.name }}{% endif %}</span>
+                <strong>{{ row.offer.title }}</strong><br />
+                <span class="muted">{{ row.offer.provider.name }}{% if row.offer.category %} · {{ row.offer.category.name }}{% endif %}</span>
               </td>
               <td>
-                {{ offer.user_reward }} {{ offer.currency }}
-                {% if offer.points_reward %}<br /><span class="muted">{{ offer.points_reward }} pts</span>{% endif %}
+                {{ row.offer.user_reward }} {{ row.offer.currency }}
+                {% if row.offer.points_reward %}<br /><span class="muted">{{ row.offer.points_reward }} pts</span>{% endif %}
+              </td>
+              <td>
+                <span class="pill ok">{{ row.limits.daily_remaining }} today</span>
+                <span class="pill">{{ row.limits.lifetime_remaining }} lifetime</span>
+                {% if row.limits.campaign_remaining is not None %}
+                  <br /><span class="muted">{{ row.limits.campaign_remaining }} left in campaign today</span>
+                {% endif %}
               </td>
               <td class="muted">
-                {{ offer.daily_user_limit }}/day · {{ offer.lifetime_user_limit }} lifetime
+                {% if row.offer.countries %}Countries: {{ row.offer.countries|join:", " }}{% else %}All countries{% endif %}
+                {% if row.offer.devices %}<br />Devices: {{ row.offer.devices|join:", " }}{% endif %}
+                {% if row.offer.min_age %}<br />Age {{ row.offer.min_age }}+{% endif %}
               </td>
-              <td class="muted">
-                {% if offer.countries %}Countries: {{ offer.countries|join:", " }}{% else %}All countries{% endif %}
-                {% if offer.devices %}<br />Devices: {{ offer.devices|join:", " }}{% endif %}
-                {% if offer.min_age %}<br />Age {{ offer.min_age }}+{% endif %}
-              </td>
+              <td><a class="pill ok" href="{% url 'offer-start' row.offer.id %}">Start</a></td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
     {% else %}
-      <p class="muted">No offers available right now. Check back soon.</p>
+      <p class="muted">No offers available for you right now. Check back soon.</p>
     {% endif %}
   </div>
+
+  {% if unavailable %}
+    <div class="card">
+      <h2 style="margin-top:0;">Not available right now</h2>
+      <p class="muted">These offers are visible so you know they exist and why you cannot complete them yet.</p>
+      <table>
+        <thead><tr><th>Offer</th><th>Reward</th><th>Why</th></tr></thead>
+        <tbody>
+          {% for row in unavailable %}
+            <tr>
+              <td>{{ row.offer.title }}<br /><span class="muted">{{ row.offer.provider.name }}</span></td>
+              <td>{{ row.offer.user_reward }} {{ row.offer.currency }}</td>
+              <td class="muted">
+                {% if not row.limits.can_complete %}
+                  You have used all your completions ({{ row.limits.daily_completed }}/{{ row.limits.daily_limit }} today,
+                  {{ row.limits.lifetime_completed }}/{{ row.limits.lifetime_limit }} lifetime) — resets
+                  {{ next_reset_at|date:"H:i" }}.
+                {% elif row.reasons %}
+                  {{ row.reasons|join:", " }}
+                {% else %}
+                  Not eligible
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
 {% endblock %}

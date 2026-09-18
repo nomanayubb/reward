@@ -5,6 +5,7 @@ signature-validated and stores the raw payload for disputes (docs/DRD.md §23-24
 §105, §142).
 """
 import logging
+from datetime import datetime, time
 
 from django.db import transaction
 from django.utils import timezone
@@ -16,6 +17,49 @@ from .eligibility import evaluate_offer
 from .models import CampaignQuota, Offer, OfferClick, OfferConversion, OfferPostback
 
 logger = logging.getLogger(__name__)
+
+
+def next_reset_at():
+    """Next local midnight — when daily counters and limits reset."""
+    now = timezone.localtime()
+    tomorrow = (now + timezone.timedelta(days=1)).date()
+    naive = datetime.combine(tomorrow, time.min)
+    return timezone.make_aware(naive, timezone.get_current_timezone())
+
+
+def limit_status(user, offer: Offer) -> dict:
+    """Remaining completions for this user on this offer.
+
+    Used by the API and the offers page so users always see how many
+    completions they have left and when the counters reset (DRD §204).
+    """
+    completed = OfferConversion.objects.filter(user=user, offer=offer).exclude(
+        status=OfferConversion.Status.REJECTED
+    )
+    lifetime = completed.count()
+    daily = completed.filter(created_at__date=timezone.localdate()).count()
+
+    daily_remaining = max(0, offer.daily_user_limit - daily)
+    lifetime_remaining = max(0, offer.lifetime_user_limit - lifetime)
+
+    quota = getattr(offer, "quota", None)
+    campaign_remaining = None
+    if quota is not None and quota.daily_global_cap is not None:
+        campaign_remaining = max(0, quota.daily_global_cap - quota.conversions_today)
+
+    return {
+        "daily_completed": daily,
+        "daily_limit": offer.daily_user_limit,
+        "daily_remaining": daily_remaining,
+        "lifetime_completed": lifetime,
+        "lifetime_limit": offer.lifetime_user_limit,
+        "lifetime_remaining": lifetime_remaining,
+        "campaign_remaining": campaign_remaining,
+        "can_complete": daily_remaining > 0
+        and lifetime_remaining > 0
+        and (campaign_remaining is None or campaign_remaining > 0),
+        "next_reset_at": next_reset_at(),
+    }
 
 
 def record_click(user, offer: Offer, *, click_id: str, ip=None, device_hash="", user_agent="") -> OfferClick:
@@ -30,12 +74,25 @@ def record_click(user, offer: Offer, *, click_id: str, ip=None, device_hash="", 
 
 
 def get_click_url(user, offer: Offer, click: OfferClick) -> str:
-    """Provider tracking URL for the click, via the provider adapter."""
+    """Provider tracking URL for the click, via the provider adapter.
+
+    Falls back to the offer's stored tracking URL and always tags the click id
+    as ``subid`` so postbacks can be matched back to the user.
+    """
     from apps.cpa.providers.base import load_adapter
 
-    adapter = load_adapter(offer.provider)
-    url = adapter.track_click(offer, user, click.click_id)
-    return url or offer.tracking_url
+    url = ""
+    try:
+        adapter = load_adapter(offer.provider)
+        url = adapter.track_click(offer, user, click.click_id)
+    except Exception:
+        logger.exception("track_click failed for provider %s", offer.provider.code)
+
+    url = url or offer.tracking_url
+    if url and "subid=" not in url:
+        separator = "&" if "?" in url else "?"
+        url = f"{url}{separator}subid={click.click_id}"
+    return url
 
 
 @transaction.atomic

@@ -6,7 +6,7 @@
     <p class="muted">Complete a survey and earn after the provider confirms it.</p>
     {% if surveys %}
       <table>
-        <thead><tr><th>Survey</th><th>Reward</th><th>Time</th><th>Eligibility</th></tr></thead>
+        <thead><tr><th>Survey</th><th>Reward</th><th>Time</th><th>Eligibility</th><th></th></tr></thead>
         <tbody>
           {% for survey in surveys %}
             <tr>
@@ -17,6 +17,7 @@
                 {% if survey.country %}{{ survey.country }}{% else %}All countries{% endif %}
                 {% if survey.device %} · {{ survey.device }}{% endif %}
               </td>
+              <td><a class="pill ok" href="{% url 'survey-start' survey.id %}">Start</a></td>
             </tr>
           {% endfor %}
         </tbody>

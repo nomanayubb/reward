@@ -48,7 +48,8 @@
 - [x] Idempotency on (provider, external_conversion_id)
 - [ ] First real CPA provider adapter
 - [ ] Second CPA provider adapter
-- [ ] Offer list/detail API + pages
+- [x] Remaining-limit visibility (offers: today/lifetime left; games: plays left)
+- [x] Offer click-through (Start → click recorded → provider redirect with subid)
 - [ ] Provider reconciliation job
 
 ## P3 — Surveys
@@ -57,7 +58,8 @@
 - [x] Survey model, sessions, completions
 - [x] Idempotent completion processing
 - [ ] First real survey provider adapter
-- [ ] Survey wall API + pages
+- [x] Survey wall API + pages
+- [x] Survey start (session created → provider redirect)
 
 ## P4 — Payments
 

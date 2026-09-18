@@ -83,6 +83,14 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   automatic RTL direction, and a pure-Python `.po`→`.mo` compiler
   (`scripts/compile_messages.py`) for machines without gettext. 3 tests
   (153 total).
+- Earning actions complete: offer Start records an `OfferClick` and redirects
+  to the provider tracking URL with the click id as `subid`; survey Start
+  creates a `SurveySession` and redirects to the provider URL (graceful errors
+  when a provider link is unavailable). 5 tests (158 total).
+- Remaining-limit visibility live: offers show how many completions a user has
+  left (today + lifetime + campaign) with the reset time, and exhausted offers
+  appear in a "Not available right now" section with the reason; the games
+  page shows plays left today and the reward per game. 6 tests (164 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
