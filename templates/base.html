@@ -1,9 +1,9 @@
-{% load static %}<!doctype html>
-<html lang="en">
+{% load static %}{% load i18n %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}Reward Platform{% endblock %}</title>
+  <title>{% block title %}{% trans "Rewards" %}{% endblock %}</title>
   <style>
     :root { --bg:#0f1218; --panel:#171b26; --line:#242a3a; --text:#e8ecf1; --muted:#98a1b3; --accent:#7dd3fc; --good:#4ade80; --bad:#f87171; }
     * { box-sizing: border-box; }
@@ -22,7 +22,7 @@
     .muted { color:var(--muted); }
     .row { display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; }
     table { width:100%; border-collapse:collapse; font-size:.92rem; }
-    th, td { text-align:left; padding:.45rem .4rem; border-bottom:1px solid var(--line); }
+    th, td { text-align:start; padding:.45rem .4rem; border-bottom:1px solid var(--line); }
     th { color:var(--muted); font-weight:600; }
     input, select, button, textarea { font:inherit; padding:.55rem .7rem; border-radius:9px; border:1px solid var(--line); background:#0d1017; color:var(--text); }
     button.primary { background:var(--accent); color:#08131f; border:0; font-weight:700; cursor:pointer; }
@@ -34,31 +34,46 @@
     .errorlist { color:var(--bad); list-style:none; padding:0; margin:.2rem 0; font-size:.85rem; }
     label { display:block; margin:.5rem 0 .2rem; color:var(--muted); font-size:.85rem; }
     form.inline { display:inline; }
+    /* RTL adjustments */
+    html[dir="rtl"] body { font-family: "Noto Nastaliq Urdu", "Segoe UI", system-ui, sans-serif; }
+    html[dir="rtl"] header.top .brand { margin-right:0; margin-left:.5rem; }
+    html[dir="rtl"] .stat, html[dir="rtl"] h1, html[dir="rtl"] h2 { text-align:right; }
   </style>
 </head>
 <body>
   <header class="top">
-    <span class="brand"><a href="{% url 'dashboard' %}">Rewards</a></span>
+    <span class="brand"><a href="{% url 'dashboard' %}">{% trans "Rewards" %}</a></span>
     <nav>
-      <a href="{% url 'game-list-page' %}">Games</a>
-      <a href="{% url 'offer-list-page' %}">Offers</a>
-      <a href="{% url 'survey-list-page' %}">Surveys</a>
-      <a href="{% url 'wallet-page' %}">Wallet</a>
-      <a href="{% url 'deposit-page' %}">Deposit</a>
-      <a href="{% url 'withdraw-page' %}">Withdraw</a>
-      <a href="{% url 'notification-page' %}">Alerts</a>
+      <a href="{% url 'game-list-page' %}">{% trans "Games" %}</a>
+      <a href="{% url 'offer-list-page' %}">{% trans "Offers" %}</a>
+      <a href="{% url 'survey-list-page' %}">{% trans "Surveys" %}</a>
+      <a href="{% url 'wallet-page' %}">{% trans "Wallet" %}</a>
+      <a href="{% url 'deposit-page' %}">{% trans "Deposit" %}</a>
+      <a href="{% url 'withdraw-page' %}">{% trans "Withdraw" %}</a>
+      <a href="{% url 'notification-page' %}">{% trans "Alerts" %}</a>
     </nav>
     <span class="spacer"></span>
+    <form class="inline" method="post" action="{% url 'set_language' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}" />
+      {% get_current_language as CURRENT_LANGUAGE %}
+      {% get_available_languages as AVAILABLE_LANGUAGES %}
+      <select name="language" onchange="this.form.submit()" aria-label="{% trans 'Language' %}">
+        {% for code, name in AVAILABLE_LANGUAGES %}
+          <option value="{{ code }}" {% if code == CURRENT_LANGUAGE %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+    </form>
     {% if user.is_authenticated %}
-      {% if user.is_staff %}<a href="{% url 'admin-dashboard' %}">Admin</a>{% endif %}
+      {% if user.is_staff %}<a href="{% url 'admin-dashboard' %}">{% trans "Admin" %}</a>{% endif %}
       <span class="who">{{ user.email }}</span>
       <form class="inline" method="post" action="{% url 'logout-page' %}">
         {% csrf_token %}
-        <button type="submit">Log out</button>
+        <button type="submit">{% trans "Log out" %}</button>
       </form>
     {% else %}
-      <a href="{% url 'login-page' %}">Log in</a>
-      <a href="{% url 'register-page' %}">Register</a>
+      <a href="{% url 'login-page' %}">{% trans "Log in" %}</a>
+      <a href="{% url 'register-page' %}">{% trans "Register" %}</a>
     {% endif %}
   </header>
 

@@ -1,6 +1,6 @@
-{% if ad_slot %}
+{% load i18n %}{% if ad_slot %}
   <div class="card" style="padding:.8rem;">
-    <span class="pill">Sponsored</span>
+    <span class="pill">{% trans "Sponsored" %}</span>
     <a href="{% url 'ad-click' ad_slot.impression.id %}" rel="noopener sponsored">
       {% if ad_slot.campaign.image %}
         <img src="{{ ad_slot.campaign.image.url }}" alt="{{ ad_slot.campaign.name }}" style="max-width:100%;border-radius:8px;margin-top:.5rem;" />

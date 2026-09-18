@@ -79,6 +79,10 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - Reports live: CSV exports (users, financial/rewards, withdrawals, offers)
   generated via `apps/reports` services + Celery task, with the admin page
   `/admin-panel/reports/` (24h expiry). 4 tests (150 total).
+- i18n live: language switcher, Urdu catalogue (navigation/dashboard),
+  automatic RTL direction, and a pure-Python `.po`→`.mo` compiler
+  (`scripts/compile_messages.py`) for machines without gettext. 3 tests
+  (153 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
@@ -99,8 +103,8 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 1. Real provider adapters (CPA, survey, EasyPaisa) — needs network choices
    (`.ai/REQUIREMENTS.md`)
-2. Urdu/i18n + RTL, ad network integration
-3. Deeper analytics dashboards, reconciliation workflow
+2. Ad network integration, deeper analytics dashboards, reconciliation workflow
+3. Remaining translations (beyond navigation) as the UI grows
 
 ## Known Problems
 
@@ -110,6 +114,7 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - Ad network integration not done (house/direct serving is live; networks need
   policy verification first — ADR-013)
 - Reports run inline (switch to Celery `.delay()` once a worker is deployed)
+- Urdu catalogue covers navigation/dashboard strings only
 - Test coverage gaps: postback end-to-end, quota edge cases, true parallel
   concurrency
 

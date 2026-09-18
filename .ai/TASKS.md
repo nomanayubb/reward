@@ -96,6 +96,7 @@
 - [ ] Public pages + sitemaps
 - [ ] Blog rendering
 - [ ] Structured data + performance budget
+- [x] Urdu/i18n + RTL (language switcher, translated nav, pure-Python .mo compiler)
 
 ## P8 — Production
 

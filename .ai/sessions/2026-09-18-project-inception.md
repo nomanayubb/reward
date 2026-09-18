@@ -353,6 +353,19 @@ and offer conversions, with the admin page `/admin-panel/reports/` (generate
 
 Commit: `feat(reports): add CSV report generation and admin reports page`.
 
+## 27. Urdu / i18n + RTL
+
+**User:** "NEXTNEXT".
+
+**Agent:** Added internationalization: language switcher in the header,
+Urdu (`ur`) catalogue for navigation and dashboard strings, automatic
+`dir="rtl"` with RTL font/spacing adjustments, and a pure-Python `.po`→`.mo`
+compiler (`scripts/compile_messages.py`) so translations build on machines
+without gettext (the first version had wrong offsets — caught and fixed by
+comparing against Python's `gettext` module). 3 tests (153 total).
+
+Commit: `feat(i18n): add Urdu translations, language switcher and RTL support`.
+
 ---
 
 ## Decisions made this session

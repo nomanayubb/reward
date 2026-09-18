@@ -1,42 +1,43 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Dashboard" %}{% endblock %}
 {% block content %}
   <div class="grid">
     <div class="card">
-      <div class="muted">Available balance ({{ wallet.currency }})</div>
+      <div class="muted">{% trans "Available balance" %} ({{ wallet.currency }})</div>
       <div class="stat">{{ cash }}</div>
     </div>
     <div class="card">
-      <div class="muted">Pending</div>
+      <div class="muted">{% trans "Pending" %}</div>
       <div class="stat">{{ pending }}</div>
     </div>
     <div class="card">
-      <div class="muted">Locked (withdrawals)</div>
+      <div class="muted">{% trans "Locked (withdrawals)" %}</div>
       <div class="stat">{{ locked }}</div>
     </div>
     <div class="card">
-      <div class="muted">Points</div>
+      <div class="muted">{% trans "Points" %}</div>
       <div class="stat">{{ points }}</div>
     </div>
   </div>
 
   <div class="card">
-    <h2 style="margin-top:0;">Earn</h2>
+    <h2 style="margin-top:0;">{% trans "Earn" %}</h2>
     <div class="row">
-      <a class="pill" href="{% url 'game-list-page' %}">Play games</a>
-      <a class="pill" href="{% url 'offer-list-page' %}">Offers</a>
-      <a class="pill" href="{% url 'survey-list-page' %}">Surveys</a>
-      <a class="pill" href="{% url 'deposit-page' %}">Deposit</a>
-      <a class="pill" href="{% url 'withdraw-page' %}">Withdraw</a>
-      <a class="pill" href="{% url 'kyc-page' %}">Verify ID</a>
-      <a class="pill" href="{% url 'notification-page' %}">Alerts ({{ unread_notifications }})</a>
+      <a class="pill" href="{% url 'game-list-page' %}">{% trans "Play games" %}</a>
+      <a class="pill" href="{% url 'offer-list-page' %}">{% trans "Offers" %}</a>
+      <a class="pill" href="{% url 'survey-list-page' %}">{% trans "Surveys" %}</a>
+      <a class="pill" href="{% url 'deposit-page' %}">{% trans "Deposit" %}</a>
+      <a class="pill" href="{% url 'withdraw-page' %}">{% trans "Withdraw" %}</a>
+      <a class="pill" href="{% url 'kyc-page' %}">{% trans "Verify ID" %}</a>
+      <a class="pill" href="{% url 'notification-page' %}">{% trans "Alerts" %} ({{ unread_notifications }})</a>
     </div>
   </div>
 
   {% include "advertising/ad_slot.html" %}
 
   <div class="card">
-    <h2 style="margin-top:0;">Recent rewards</h2>
+    <h2 style="margin-top:0;">{% trans "Recent rewards" %}</h2>
     {% if recent_rewards %}
       <table>
         <thead><tr><th>Date</th><th>Source</th><th>Amount</th><th>Status</th></tr></thead>

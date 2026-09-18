@@ -35,6 +35,7 @@ urlpatterns = [
     path("kyc/", include("apps.kyc.web_urls")),
     path("admin-panel/", include("apps.adminpanel.web_urls")),
     path("ads/", include("apps.advertising.urls")),
+    path("i18n/", include("django.conf.urls.i18n")),
     # Game hosting
     path("play/<slug:slug>/", GamePlayerView.as_view(), name="game-player"),
     path("games/<slug:slug>/<path:asset>", GameAssetView.as_view(), name="game-asset"),
