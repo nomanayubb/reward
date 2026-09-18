@@ -197,6 +197,23 @@ in PKR. Planned four migration slices.
 
 Commits: `d03b973` (slice 1), slice 2 commit.
 
+## 15. PKR migration slices 3-4 (complete)
+
+**User:** "next" — continue the planned slices.
+
+**Agent:**
+
+- Slice 3: withdrawal limits are configured in PKR
+  (`MIN/MAX_WITHDRAWAL_PKR`, `KYC_THRESHOLD_PKR`, `AUTO_PAYOUT_MAX_PKR`,
+  `DUAL_APPROVAL_THRESHOLD_PKR`) and converted for other wallet currencies;
+  5 new limit tests; DRD W5/W6 updated.
+- Slice 4: wallet summary now returns per-currency buckets
+  (`balances`: PKR primary + USD) plus the existing primary-currency fields;
+  API docs updated to mark auth/wallets/ledger live. The PKR migration
+  (ADR-015) is complete.
+
+Commits: `377a14f` (slice 3), slice 4 commit. 48 tests total.
+
 ---
 
 ## Decisions made this session

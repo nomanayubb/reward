@@ -69,9 +69,9 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Known Problems
 
-- Currency migration (ADR-015): slice 3 done — withdrawal limits (min/max,
-  KYC threshold, auto-payout, dual-approval) are configured in PKR and
-  converted for other wallet currencies; slice 4 pending (API/docs polish)
+- Currency migration (ADR-015): **complete** — multi-currency wallets,
+  per-currency ledger integrity, PKR rewards with stored exchange rate,
+  PKR-based withdrawal limits, dual-currency wallet summary
 - User-facing layer incomplete: auth + wallet + ledger read APIs done;
   offers/withdrawals endpoints and all pages still missing
 - Custom admin UI not built (Django admin works; dashboard/queue/config UI do not)

@@ -6,10 +6,10 @@ OpenAPI schema: `/api/v1/schema/` · Swagger UI: `/api/v1/docs/`
 
 | Prefix | Module | Status |
 | --- | --- | --- |
-| `/api/v1/auth/` | accounts | planned (stub) |
+| `/api/v1/auth/` | accounts | **live** — register, login, logout, me |
 | `/api/v1/users/` | users | planned (stub) |
-| `/api/v1/wallets/` | wallets | planned (stub) |
-| `/api/v1/ledger/` | ledger | planned (stub) |
+| `/api/v1/wallets/` | wallets | **live** — `GET summary/` (PKR + USD buckets) |
+| `/api/v1/ledger/` | ledger | **live** — `GET transactions/` (type/status filters) |
 | `/api/v1/rewards/` | rewards | planned (stub) |
 | `/api/v1/deposits/` | deposits | planned (stub) |
 | `/api/v1/withdrawals/` | withdrawals | planned (stub) |

@@ -76,6 +76,9 @@
   (`MIN/MAX_WITHDRAWAL_PKR`, `KYC_THRESHOLD_PKR`, `AUTO_PAYOUT_MAX_PKR`,
   `DUAL_APPROVAL_THRESHOLD_PKR`) and converted per wallet currency; 5 new
   limit tests (47 total). Docs updated (DRD W5/W6).
+- ADR-015 slice 4 (migration complete): wallet summary returns per-currency
+  buckets (`balances` list, PKR primary + USD) alongside the primary-currency
+  fields; API docs updated to mark auth/wallets/ledger as live. 48 tests.
 
 ### Tests
 

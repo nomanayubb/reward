@@ -77,3 +77,26 @@ def test_summary_isolates_users(client, user):
     response = client.get(SUMMARY_URL)
 
     assert Decimal(response.data["cash"]) == Decimal("0")
+
+
+def test_summary_includes_both_currencies(client, user):
+    RewardService.award_fixed(
+        user=user, source=Reward.Source.PROMOTION, cash=Decimal("100"), source_reference="pkr-side"
+    )
+    RewardService.award_fixed(
+        user=user,
+        source=Reward.Source.PROMOTION,
+        cash=Decimal("5.00"),
+        currency="USD",
+        source_reference="usd-side",
+    )
+
+    client.force_login(user)
+    response = client.get(SUMMARY_URL)
+
+    assert response.data["currency"] == "PKR"
+    assert Decimal(response.data["cash"]) == Decimal("100")
+
+    balances = {bucket["currency"]: bucket for bucket in response.data["balances"]}
+    assert Decimal(balances["PKR"]["cash"]) == Decimal("100")
+    assert Decimal(balances["USD"]["cash"]) == Decimal("5.00")

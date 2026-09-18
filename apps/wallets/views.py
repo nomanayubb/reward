@@ -11,7 +11,9 @@ from rest_framework.views import APIView
 
 from .models import WalletAccount
 from .serializers import WalletSummarySerializer
-from .services import POINTS_CURRENCY, get_wallet
+from .services import POINTS_CURRENCY, SUPPORTED_CURRENCIES, get_wallet
+
+ZERO = Decimal("0")
 
 
 class WalletSummaryView(APIView):
@@ -21,25 +23,48 @@ class WalletSummaryView(APIView):
         wallet = get_wallet(request.user)
         accounts = list(wallet.accounts.all())
 
-        money_accounts = [account for account in accounts if account.currency == wallet.currency]
-        by_type = {account.type: account.balance for account in money_accounts}
+        by_currency: dict[str, dict[str, Decimal]] = {}
+        for account in accounts:
+            if account.currency not in SUPPORTED_CURRENCIES:
+                continue
+            by_currency.setdefault(account.currency, {})[account.type] = account.balance
+
+        ordered_currencies = [wallet.currency] + [
+            currency for currency in by_currency if currency != wallet.currency
+        ]
+        balances = [
+            {
+                "currency": currency,
+                "cash": by_currency[currency].get(WalletAccount.Type.CASH, ZERO),
+                "pending": by_currency[currency].get(WalletAccount.Type.PENDING, ZERO),
+                "locked": by_currency[currency].get(WalletAccount.Type.LOCKED, ZERO),
+                "bonus": by_currency[currency].get(WalletAccount.Type.BONUS, ZERO),
+            }
+            for currency in ordered_currencies
+            if currency in by_currency
+        ]
+
+        primary = next(
+            (bucket for bucket in balances if bucket["currency"] == wallet.currency),
+            {"cash": ZERO, "pending": ZERO, "locked": ZERO, "bonus": ZERO},
+        )
         points = next(
             (
                 account.balance
                 for account in accounts
-                if account.type == WalletAccount.Type.POINTS
-                and account.currency == POINTS_CURRENCY
+                if account.type == WalletAccount.Type.POINTS and account.currency == POINTS_CURRENCY
             ),
-            Decimal("0"),
+            ZERO,
         )
 
         data = {
             "currency": wallet.currency,
-            "cash": by_type.get(WalletAccount.Type.CASH, Decimal("0")),
-            "pending": by_type.get(WalletAccount.Type.PENDING, Decimal("0")),
-            "locked": by_type.get(WalletAccount.Type.LOCKED, Decimal("0")),
-            "bonus": by_type.get(WalletAccount.Type.BONUS, Decimal("0")),
+            "cash": primary["cash"],
+            "pending": primary["pending"],
+            "locked": primary["locked"],
+            "bonus": primary["bonus"],
             "points": points,
-            "accounts": money_accounts,
+            "balances": balances,
+            "accounts": [a for a in accounts if a.currency in SUPPORTED_CURRENCIES],
         }
         return Response(WalletSummarySerializer(data).data)
