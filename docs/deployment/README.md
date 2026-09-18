@@ -14,6 +14,12 @@ python manage.py runserver
 SQLite and locmem cache are used automatically when `DATABASE_URL`/`REDIS_URL`
 are unset.
 
+## Own server (recommended for launch)
+
+`docker-compose.prod.yml` + Caddy runs the full stack (Django, PostgreSQL,
+Redis, Celery, automatic HTTPS) on any VPS with **no PaaS dependency**.
+Step-by-step guide: **`docs/deployment/VPS.md`**.
+
 ## Free public URL (for provider review, e.g. AdGem)
 
 You need a live URL before payment/CPA networks will approve you. Two free

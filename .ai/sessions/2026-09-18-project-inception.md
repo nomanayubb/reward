@@ -506,6 +506,21 @@ three free options. 194 tests still green.
 
 Commit: `chore(deploy): add free deployment path (Render blueprint and tunnel script)`.
 
+## 37. Own-server deployment (no PaaS dependency)
+
+**User:** "but we dont have to dependent on render as project finished" — they
+want full independence once the project is done.
+
+**Agent:** Added the own-server production stack: `docker-compose.prod.yml`
+(PostgreSQL, Redis, web, Celery worker + beat, **Caddy with automatic
+Let's Encrypt HTTPS**), `docker/Caddyfile` (static/media + reverse proxy),
+`DOMAIN`/`POSTGRES_*` keys in `.env.example`, and `docs/deployment/VPS.md`
+with the full walkthrough (VPS, Docker install, DNS, deploy, createsuperuser,
+daily pg_dump backup cron, update flow, hardening, and the checklist for
+switching providers from a temporary URL to the real domain). 194 tests green.
+
+Commit: `chore(deploy): add own-server production stack (Caddy + VPS guide)`.
+
 ---
 
 ## Decisions made this session

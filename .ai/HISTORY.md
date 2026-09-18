@@ -193,6 +193,11 @@
   `scripts/public-tunnel.ps1` for an instant temporary public URL. Production
   settings now run without Redis (locmem fallback) and trust Render's
   hostname automatically. Deployment docs updated.
+- Added the own-server (no PaaS dependency) production stack:
+  `docker-compose.prod.yml` with PostgreSQL, Redis, web, Celery worker/beat and
+  Caddy (automatic Let's Encrypt HTTPS), `docker/Caddyfile`, `.env` keys for
+  DOMAIN/POSTGRES_*, and `docs/deployment/VPS.md` (server setup, DNS, deploy,
+  backups, and the checklist for moving off a temporary URL).
 
 ### Tests
 

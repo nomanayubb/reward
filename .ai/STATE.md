@@ -126,6 +126,10 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   `scripts/public-tunnel.ps1` (instant temporary URL via cloudflared);
   `docker/start.sh` is the container entrypoint (migrate → collectstatic →
   seed → gunicorn); production settings work without Redis.
+- Own-server (no PaaS dependency) path ready: `docker-compose.prod.yml`
+  (PostgreSQL + Redis + web + worker + beat + **Caddy with automatic HTTPS**),
+  `docker/Caddyfile`, and the step-by-step `docs/deployment/VPS.md` guide
+  (server, DNS, deploy, backups, migration from the temporary URL).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
