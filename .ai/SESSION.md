@@ -33,5 +33,6 @@ ledger read endpoints. Follow `AGENTS.md` §2 (take the next task from
 
 ## Blocking / Notes
 
-- Add a Git remote before pushing: `git remote add origin <github-url>`
+- Remote configured: `origin` → https://github.com/nomanayubb/reward.git
 - Git identity is set locally: noman <nomanayubb@gmail.com>
+- Follow-up: configure/fix `ruff` so `scripts/project-check` passes end-to-end

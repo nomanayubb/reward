@@ -53,8 +53,8 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 - Business API endpoints are empty stubs (only schema/docs/callbacks exist)
 - No real provider adapters implemented yet (interfaces only)
 - No frontend templates yet
-- No Git remote configured — push is not possible until one is added
-  (`git remote add origin <url>`)
+- `ruff` reports 321 findings (no config yet) — `scripts/project-check` fails
+  at the lint step until configured/fixed
 
 ## Important Decisions
 
@@ -70,6 +70,6 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 ## Current Git
 
 Branch: main
-Last known commit: 0e69b96
-Remote: none configured
+Last known commit: 5e29c59
+Remote: origin — https://github.com/nomanayubb/reward.git
 Working tree: clean
