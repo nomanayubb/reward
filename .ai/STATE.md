@@ -35,6 +35,8 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   GitHub Actions CI, docs folder structure
 - Ruff configured (`ruff.toml`); `scripts/project-check` passes end-to-end
   (Django check + migrations + tests + lint)
+- Auth API live: `/api/v1/auth/register|login|logout|me/` with 8 tests
+  (19 tests total)
 - Git repository initialized; initial commit created
 
 ## In Progress
@@ -43,17 +45,18 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
 
 ## Next
 
-1. User REST API — start with auth (register/login/logout/me) + tests
-2. Wallet + ledger read endpoints
-3. Game SDK + first game package
-4. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
-5. Frontend templates (home, earn, wallet, withdraw, dashboard)
-6. Custom admin UI (dashboard, withdrawal queue, config center)
+1. Wallet + ledger read endpoints (balance summary, transaction history)
+2. Offers / games / surveys listing endpoints
+3. Withdrawal request/list endpoints
+4. Game SDK + first game package
+5. Real provider adapters (CPA, survey, NOWPayments, EasyPaisa)
+6. Frontend templates (home, earn, wallet, withdraw, dashboard)
+7. Custom admin UI (dashboard, withdrawal queue, config center)
 
 ## Known Problems
 
-- Business API endpoints are empty stubs (only schema/docs/callbacks exist)
-- User-facing layer missing: no pages, no auth endpoints
+- User-facing layer incomplete: auth API done; wallet/offers/withdrawals
+  endpoints and all pages still missing
 - Custom admin UI not built (Django admin works; dashboard/queue/config UI do not)
 - Test coverage gaps: deposits, postback end-to-end, quotas/eligibility,
   true parallel concurrency, points ledger

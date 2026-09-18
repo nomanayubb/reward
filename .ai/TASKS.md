@@ -17,7 +17,11 @@
 - [x] Ruff configuration (project-check passes end-to-end)
 - [ ] Extra test coverage: deposits, postback end-to-end, quotas/eligibility,
       true parallel concurrency, points ledger
-- [ ] User-facing REST API (auth, wallet, ledger, offers, withdrawals, notifications)
+- [x] Auth API (register/login/logout/me) + 8 tests
+- [ ] Wallet + ledger read endpoints
+- [ ] Offers / surveys / games listing endpoints
+- [ ] Withdrawal request/list endpoints
+- [ ] Notifications endpoints
 - [ ] Frontend templates (home, earn, wallet, withdraw, dashboard)
 
 ## P1 — Games

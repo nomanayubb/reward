@@ -43,6 +43,10 @@
 - Configured `ruff` (`ruff.toml`, Django-aware rule set) and fixed all lint
   findings (import sorting, unused imports, simplifications, `StrEnum`);
   `scripts/project-check` now passes end-to-end.
+- Added the auth API (`apps/accounts`: serializers, views, routes) —
+  `POST /api/v1/auth/register/`, `login/`, `logout/`, `GET me/` — with 8 API
+  tests (19 tests total). Registration reuses `register_user` (wallet +
+  referral provisioning) and applies Django password validators.
 
 ### Tests
 

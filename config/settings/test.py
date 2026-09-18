@@ -29,3 +29,12 @@ STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.InMemoryStorage"},
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
+
+# Throttling is disabled in tests so repeated auth calls never flake.
+REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = dict.fromkeys(  # noqa: F405
+    REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"], None  # noqa: F405
+)
+
+# Static-file serving middleware is irrelevant in tests (and warns when
+# staticfiles/ has not been collected).
+MIDDLEWARE = [m for m in MIDDLEWARE if "whitenoise" not in m]  # noqa: F405
