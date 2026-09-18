@@ -203,6 +203,11 @@
   Redis, and the Render hostname check reduced to an optional convenience that
   is ignored elsewhere. Verified with a production smoke test and the full
   suite (194 tests).
+- Added SEO essentials: `/robots.txt` (allows the landing page and CMS pages,
+  disallows app/admin/api paths), `/sitemap.xml` (landing page + published CMS
+  pages) and per-path metadata from `SEOConfig` (title, description, robots,
+  canonical, OG tags) through a cached context processor with safe defaults.
+  5 tests (199 total).
 
 ### Tests
 

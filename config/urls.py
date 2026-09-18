@@ -7,10 +7,18 @@ Web pages are rendered by each app's ``urls.py``; JSON APIs live under
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from apps.games.views import GameAssetView, GamePlayerView
+from apps.seo.sitemaps import CMSPageSitemap, StaticViewSitemap
+from apps.seo.views import robots_txt
+
+sitemaps = {
+    "static": StaticViewSitemap,
+    "pages": CMSPageSitemap,
+}
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -40,6 +48,9 @@ urlpatterns = [
     # Game hosting
     path("play/<slug:slug>/", GamePlayerView.as_view(), name="game-player"),
     path("games/<slug:slug>/<path:asset>", GameAssetView.as_view(), name="game-asset"),
+    # SEO
+    path("robots.txt", robots_txt, name="robots-txt"),
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
 ]
 
 if settings.DEBUG:

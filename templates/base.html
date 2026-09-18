@@ -3,7 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}{% trans "Rewards" %}{% endblock %}</title>
+  <title>{% block title %}{% if seo.title %}{{ seo.title }}{% else %}{% trans "Rewards" %}{% endif %}{% endblock %}</title>
+  <meta name="description" content="{% if seo.description %}{{ seo.description }}{% else %}{% trans "Earn rewards for games, surveys and offers. Track every reward in your wallet and withdraw through supported payment methods." %}{% endif %}" />
+  {% if seo.robots %}<meta name="robots" content="{{ seo.robots }}" />{% endif %}
+  {% if seo.canonical %}<link rel="canonical" href="{{ seo.canonical }}" />{% endif %}
+  <meta property="og:title" content="{% firstof seo.og_title seo.title %}" />
+  <meta property="og:description" content="{% firstof seo.og_description seo.description %}" />
+  {% if seo.og_image %}<meta property="og:image" content="{{ seo.og_image }}" />{% endif %}
   <style>
     :root { --bg:#0f1218; --panel:#171b26; --line:#242a3a; --text:#e8ecf1; --muted:#98a1b3; --accent:#7dd3fc; --good:#4ade80; --bad:#f87171; }
     * { box-sizing: border-box; }

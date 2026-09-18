@@ -536,6 +536,19 @@ smoke test (`manage.py check` with production settings) and the full suite
 
 Commit: `refactor(settings): make production host configuration environment-driven`.
 
+## 39. SEO essentials
+
+**User:** "next".
+
+**Agent:** Added `/robots.txt` (landing + CMS pages allowed; admin, api and all
+app paths disallowed), `/sitemap.xml` (landing page + published CMS pages),
+and per-path metadata (title, description, robots, canonical, OG tags) driven
+by the `SEOConfig` model through a cached context processor with safe
+defaults. Fixed a template bug (filter arguments cannot resolve missing
+context keys — switched to `firstof`/conditionals). 5 tests (199 total).
+
+Commit: `feat(seo): add robots.txt, sitemap and per-page metadata`.
+
 ---
 
 ## Decisions made this session

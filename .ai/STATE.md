@@ -134,6 +134,10 @@ Repository + AI development protocol are in place. Next: user-facing REST API.
   (`ALLOWED_HOSTS`, `EXTRA_ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, optional
   Redis); the only Render-aware line is an optional hostname auto-detect that
   is ignored elsewhere. Verified with a production-settings smoke test.
+- SEO live: `/robots.txt` (public pages allowed, app/admin disallowed),
+  `/sitemap.xml` (landing + published CMS pages) and per-path metadata from
+  `SEOConfig` (title, description, robots, canonical, OG tags) via a cached
+  context processor. 5 tests (199 total).
 - Fixed reward-engine bugs found while building the wallet API: points were
   double-credited and duplicate points accounts existed (ADR-014)
 - Currency migration (ADR-015): slices 1-2 done — multi-currency wallets,
