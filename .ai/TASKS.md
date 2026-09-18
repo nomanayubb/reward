@@ -50,6 +50,7 @@
 - [x] Network catalog (34 platforms) + provider scaffolding command
 - [x] CPA onboarding checklist (`docs/integrations/CPA_ONBOARDING.md`)
 - [x] AdGem adapter (Offer API + v3 signed postbacks; credential pending approval)
+- [x] AdGem Prism (GraphQL) mode support (`mode: prism` in provider config)
 - [x] AdGem Web Offerwall page (`/offers/offerwall/adgem/`, player-id based)
 - [x] AdGem Reporting API + reconciliation (`manage.py reconcile_provider`)
 - [ ] Second CPA provider adapter

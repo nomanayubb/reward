@@ -114,6 +114,56 @@ def test_missing_refresh_token_raises(adapter):
         adapter._exchange_token()
 
 
+def test_prism_mode_uses_graphql(provider, monkeypatch):
+    provider.config = {"mode": "prism", "incentive_allowed": True}
+    provider.save(update_fields=["config"])
+    adapter = AdgemAdapter(provider)
+
+    captured = {}
+
+    def fake_prism_request(query, variables):
+        captured["query"] = query
+        captured["variables"] = variables
+        return {
+            "data": {
+                "offers": [
+                    {
+                        "id": "p1",
+                        "name": "Prism Offer",
+                        "total_payout_usd": 2.5,
+                        "creatives": {"name": "Prism Offer", "description": "Do it"},
+                    }
+                ]
+            }
+        }
+
+    monkeypatch.setattr(adapter, "_prism_request", fake_prism_request)
+
+    offers = adapter.get_offers()
+
+    assert len(offers) == 1
+    assert offers[0].external_id == "p1"
+    assert offers[0].payout == Decimal("2.5")
+    assert offers[0].incentive_allowed is True
+    assert "offers(player_id" in captured["query"]
+    assert captured["variables"]["playerId"] == "catalog"
+
+
+@override_settings(ADGEM_REFRESH_TOKEN="refresh-123")
+def test_prism_token_is_exchanged_and_cached(adapter, monkeypatch):
+    calls = {"count": 0}
+
+    def fake_exchange():
+        calls["count"] += 1
+        return "prism-jwt", 3600
+
+    monkeypatch.setattr(adapter, "_exchange_prism_token", fake_exchange)
+
+    assert adapter._get_prism_token() == "prism-jwt"
+    assert adapter._get_prism_token() == "prism-jwt"
+    assert calls["count"] == 1
+
+
 def _sign(body: bytes, key: str) -> str:
     return hmac.new(key.encode(), body, hashlib.sha256).hexdigest()
 

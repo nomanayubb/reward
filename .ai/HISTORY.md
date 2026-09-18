@@ -215,6 +215,11 @@
   reconciliation service + `manage.py reconcile_provider` command (verified
   live with the dashboard token). Added the AdGem adapter's Cloudflare-safe
   User-Agent. 20 tests (223 total).
+- Added Prism (GraphQL) mode to the AdGem adapter (`mode: prism` in the
+  provider config): separate token exchange at `prism.adgem.com`, GraphQL
+  offers query, cached JWT. Documented that the `refresh_token` is **provided
+  by the AdGem Team** (not self-service), which is why the credentials tried so
+  far returned 401. 2 tests (225 total).
 
 ### Tests
 

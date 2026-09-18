@@ -42,19 +42,28 @@ Fields available: `app_id`, `app_name`, `date`, `country_name`,
 Note: Cloudflare fronts `dashboard.adgem.com` and blocks unknown client
 signatures — the adapter sends a normal User-Agent header for this reason.
 
-### Offer API (REST, native UI)
+### Offer API (REST) and Prism (GraphQL) — native UI
+
+Both use the same OAuth 2.0 exchange, on different hosts:
 
 ```
-1. Exchange the refresh token for a short-lived access token:
-   POST https://offer-api.adgem.com/v1/users/token
-   Content-Type: application/x-www-form-urlencoded
-   grant_type=refresh_token&refresh_token=<REFRESH_TOKEN>
-   -> {"access_token": "...", "expires_in": 3600}
+# REST Offer API
+POST https://offer-api.adgem.com/v1/users/token   (form: grant_type=refresh_token&refresh_token=…)
+GET  https://offer-api.adgem.com/v1/offers        (Authorization: Bearer <access_token>)
 
-2. Fetch offers:
-   GET https://offer-api.adgem.com/v1/offers
-   Authorization: Bearer <access_token>
+# Prism (GraphQL)
+POST https://prism.adgem.com/v1/users/token       (same form)
+POST https://prism.adgem.com/v1/offers            (Bearer; JSON body: {query, variables})
 ```
+
+**Critical:** the `refresh_token` is **"provided by the AdGem Team"** (their
+Prism docs) — it is *not* self-generated in the dashboard. Only AdGem support
+can issue it, and only after your app is approved. That is why the credentials
+tried so far returned 401 (`"scopes":[]`).
+
+Our adapter supports both: set the provider config key
+`"mode": "prism"` to use GraphQL (default is `"rest"`). Prism offer mapping is
+deliberately minimal until real credentials allow testing the full schema.
 
 - Access tokens live ~1 hour; the adapter caches them and re-exchanges shortly
   before expiry, and clears the cache on any 401.

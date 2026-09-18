@@ -40,9 +40,24 @@ from .base import (
 )
 
 DEFAULT_API_BASE = "https://offer-api.adgem.com"
+DEFAULT_PRISM_BASE = "https://prism.adgem.com"
 DEFAULT_REPORT_BASE = "https://dashboard.adgem.com"
 DEFAULT_TIMEOUT = 30
 TOKEN_CACHE_KEY = "adgem:access_token"
+PRISM_TOKEN_CACHE_KEY = "adgem:prism_token"
+
+# Minimal, documented Prism query (fields verified from AdGem's Prism example).
+# Extend once real credentials allow testing the full schema.
+PRISM_OFFERS_QUERY = """
+query Offers($playerId: String!) {
+  offers(player_id: $playerId) {
+    id
+    name
+    total_payout_usd
+    creatives { name description }
+  }
+}
+"""
 
 # Cloudflare fronts AdGem's hosts and rejects unknown client signatures, so we
 # identify as a normal HTTP client.
@@ -148,6 +163,95 @@ class AdgemAdapter(CPAProviderAdapter):
         except urllib.error.URLError as exc:
             raise ProviderRequestError(f"AdGem unreachable: {exc.reason}") from exc
 
+    # -- Prism (GraphQL) ----------------------------------------------------
+    @property
+    def prism_base(self) -> str:
+        return (
+            self.config.get("prism_base")
+            or getattr(settings, "ADGEM_PRISM_BASE", "")
+            or DEFAULT_PRISM_BASE
+        )
+
+    @property
+    def mode(self) -> str:
+        """``rest`` (Offer API) or ``prism`` (GraphQL). Credentials differ."""
+        return str(self.config.get("mode") or "rest").lower()
+
+    def _exchange_prism_token(self) -> tuple[str, int]:
+        """Exchange the refresh token for a Prism JWT (same OAuth flow)."""
+        if not self.refresh_token:
+            raise ProviderConfigurationError(
+                "ADGEM_REFRESH_TOKEN is not configured. AdGem support must provide it."
+            )
+        body = urllib.parse.urlencode(
+            {"grant_type": "refresh_token", "refresh_token": self.refresh_token}
+        ).encode("utf-8")
+        request = urllib.request.Request(
+            f"{self.prism_base.rstrip('/')}/v1/users/token", data=body, method="POST"
+        )
+        request.add_header("Content-Type", "application/x-www-form-urlencoded")
+        _add_common_headers(request)
+
+        try:
+            with urllib.request.urlopen(request, timeout=DEFAULT_TIMEOUT) as response:
+                payload = json.loads(response.read().decode("utf-8") or "{}")
+        except urllib.error.HTTPError as exc:
+            detail = exc.read()[:300]
+            raise ProviderRequestError(f"AdGem Prism token HTTP {exc.code}: {detail!r}") from exc
+        except urllib.error.URLError as exc:
+            raise ProviderRequestError(f"AdGem unreachable: {exc.reason}") from exc
+
+        access_token = payload.get("access_token", "")
+        if not access_token:
+            raise ProviderRequestError("AdGem Prism token exchange returned no access_token.")
+        return access_token, int(payload.get("expires_in", 3600))
+
+    def _get_prism_token(self) -> str:
+        token = cache.get(PRISM_TOKEN_CACHE_KEY)
+        if token:
+            return token
+        access_token, expires_in = self._exchange_prism_token()
+        cache.set(PRISM_TOKEN_CACHE_KEY, access_token, max(60, expires_in - 300))
+        return access_token
+
+    def _prism_request(self, query: str, variables: dict) -> dict:
+        request = urllib.request.Request(
+            f"{self.prism_base.rstrip('/')}/v1/offers",
+            data=json.dumps({"query": query, "variables": variables}).encode("utf-8"),
+            method="POST",
+        )
+        request.add_header("Authorization", f"Bearer {self._get_prism_token()}")
+        request.add_header("Content-Type", "application/json")
+        _add_common_headers(request)
+
+        try:
+            with urllib.request.urlopen(request, timeout=DEFAULT_TIMEOUT) as response:
+                return json.loads(response.read().decode("utf-8") or "{}")
+        except urllib.error.HTTPError as exc:
+            if exc.code == 401:
+                cache.delete(PRISM_TOKEN_CACHE_KEY)
+            detail = exc.read()[:300]
+            raise ProviderRequestError(f"AdGem Prism HTTP {exc.code}: {detail!r}") from exc
+        except urllib.error.URLError as exc:
+            raise ProviderRequestError(f"AdGem unreachable: {exc.reason}") from exc
+
+    def _prism_offers(self, player_id: str | None = None) -> list[NormalizedOffer]:
+        player = player_id or self.config.get("player_id") or "catalog"
+        payload = self._prism_request(PRISM_OFFERS_QUERY, {"playerId": player})
+        rows = (payload.get("data") or {}).get("offers") or []
+        return [self._normalize_prism_offer(item) for item in rows]
+
+    def _normalize_prism_offer(self, item: dict) -> NormalizedOffer:
+        creatives = item.get("creatives") or {}
+        return NormalizedOffer(
+            external_id=str(item.get("id", "")),
+            title=creatives.get("name") or item.get("name", ""),
+            payout=Decimal(str(item.get("total_payout_usd", "0") or "0")),
+            description=creatives.get("description") or "",
+            incentive_allowed=bool(self.config.get("incentive_allowed", False)),
+            raw=item,
+        )
+
     # -- reporting API ------------------------------------------------------
     @property
     def report_token(self) -> str:
@@ -201,6 +305,11 @@ class AdgemAdapter(CPAProviderAdapter):
 
     # -- provider interface -------------------------------------------------
     def get_offers(self) -> list[NormalizedOffer]:
+        if self.mode == "prism":
+            return self._prism_offers()
+        return self._rest_offers()
+
+    def _rest_offers(self) -> list[NormalizedOffer]:
         payload = self._request("/v1/offers")
         data = payload.get("data", payload)
         raw_offers = data.get("offers", []) if isinstance(data, dict) else (data or [])
