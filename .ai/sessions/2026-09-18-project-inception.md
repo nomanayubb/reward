@@ -150,6 +150,28 @@ saved in other documents just like our workflow already is."
 updated `AGENTS.md` and `.ai/RULES.md` so every future session writes a log
 at session end and reads the latest log at session start.
 
+## 13. Wallet + ledger read endpoints
+
+**User:** "now what to do" → after pushing, the agent continued with the next
+task from `.ai/STATE.md`.
+
+**Agent:** Built `GET /api/v1/wallets/summary/` (cash/pending/locked/bonus/
+points + accounts) and `GET /api/v1/ledger/transactions/` (paginated,
+user-scoped, `type`/`status` filters), with 8 tests (27 total).
+
+While testing, two reward-engine bugs were found and fixed:
+
+- Points were credited twice (once at award, again at approval).
+- Two points accounts existed per wallet: currency `USD` (created by account
+  provisioning) and currency `POINTS` (created by the rewards flow).
+
+Fix: points now follow the same pending → approved flow as cash via a system
+pending-points holding account; reversing an approved reward unwinds both the
+pending and approval postings (ADR-014). Stale zero-balance USD points accounts
+were removed from the dev database.
+
+Commits: `0d2996e`, `36d6d72`.
+
 ---
 
 ## Decisions made this session
@@ -171,4 +193,4 @@ at session end and reads the latest log at session start.
 ## Commits this session
 
 `0e69b96`, `5e29c59`, `91fc708`, `2ac7f29`, `2907a87`, `08672f8`, `63060f0`,
-plus the session-log commit.
+`095bce0`, `0d2996e`, `36d6d72`, plus the session-log commit.
